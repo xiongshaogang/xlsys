@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<TaskThreadPool desc="任务线程池的配置">
+		<corePoolSize desc="核心池大小">5</corePoolSize>
+	</TaskThreadPool>
+	<Task desc="任务配置">
+		<id desc="任务ID编号">1001</id>
+		<name desc="任务名称">测试任务</name>
+		<runnableClass desc="实现了Runnable接口的目标类">5</runnableClass>
+		<param desc="构造方法中的参数，可多个" name="serverIp" javaClass="java.lang.String">172.17.5.160</param>
+		<param name="serverPort" javaClass="java.lang.Integer">8080</param>
+		<field desc="成员属性，可多个" name="outStr">Hello everyone!</field>
+		<ScheduleTime desc="调度时间配置">
+			<mode desc="调度模式,详见ScheduleTime类">4</mode>
+			<year>0</year>
+			<month>0</month>
+			<day>0</day>
+			<hour>0</hour>
+			<minute>0</minute>
+			<second>1</second>
+			<period>0</period>
+			<weekDays desc="0-6代表星期日到星期六,可写多个">1,3,5</weekDays>
+		</ScheduleTime>
+	</Task>
+</config>

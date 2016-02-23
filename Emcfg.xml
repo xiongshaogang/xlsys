@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<Synonym desc="同义词相关配置">
+		<toFormalheat desc="预备同义词转为正式同义词的热度值, 当小于等于0时不会进行自动转换">5</toFormalheat>
+	</Synonym>
+	<KeyWord desc="关键词相关配置">
+		<bufferKeyCount desc="保存常用关键词的个数">100</bufferKeyCount>
+		<tobeUpdateKeyCount desc="缓存需要更新热度的关键词的个数,一般情况下,应该比bufferKeyCount小">10</tobeUpdateKeyCount>
+	</KeyWord>
+	<SearchText desc="搜索文本相关设置">
+		<bufferTextCount desc="保存常用搜索文本的个数">20</bufferTextCount>
+		<tobeUpdateTextCount desc="缓存需要更新热度的搜索文本的个数,一般情况下,应该比bufferTextCount小">5</tobeUpdateTextCount>
+	</SearchText>
+</config>

@@ -1,0 +1,22 @@
+词法分析
+
+1. 从正则表达式构造NFA 
+	P101 归纳规则，3个规则，非常重要。
+	P105-P106 将多个模式的正则表达式的NFA合并为一个NFA规则
+	P107 例3.27, 以一个实际的输入为例，说明了如何查找最匹配的模式
+	
+2. 从NFA转化为DFA
+	P97-P98
+	
+3. DFA模式匹配器的优化
+	P111-P112 计算nullable、firstpos、lastpos、followpos的方法
+	
+
+DFA实现 : 根据P111-P113原理, 实现类全部都放在包xlsys.base.script.regex.dfa中
+NFA实现 : 根据P97-P99原理, 实现类全部都放在包xlsys.base.script.regex.nfa中
+
+
+语法分析
+
+1. FIRST和FOLLOW的算法
+	P140-P141

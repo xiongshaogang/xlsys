@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <SessionAliveTime desc="服务端在线列表的Session保留时间, 单位秒">60</SessionAliveTime>
+	<PackageProcessor desc="服务端处理类配置">
+		<className desc="处理主类">xlsys.server.base.process.ServerPackageProcessor</className>
+		<extProcessor desc="附加处理类,可配置多个">xlsys.server.business.process.BusinessPackageProcessor</extProcessor>
+		<extProcessor>xlsys.server.finance.process.FinancePackageProcessor</extProcessor>
+	</PackageProcessor>
+	<QueryBuffer desc="服务端查询缓存配置">
+	    <criticalSize desc="查询结果集返回行数临界值，大于此值时启用缓存，为0始终启用，小于0则不启用">1000</criticalSize>
+	    <bufferSize desc="缓冲池结果集存放个数。该值决定了缓冲池中能存放多少个结果集(非数据大小), 小于等于0则不限制数量(慎用)">20</bufferSize>
+	</QueryBuffer>
+</config>

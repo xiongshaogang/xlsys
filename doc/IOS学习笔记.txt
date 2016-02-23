@@ -1,0 +1,19 @@
+Cocoa中前置申明用"-"代表实例方法，"+"代表类方法。大概也就是Java中非static方法和static方法的区别
+
+NSMutableArray和Java中的ArrayList的位置相当
+
+在Cocoa的API中，使用get开头的方法一般都要传递一个内存地址作为参数，该参数所指向的地址一般是用来存储这个方法获取到的值
+
+Objective-C中，使用isKindOfClass来判断当前对象是否是指定的对象类型
+
+属性可以设置成私有的，方法是定义在实现文件顶部的类扩展中
+
+如果出现"My mac 64-bit"的错误，首先关闭你的Xcode，找到你出现解决此问题的项目目录下，然后此项目的***.xcodeproj 文件，然后右键选择“显示包内容”，找到“xcuserdata”这个罪魁祸首，将其整个移到废纸篓中，OK，重新打开你的项目，则正常显示可使用的Simulator；
+
+在IOS中任何更新UI的操作都必须在主线程上完成
+
+学习资料:
+PDF-20120917083652-ObjectiveCJiChuJiaoCheng.pdf
+http://www.raywenderlich.com/tutorials
+
+常用的Blocks,见url的最后一段 : http://www.raywenderlich.com/9438/how-to-use-blocks-in-ios-5-tutorial-part-2

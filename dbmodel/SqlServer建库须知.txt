@@ -1,0 +1,2 @@
+1. 建立数据库时排序规则使用Chinese_PRC_CS_AS，使数据库区分大小写
+2. 将建表语句中的所有ntext替换为varbinary(max)

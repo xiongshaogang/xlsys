@@ -1,0 +1,4 @@
+JNI头文件生成:
+1. 确保java/bin被加入环境变量中的path中
+2. 进入项目的bin目录下
+3. javah -classpath .;../orbit/ant.jar -jni xlsys.base.io.util.IOUtil

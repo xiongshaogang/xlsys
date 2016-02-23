@@ -1,0 +1,3 @@
+1. equinoxs的使用 : http://www.eclipse.org/equinox/documents/quickstart.php
+2. 导出bundle时，勾选Options中的Use class files compiled in the workspace
+3. 使用"Plug-in from Existing JAR Archives"创建项目后，要删除项目"META-INF"下的 *.SF *.DSA or *.RSA 

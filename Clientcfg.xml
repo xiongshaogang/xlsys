@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <RepositorySite desc="客户端更新地址">http://211.155.27.238/repository</RepositorySite>
+	<ClientTransfer desc="客户端传输方式配置">
+	    <Factory desc="工厂类配置">
+	        <className desc="工厂类">xlsys.base.io.transfer.client.ClientTransferFactory</className>
+	        <instanceMethod desc="获取工厂类实例的静态方法名">getFactoryInstance</instanceMethod>
+	    </Factory>
+		<Transfer desc="Servlet传输方式">
+			<id default="false" desc="传输方式实例标识,一个标识只可能有一个实例,只能有一个实例设置为默认传输实例">1001</id>
+			<className desc="传输方式对应的Java类, 必须为ClientTransfer的子类">xlsys.base.io.transfer.client.ServletClientTransfer</className>
+			<param desc="传输类构造方法需要的参数, 必须具有带一个String参数的构造方法" name="servletUrl" javaClass="java.lang.String">http://172.16.212.5/xlsysrap/XlsysServlet</param>
+			<seriMode desc="序列化模式,0为使用jdk中的序列化方式, 1为使用内部序列化方式, 2为JSON序列化方式">0</seriMode>
+		</Transfer>
+		<Transfer desc="Socket传输方式">
+			<id default="true">1002</id>
+			<className>xlsys.base.io.transfer.client.SocketClientTransfer</className>
+			<param name="serverIp" javaClass="java.lang.String">172.17.5.26</param>
+			<param name="serverPort" javaClass="int">8080</param>
+			<seriMode>0</seriMode>
+		</Transfer>
+		<Transfer desc="Http传输方式">
+			<id default="false">1003</id>
+			<className>xlsys.base.io.transfer.client.HttpClientTransfer</className>
+			<param name="serverIp" javaClass="java.lang.String">172.16.212.5</param>
+			<param name="serverPort" javaClass="int">80</param>
+			<param name="path" javaClass="java.lang.String">http://172.16.212.5/xlsysrap/XlsysServlet</param>
+			<seriMode>0</seriMode>
+		</Transfer>
+	</ClientTransfer>
+</config>

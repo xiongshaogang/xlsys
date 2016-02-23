@@ -1,0 +1,32 @@
+package xlsys.script;
+
+import java.util.List;
+import java.util.ArrayList;
+import xlsys.base.XLSYS;
+import xlsys.base.session.Session;
+
+public class A
+{
+	public A() {}
+	
+	public int max(int first, int second)
+	{
+		return first<second?second:first;
+	}
+	
+	public void testList()
+	{
+		List<B> list = new ArrayList<B>();
+		list.add(new B("a"));
+		list.add(new B("b"));
+		list.add(new B("c"));
+		list.add(new B("d"));
+		for(B b : list)
+		{
+			System.out.println(b);
+		}
+		System.out.println(XLSYS.COMMAND_PERMISSION_DENIED);
+		Session session = new Session("lxd");
+		System.out.println(session);
+	}
+}

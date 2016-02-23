@@ -1,0 +1,4 @@
+http://www.java2v.com/CN/Code/Java/SWT-JFace-Eclipse/DemonstratesTableTreeViewer2.htm
+
+1. 如果要使用ColumnViewer的ToolTip支持，需要执行以下语句
+ColumnViewerToolTipSupport.enableFor(viewer, ToolTip.NO_RECREATE); 

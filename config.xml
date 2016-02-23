@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<Cfg>
+		<cfgName>Syscfg</cfgName>
+		<cfgPath>Syscfg.xml</cfgPath>
+	</Cfg>
+	<Cfg>
+		<cfgName>Servercfg</cfgName>
+		<cfgPath>Servercfg.xml</cfgPath>
+	</Cfg>
+	<Cfg>
+		<cfgName>Clientcfg</cfgName>
+		<cfgPath>Clientcfg.xml</cfgPath>
+	</Cfg>
+	<Cfg>
+		<cfgName>Taskcfg</cfgName>
+		<cfgPath>Taskcfg.xml</cfgPath>
+	</Cfg>
+	<Cfg>
+		<cfgName>Emcfg</cfgName>
+		<cfgPath>Emcfg.xml</cfgPath>
+	</Cfg>
+</config>

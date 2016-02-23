@@ -1,0 +1,22 @@
+1. 安装eclipse cdt
+2. 安装eclipse e4 tools和e4 spy, 参见文档: http://www.vogella.com/tutorials/EclipseRCP/article.html
+3. 安装RAP Tools, 参见文档 : http://www.eclipse.org/rap/developers-guide/devguide.php?topic=setup-ide.html&version=3.0
+4. 安装WAR Products, 参见文档: http://www.eclipse.org/rap/developers-guide/devguide.php?topic=deployment.html&version=3.0
+5. 安装Subclipse, 参见网址 : http://marketplace.eclipse.org/content/subclipse
+7. (可选) 安装Android SDK, 安装时参见网址 : 
+安装Off-line installation : http://marketplace.eclipse.org/content/android-development-tools-eclipse
+http://www.androiddevtools.cn/
+8. 安装Java EE相关, 从当前Eclipse版本的更新地址 : http://download.eclipse.org/releases/mars下安装如下组件
+Eclipse Java EE Developer Tools
+Eclipse Java Web Developer Tools
+Eclipse Web Developer Tools
+JavaScript Development Tools
+JST Server Adapters
+JST Server Adapters Extensions
+9. sqllite的JDBC驱动安装 : https://bitbucket.org/xerial/sqlite-jdbc/downloads
+10. 安装Git : http://download.eclipse.org/releases/mars
+搜索git, 选第一个和第二个
+10. 安装更新 : http://download.eclipse.org/eclipse/updates/4.5
+11. (不建议)安装jetty : http://download.eclipse.org/jetty/updates/jetty-bundles-9.x/
+找不到的bundle可以去Git下载 : http://git.eclipse.org/c/jetty/org.eclipse.jetty.orbit.git/
+12. 在主资源库中安装 : Code Recommenders for Java Developers

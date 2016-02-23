@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<LicenseFile desc="指明系统license文件所在路径">license.xlsys</LicenseFile>
+	<SharedLib desc="要加载的动态库,注意客户端和服务端不能同时共享同一个动态库文件">
+	  <libFile>cpplib/libwinpthread-1.dll</libFile>
+  	  <libFile>cpplib/libgcc_s_seh-1.dll</libFile>
+  	  <libFile>cpplib/libstdc++-6.dll</libFile>
+	  <libFile desc="动态库所在的路径,可以写全路径,也可以直接写动态库名称">cpplib/libXlsysJni.dll</libFile>
+	</SharedLib>
+	<JAVA_HOME>C:/Program Files/Java/jdk1.7.0_21</JAVA_HOME>
+	<ThreadPool desc="线程池的配置">
+		<corePoolSize desc="核心池大小">5</corePoolSize>
+		<maximumPoolSize desc="线程池最大容量,小于等于零时无限制">10</maximumPoolSize>
+		<keepAliveTime desc="线程保持活动的时间(秒),如果该值小于等于0，则空闲线程立即终止">60</keepAliveTime>
+		<queueCapacity desc="线程池的等待队列容量,当为0时不等待,当为负数时容量无限制">100</queueCapacity>
+	</ThreadPool>
+	<Env>
+		<Factory desc="工厂类配置">
+	        <className desc="工厂类">xlsys.base.env.EnvFactory</className>
+	        <instanceMethod desc="获取工厂类实例的静态方法名">getFactoryInstance</instanceMethod>
+	    </Factory>
+	</Env>
+	<DBConPool desc="数据库连接池配置">
+		<Factory desc="工厂类配置">
+	        <className desc="工厂类">xlsys.base.database.DBPoolFactory</className>
+	        <instanceMethod desc="获取工厂类实例的静态方法名">getFactoryInstance</instanceMethod>
+	    </Factory>
+		<DefaultPool desc="默认的连接池配置">
+			<corePoolSize desc="核心池大小,如果有些数据库会自动超时,这里最好设置成0">0</corePoolSize>
+			<maximumPoolSize desc="连接池最大容量,小于等于0时无限制">10</maximumPoolSize>
+			<keepAliveTime desc="空闲连接保持活动的时间(秒),如果该值小于等于0，则空闲连接立即终止">10</keepAliveTime>
+			<queueCapacity desc="连接池的等待队列容量,当为0时不等待,当为负数时容量无限制">100</queueCapacity>
+		</DefaultPool>
+		<InnerDataBase desc="内部数据库信息相关配置, 该配置只能有一个">
+			<id desc="数据库在系统中的唯一标识">999999</id>
+			<description desc="数据库描述">内部数据库</description>
+			<dataSource desc="数据源URL">jdbc:sqlite:xlsys.db</dataSource>
+			<user>nonuser</user>
+			<password>nonpwd</password>
+		</InnerDataBase>
+	</DBConPool>
+	<LogConfig desc="日志相关配置">
+		<Factory desc="工厂类配置">
+	        <className desc="工厂类">xlsys.base.log.LogFactory</className>
+	        <instanceMethod desc="获取工厂类实例的静态方法名">getFactoryInstance</instanceMethod>
+	    </Factory>
+		<Log desc="日志">
+			<id default="false" desc="日志实例标识,一个标识只可能有一个实例,只能有一个实例设置为默认日志实例">1001</id>
+			<logType desc="日志类，不同的类型可能有不同的配置参数">xlsys.base.log.FileLog</logType>
+			<logLevel desc="默认的日志等级">20</logLevel>
+			<params desc="该日志类型专有参数">
+				<outFilePath desc="普通日志输出路径">xlsysout.log</outFilePath>
+				<errFilePath desc="错误日志输出路径">xlsyserr.log</errFilePath>
+			</params>
+		</Log>
+		<Log desc="日志">
+			<id default="true" desc="日志实例标识,一个标识只可能有一个实例,只能有一个实例设置为默认日志实例">1002</id>
+			<logType desc="日志类，不同的类型可能有不同的配置参数">xlsys.base.log.ConsoleLog</logType>
+			<logLevel desc="默认的日志等级">40</logLevel>
+		</Log>
+	</LogConfig>
+	<Session desc="会话相关配置">
+		<Manager>
+			<className desc="会话管理器类，注意该类必须为SessionManager或其子类">xlsys.base.session.SessionManager</className>
+		</Manager>
+	</Session>
+	<TransferConfig desc="传输相关配置">
+		<timeout desc="传输等待超时时间，单位毫秒，小于等于0时无超时限制">60000</timeout>
+		<encrypt desc="传输的内容是否加密">false</encrypt>
+		<compress desc="压缩传输字节大小，即传输大于该值的字节流时，启用压缩传输，小于等于0时不启用压缩传输">1048576</compress>
+	</TransferConfig>
+	<LockUtil desc="系统中的同步加锁工具相关配置">
+		<lockTimeout desc="同步锁等待超时时间，单位秒，小于等于0时无超时限制">60</lockTimeout>
+	</LockUtil>
+	<FtpConfig desc="Ftp相关配置">
+		<Factory desc="工厂类配置">
+	        <className desc="工厂类">xlsys.base.io.ftp.FtpModelFactory</className>
+	        <instanceMethod desc="获取工厂类实例的静态方法名">getFactoryInstance</instanceMethod>
+	    </Factory>
+		<Ftp default="true" desc="Ftp连接配置，可配置多个">
+			<id desc="Ftp在系统中的唯一标识">1001</id>
+			<host desc="Ftp服务器地址">211.155.27.238</host>
+			<port desc="Ftp服务器端口">21</port>
+			<user>snsoft</user>
+			<password>ibmIBM123</password>
+		</Ftp>
+	</FtpConfig>
+	<WorkDirConfig desc="工作目录相关配置，主要用来存放上传的文件">
+		<Factory desc="工厂类配置">
+	        <className desc="工厂类">xlsys.base.io.workdir.WorkDirFactory</className>
+	        <instanceMethod desc="获取工厂类实例的静态方法名">getFactoryInstance</instanceMethod>
+	    </Factory>
+		<WorkDir default="true" desc="工作路径配置，可配置多个">
+			<id desc="工作路径在系统中的唯一标识">1001</id>
+			<dir>e:/xlsysWorkDir</dir>
+		</WorkDir>
+	</WorkDirConfig>
+	<WebService desc="Web Service的相关配置">
+	    <webRoot desc="web发布的根目录">http://localhost/xlsysrap</webRoot>
+	    <defaultPackage desc="默认的WebService发布包名">xlsys.webservice.custom</defaultPackage>
+	</WebService>
+	<CenterServer switch="off" desc="控制中心服务配置, switch为on时启用，为off时不启用，一般为服务端启用, 当服务端本身为控制中心时，必须配置为off，否则会造成无限循环">
+		<Transfer>
+			<className>xlsys.base.io.transfer.client.SocketClientTransfer</className>
+			<param name="serverIp" javaClass="java.lang.String">172.17.5.87</param>
+			<param name="serverPort" javaClass="int">8080</param>
+		</Transfer>
+		<RegisterCommand>
+			<cmd>xlsys.base.XLSYS.COMMAND_ALLOC_ID</cmd>
+			<cmd>xlsys.base.XLSYS.COMMAND_GET_LOCK</cmd>
+			<cmd>xlsys.base.XLSYS.COMMAND_TRY_LOCK</cmd>
+			<cmd>xlsys.base.XLSYS.COMMAND_RELEASE_LOCK</cmd>
+		</RegisterCommand>
+	</CenterServer>
+</config>

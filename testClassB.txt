@@ -1,0 +1,16 @@
+package xlsys.script;
+
+public class B
+{
+	private String str;
+
+	public B(String str)
+	{
+		this.str = str;
+	}
+	
+	public String toString()
+	{
+		return str;
+	}
+}

@@ -1,0 +1,4 @@
+1. 查看本地API网页时，使用Chrome浏览器，并且在浏览器的启动参数中增加:
+	-allow-file-access-from-files
+2. 如果编译时出现编码错误，则在config.json里面的"let"项下面重新指定TMPDIR:
+	"TMPDIR"       : "c:/temp"

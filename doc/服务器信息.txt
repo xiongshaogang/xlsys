@@ -1,0 +1,8 @@
+服务器地址
+172.17.5.38
+administrator
+17131721
+
+svn插件 : http://subclipse.tigris.org/update_1.8.x
+svn地址 : https://172.17.5.38/svn/xlsys/
+svn用户 : xlsys/xlsys

@@ -1,0 +1,10 @@
+1. 第三方jar包添加:
+	要在plugin项目中添加第三方的jar包，一定只能在plugin.xml的runtime选项卡中添加相关的jar包，并且一定要添加"."
+	
+2. 参考资料
+	http://openstudy.iteye.com/blog/576755
+	http://www.vogella.com/eclipse.html
+	http://help.eclipse.org/juno/index.jsp
+	http://help.eclipse.org/juno/topic/org.eclipse.platform.doc.isv/guide/java_web_start.htm?cp=2_0_21_7
+	
+3. 可用的Tags在接口IPresentationEngine中

@@ -1,0 +1,101 @@
+长久以来一直为RCP的文件路径获取在IDE环境时和产品发布时不同苦恼不已，今天终于可以宣布已经fix了这个难题。 
+检测报告如下：
+ 在 eclipse中运行时得到的路径结果：
+Platform.getLocation().toString():E:/Eclipse/runtime-operationtool.product
+ Platform.getProduct().getDefiningBundle().getLocation():initial@reference:E:/Eclipse/workspace/operationtool/
+ Activator.getDefault().getBundle().getLocation():initial@reference:E:/Eclipse/workspace/operationtool/
+ Platform.getLogFileLocation():E:/Eclipse/runtime-operationtool.product/.data/.log
+ Platform.getInstallLocation():/D:/Program Files/eclipse/
+ Platform.getStateLocation(Activator.getDefault().getBundle()):E:/Eclipse/runtime-operationtool.product/.data/.plugins/operationtool
+ Platform.getUserLocation():/C:/Documents and Settings/Allen/user/
+ Platform.getInstanceLocation():/E:/Eclipse/runtime-operationtool.product/
+ Platform.getConfigurationLocation():/E:/Eclipse/workspace/.data/.plugins/org.eclipse.pde.core/operationtool.product/ 
+在发布后运行时得到的路径结果，operationtool_1.0.0.jar未解压：
+Platform.getLocation().toString():E:/product/tool/workspace
+ Platform.getProduct().getDefiningBundle().getLocation():initial@reference:plugins/operationtool_1.0.0.jar/
+ Activator.getDefault().getBundle().getLocation():initial@reference:plugins/operationtool_1.0.0.jar/
+ Platform.getLogFileLocation():E:/product/tool/workspace/.data/.log
+ Platform.getInstallLocation():/E:/product/tool/
+ Platform.getStateLocation(Activator.getDefault().getBundle()):E:/product/tool/workspace/.data/.plugins/operationtool
+ Platform.getUserLocation():/C:/Documents and Settings/Allen/user/
+ Platform.getInstanceLocation():/E:/product/tool/workspace/
+ Platform.getConfigurationLocation():/E:/product/tool/configuration/
+
+ 在发布后运行时得到的路径结果，operationtool_1.0.0.jar已解压，并删除 operationtool_1.0.0.jar：
+Platform.getLocation().toString():E:/product/tool/workspace
+ Platform.getProduct().getDefiningBundle().getLocation():initial@reference:plugins/operationtool_1.0.0/
+ Activator.getDefault().getBundle().getLocation():initial@reference:plugins/operationtool_1.0.0/
+ Platform.getLogFileLocation():E:/product/tool/workspace/.data/.log
+ Platform.getInstallLocation():/E:/product/tool/
+ Platform.getStateLocation(Activator.getDefault().getBundle()):E:/product/tool/workspace/.data/.plugins/operationtool
+ Platform.getUserLocation():/C:/Documents and Settings/Allen/user/
+ Platform.getInstanceLocation():/E:/product/tool/workspace/
+ Platform.getConfigurationLocation():/E:/product/tool/configuration/
+
+通过对检测报告分析，得出以下有用的几个API的结论：
+1.product的根目录获取：
+ 未发布前：
+Activator.getDefault().getBundle().getLocation()， 截去掉 initial@reference:file :后使用，比如：E:/Eclipse/workspace/operationtool/
+发布后：
+Platform.getInstallLocation() ，比如：E:/product/tool/ 
+ 2.自己定制的plugin目录的获取：
+ 发布后：
+Activator.getDefault().getBundle().getLocation()， 截去掉 initial@reference:file :后使用，当plugin未解压：/E:/product/tool/plugins/operationtool_1.0.0.jar/
+当 operationtool_1.0.0.jar已解压，并删除operationtool_1.0.0.jar，得到的结果为/E:/product /tool/plugins/operationtool_1.0.0/ 
+ 3.configuration目录的获取：
+ 发布后：
+Platform.getConfigurationLocation() ，比如/E:/product/tool/configuration/
+ 4.workspace目录的获取：
+ 发布后：
+Platform.getInstanceLocation()， 比如/E:/product/tool/workspace/ 
+
+ .号发布前代表src,发布后忽略 
+----------------------------------- 以下为参考文档-----------------------------------------------------
+从插件/RCP中 取得文件路径的方法 
+最近社区 里问这个问题的人特别多，所以在这里将自己用到的几个方法写出来。假如以后还有其他的方法，会进行更新。
+
+从插件中获得绝对路径：
+AaaaPlugin.getDefault().getStateLocation().makeAbsolute().toFile().getAbsolutePath());
+
+
+通过文件得到Project：
+
+ IProject project  =  ((IFile)o).getProject();
+
+
+通过文件得到全路径：
+
+ String path  =  ((IFile)o).getLocation().makeAbsolute().toFile().getAbsolutePath();
+
+
+
+得到整个Workspace的根：
+
+ IWorkspaceRoot root  =  ResourcesPlugin.getWorkspace().getRoot();
+
+
+从根来查找资源：
+
+ IResource resource  =  root.findMember( new  Path(containerName));
+
+从Bundle来查找资源：
+
+ Bundle bundle  =  Platform.getBundle(pluginId);
+ URL fullPathString  =  BundleUtility.find(bundle, filePath);
+
+
+ 
+
+得到Appliaction workspace：
+
+ Platform.asLocalURL(PRODUCT_BUNDLE.getEntry( "" )).getPath()).getAbsolutePath();
+
+得到runtimeworkspace：
+Platform.getInstanceLocation().getURL().getPath();
+
+从编辑器来获得编辑文件
+IEditorPart editor  =  ((DefaultEditDomain)(parent.getViewer().getEditDomain())).getEditorPart();
+ IEditorInput input  =  editor.getEditorInput();
+ if (input  instanceof  IFileEditorInput)  {
+ IFile file  =  ((IFileEditorInput)input).getFile();
+ }
