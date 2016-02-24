@@ -324,7 +324,7 @@ public class TreeDataSet extends DataSet implements ITreeDataSet
 			{
 				DataSetRow row = rows.get(rowAt);
 				String rowStr = "" + row.getCell(treeColIdx).getContent();
-				for(int i=rowAt-1;i>=0;i--)
+				for(int i=rowAt-1;i>=0;--i)
 				{
 					DataSetRow otherRow = rows.get(i);
 					String otherRowStr = "" + otherRow.getCell(treeColIdx).getContent();

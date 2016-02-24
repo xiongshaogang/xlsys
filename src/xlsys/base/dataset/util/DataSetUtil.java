@@ -400,7 +400,7 @@ public class DataSetUtil
 		IDataBase dataBase = null;
 		try
 		{
-			dataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(1007)).getNewDataBase();
+			dataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(1001)).getNewDataBase();
 			dataBase.setAutoCommit(false);
 			List<StorableDataSet> sdsList = (List<StorableDataSet>) IOUtil.readObject(FileUtil.getByteFromFile("dbmodel/init_data.data"));
 			for(StorableDataSet sds : sdsList)
