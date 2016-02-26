@@ -1,6 +1,5 @@
 package xlsys.base.util;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -95,15 +94,7 @@ public class EDCoder
 	 */
 	public static byte[] getSecretKey(InputStream is) throws Exception
 	{
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		int c = -1;
-		while((c=is.read())!=-1)
-		{
-			baos.write(c);
-		}
-		byte[] key = baos.toByteArray();
-		baos.close();
-		return key;
+		return IOUtil.readBytesFromInputStream(is, -1);
 	}
 	
 	public byte[] base64Encode(byte[] srcByte) throws NativeException

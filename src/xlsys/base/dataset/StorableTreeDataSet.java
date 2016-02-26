@@ -19,12 +19,12 @@ public class StorableTreeDataSet extends StorableDataSet implements ITreeDataSet
 	
 	public StorableTreeDataSet(IStorableDataSet sds)
 	{
-		this(sds, IDataSet.STYLE_NONE);
+		this(sds, sds.getStyle());
 	}
 
 	public StorableTreeDataSet(IStorableDataSet sds, int style)
 	{
-		super(sds.getDataBase(), sds.getSelectBean(), sds.getTableName(), sds.getStyle());
+		super(sds.getDataBase(), sds.getSelectBean(), sds.getTableName(), style);
 		refDataSet(sds);
 	}
 

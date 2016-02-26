@@ -1787,6 +1787,64 @@ public class IOUtil
 		}
 		return obj;
 	}
+	
+	/**
+	 * 将指定个数的字节流从指定的输入流写入到指定的输出流
+	 * @param is
+	 * @param targetLength 指定的字节个数, 为-1则写入所有
+	 * @param os
+	 * @throws IOException
+	 */
+	public static void writeBytesFromIsToOs(InputStream is, int targetLength, OutputStream os) throws IOException
+	{
+		int bufferLen = 1024;
+		int length = -1;
+		byte[] b = new byte[bufferLen];
+		if(targetLength<0)
+		{
+			while((length=is.read(b, 0, bufferLen))!=-1)
+			{
+				os.write(b, 0, length);
+			}
+		}
+		else
+		{
+			int leftLen = targetLength;
+			int curTargetLen = leftLen<bufferLen?leftLen:bufferLen;
+			while(curTargetLen>0&&(length=is.read(b, 0, curTargetLen))!=-1)
+			{
+				os.write(b, 0, length);
+				leftLen -= length;
+				curTargetLen = leftLen<bufferLen?leftLen:bufferLen;
+			}
+		}
+		os.flush();
+	}
+	
+	/**
+	 * 从指定的输入流读入指定的字节个数
+	 * @param is 输入流
+	 * @param targetLength 字节个数, 如果为-1则读取到输入流的结尾
+	 * @return
+	 * @throws IOException
+	 */
+	public static byte[] readBytesFromInputStream(InputStream is, int targetLength) throws IOException
+	{
+		ByteArrayOutputStream baos = null;
+		byte[] ret = null;
+		try
+		{
+			baos = new ByteArrayOutputStream();
+			writeBytesFromIsToOs(is, targetLength, baos);
+			if(targetLength>=0&&baos.size()!=targetLength) throw new IOException("Cannot read " + targetLength + " bytes from " + is);
+			ret = baos.toByteArray();
+		}
+		finally
+		{
+			IOUtil.close(baos);
+		}
+		return ret;
+	}
 
 	public static void main(String[] args) throws Exception
 	{

@@ -2,7 +2,6 @@ package xlsys.base.io.transfer.server;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -314,7 +313,6 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 				// 从Ftp下载
 				FTPUtil ftpUtil = null;
 				InputStream is = null;
-				ByteArrayOutputStream baos = null;
 				try
 				{
 					if(inAttachment.getId()!=null) ftpUtil = ((FtpModel)XlsysFactory.getFactoryInstance(XLSYS.FACTORY_FTP).getInstance(inAttachment.getId())).getFtpInstance();
@@ -323,14 +321,7 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 					// 使用内部名称获取文件
 					is = ftpUtil.get(inAttachment.getInnerName());
 					BufferedInputStream bis = new BufferedInputStream(is);
-					baos = new ByteArrayOutputStream();
-					byte[] b = new byte[32*1024];
-					int len = -1;
-					while((len=bis.read(b))!=-1)
-					{
-						baos.write(b, 0, len);
-					}
-					bytes = baos.toByteArray();
+					bytes = IOUtil.readBytesFromInputStream(bis, -1);
 				}
 				catch(Exception e)
 				{
@@ -340,7 +331,6 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 				{
 					if(ftpUtil!=null) ftpUtil.close();
 					IOUtil.close(is);
-					IOUtil.close(baos);
 				}
 			}
 			outAttachment = new XlsysAttachment(inAttachment.getAttachmentName(), inAttachment.getLastModified(), inAttachment.getStyle(), bytes, inAttachment.isCompress());

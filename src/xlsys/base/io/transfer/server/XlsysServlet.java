@@ -219,8 +219,7 @@ public class XlsysServlet extends HttpServlet
 		try
 		{
 			is = req.getInputStream();
-			byte[] b = new byte[length];
-			is.read(b, 0, length);
+			byte[] b = IOUtil.readBytesFromInputStream(is, length);
 			String str = new String(b, "UTF-8");
 			Map<String, String> paramMap = StringUtil.getParamMap(str, "=", "&");
 			String cmd = paramMap.get(XLSYS.WEB_COMMAND);

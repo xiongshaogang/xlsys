@@ -1,6 +1,5 @@
 package xlsys.base.database;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -37,6 +36,7 @@ import xlsys.base.dataset.DataSetColumn;
 import xlsys.base.dataset.DataSetRow;
 import xlsys.base.dataset.IDataSet;
 import xlsys.base.exception.AlreadyClosedException;
+import xlsys.base.io.util.IOUtil;
 import xlsys.base.log.LogUtil;
 import xlsys.base.script.XlsysClassLoader;
 import xlsys.base.util.DateUtil;
@@ -88,16 +88,9 @@ public class OracleDataBase extends DataBase
 				if(data instanceof Blob)
 				{
 					InputStream is = ((Blob)data).getBinaryStream();
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					byte[] b = new byte[1024];
-					int len = -1;
-					while((len=is.read(b))!=-1)
-					{
-						baos.write(b, 0, len);
-					}
+					byte[] bytes = IOUtil.readBytesFromInputStream(is, -1);
 					is.close();
-					dsr.getCells().get(i).setContent(baos.toByteArray());
-					baos.close();
+					dsr.getCells().get(i).setContent(bytes);
 				}
 				else
 				{

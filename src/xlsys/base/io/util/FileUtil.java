@@ -4,7 +4,6 @@ import java.awt.Desktop;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -52,19 +51,11 @@ public class FileUtil
 	public static byte[] getByteFromFile(String filePath) throws IOException
 	{
 		byte[] bytes = null;
-		ByteArrayOutputStream baos = null;
 		FileInputStream fis = null;
 		try
 		{
-			baos = new ByteArrayOutputStream();
 			fis = IOUtil.getFileInputStream(filePath);
-			byte[] b = new byte[1024];
-			int len = -1;
-			while ((len = fis.read(b)) != -1)
-			{
-				baos.write(b, 0, len);
-			}
-			bytes = baos.toByteArray();
+			bytes = IOUtil.readBytesFromInputStream(fis, -1);
 		}
 		catch(IOException e)
 		{
@@ -73,7 +64,6 @@ public class FileUtil
 		finally
 		{
 			IOUtil.close(fis);
-			IOUtil.close(baos);
 		}
 		return bytes;
 	}
@@ -185,12 +175,7 @@ public class FileUtil
 			File fosFile = new File(descPath);
 			createParentPath(fosFile);
 			bos = IOUtil.getBufferedOutputStream(descPath, false);
-			int b = 0;
-			while ((b = bis.read()) != -1)
-			{
-				bos.write(b);
-			}
-			bos.flush();
+			IOUtil.writeBytesFromIsToOs(bis, -1, bos);
 		}
 		catch (Exception e)
 		{

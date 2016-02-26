@@ -322,17 +322,7 @@ public class FTPUtil
 			ensureOpen();
 			BufferedInputStream bis = new BufferedInputStream(is);
 			os = ftpClient.storeFileStream(fileName);
-			/*byte[] b = new byte[32*1024];
-			int len = -1;
-			while((len=bis.read(b))!=-1)
-			{
-				os.write(b, 0, len);
-			}*/
-			int b = -1;
-			while((b=bis.read())!=-1)
-			{
-				os.write(b);
-			}
+			IOUtil.writeBytesFromIsToOs(bis, -1, os);
 		}
 		catch(IOException e)
 		{
