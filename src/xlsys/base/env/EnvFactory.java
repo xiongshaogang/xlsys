@@ -6,12 +6,12 @@ import java.util.List;
 
 import xlsys.base.XLSYS;
 import xlsys.base.XlsysFactory;
-import xlsys.base.buffer.ModelBuffer;
 import xlsys.base.database.DBPoolFactory;
 import xlsys.base.database.IDataBase;
 import xlsys.base.database.bean.ParamBean;
 import xlsys.base.database.util.DBUtil;
 import xlsys.base.log.LogUtil;
+import xlsys.base.model.ModelUtil;
 
 public class EnvFactory extends XlsysFactory<Integer, Env>
 {
@@ -39,9 +39,9 @@ public class EnvFactory extends XlsysFactory<Integer, Env>
 			DBPoolFactory dbPoolFactory = (DBPoolFactory) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE);
 			innerDataBase = dbPoolFactory.getInnerConnectionPool().getNewDataBase();
 			String selectSql = "select * from xlsys_env";
-			List<Env> envList = ModelBuffer.getModelsFromDatas(innerDataBase, Env.class, new ParamBean(selectSql));
+			List<Env> envList = ModelUtil.getModelsFromDatas(innerDataBase, Env.class, new ParamBean(selectSql));
 			selectSql = "select * from xlsys_envdetail";
-			List<EnvDetail> envDtList = ModelBuffer.getModelsFromDatas(innerDataBase, EnvDetail.class, new ParamBean(selectSql));
+			List<EnvDetail> envDtList = ModelUtil.getModelsFromDatas(innerDataBase, EnvDetail.class, new ParamBean(selectSql));
 			for(Env env : envList)
 			{
 				if(defaultKey==null) defaultKey = env.getEnvId();

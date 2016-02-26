@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import xlsys.base.model.IModel;
+import xlsys.base.model.ITableModel;
 
-public class Env implements IModel
+public class Env implements ITableModel
 {
 	private static final long serialVersionUID = -7304428833924137849L;
 	
@@ -100,5 +100,11 @@ public class Env implements IModel
 		}
 		else dbId = tableDbMap.get(tableName);
 		return dbId;
+	}
+
+	@Override
+	public String getRefTableName()
+	{
+		return "xlsys_env";
 	}
 }

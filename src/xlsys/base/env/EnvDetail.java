@@ -1,8 +1,8 @@
 package xlsys.base.env;
 
-import xlsys.base.model.IModel;
+import xlsys.base.model.ITableModel;
 
-public class EnvDetail implements IModel
+public class EnvDetail implements ITableModel
 {
 	private static final long serialVersionUID = -2199344316296625818L;
 
@@ -58,5 +58,11 @@ public class EnvDetail implements IModel
 	public void setName(String name)
 	{
 		this.name = name;
+	}
+
+	@Override
+	public String getRefTableName()
+	{
+		return "xlsys_envdetail";
 	}
 }
