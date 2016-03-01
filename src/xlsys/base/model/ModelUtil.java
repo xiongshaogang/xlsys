@@ -5,16 +5,24 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import xlsys.base.XLSYS;
+import xlsys.base.XlsysFactory;
+import xlsys.base.database.ConnectionPool;
 import xlsys.base.database.IDataBase;
 import xlsys.base.database.IEnvDataBase;
 import xlsys.base.database.TableInfo;
 import xlsys.base.database.bean.ParamBean;
+import xlsys.base.database.util.DBUtil;
 import xlsys.base.database.util.TranslateUtil;
+import xlsys.base.dataset.DataSetColumn;
 import xlsys.base.dataset.IDataSet;
 import xlsys.base.util.ObjectUtil;
+import xlsys.base.util.StringUtil;
 
 public class ModelUtil
 {
@@ -57,32 +65,44 @@ public class ModelUtil
 		return modelList;
 	}
 	
+	private static void addImportClass(String packageName, String className, StringBuilder importSb, Set<String> importedClass)
+	{
+		if(className.startsWith(packageName))
+		{
+			String temp = className.substring(packageName.length()+1);
+			if(temp.indexOf('.')==-1) return;
+		}
+		if(!importedClass.contains(className))
+		{
+			importedClass.add(className);
+			importSb.append("import ").append(className).append(';').append('\n');
+		}
+	}
+	
 	/**
-	 * 自动生成表对应的model类, 如果该类已存在则会覆盖. 在生成时, 如果存在引用的表, 则会在classNameMap中查找该表对应的类, 如果类名存在, 但类不存在, 则会自动生成被引用到的类.
+	 * 自动生成表对应的model类
 	 * @param dataBase 数据库连接
 	 * @param tableName 表名称
-	 * @param srcRoot 放置Model类的源文件根目录
-	 * @param classNameMap 表名与类名的对应关系Map, key为表名, value为对应的类名
-	 * @param classLoader 
+	 * @param classFullName 生成类的全名称
+	 * @param childrenModelList 对应的子表model类列表
 	 * @throws Exception
-	 * @return 成功则返回true, 失败返回false
+	 * @return 类文本
 	 */
-	public static boolean createModelClassFromDB(IDataBase dataBase, String tableName, String srcRoot, Map<String, String> classNameMap, ClassLoader classLoder) throws Exception
+	public static String createModelClassFromDB(IDataBase dataBase, String tableName, String classFullName, List<String> childrenModelList) throws Exception
 	{
-		boolean success = true;
-		TableInfo tableInfo= dataBase.getTableInfo(tableName);
+		TableInfo tableInfo = dataBase.getTableInfo(tableName);
 		if(tableInfo==null) throw new RuntimeException("Can not find table : " + tableName);
-		String classFullName = classNameMap.get(tableName);
-		if(classFullName==null) return false;
 		int lastDotIdx = classFullName.lastIndexOf('.');
 		String packageName = classFullName.substring(0, lastDotIdx);
 		String className = classFullName.substring(lastDotIdx+1);
 		StringBuilder sb = new StringBuilder();
 		// 添加包信息
 		sb.append("package ").append(packageName).append(';').append('\n');
+		sb.append('\n');
 		// 生成import信息
 		StringBuilder importSb = new StringBuilder();
-		importSb.append("import xlsys.base.model.ITableModel;").append('\n');
+		Set<String> importedClass = new HashSet<String>();
+		addImportClass(packageName, "xlsys.base.model.ITableModel", importSb, importedClass);
 		// 生成类注释
 		StringBuilder classSb = new StringBuilder();
 		classSb.append("/**").append('\n');
@@ -93,11 +113,143 @@ public class ModelUtil
 		// 生成类头
 		classSb.append("public class").append(className).append(" implements ITableModel").append('\n');
 		classSb.append('{').append('\n');
-		// 生成类属性 TODO
-		
+		// 生成类主体
+		StringBuilder fieldSb = new StringBuilder();
+		StringBuilder methodSb = new StringBuilder();
+		// 生成类构造方法
+		boolean needProtectedConstruction = false;
+		List<String> pkColList = new ArrayList<String>();
+		pkColList.addAll(tableInfo.getPkColSet());
+		if(!pkColList.isEmpty()) needProtectedConstruction = true;
+		methodSb.append('\t');
+		if(needProtectedConstruction) methodSb.append("protected ");
+		else methodSb.append("public ");
+		methodSb.append(className).append("() {}").append('\n');
+		methodSb.append('\n');
+		if(!pkColList.isEmpty())
+		{
+			methodSb.append('\t').append("public ").append(className).append('(');
+			StringBuilder tempSb = new StringBuilder();
+			for(int i=0;i<pkColList.size();++i)
+			{
+				String pkColName = pkColList.get(i);
+				DataSetColumn dsc = tableInfo.getDataSetColumn(pkColName);
+				String fieldJavaClass = dsc.getJavaClass();
+				String fieldColumnName = dsc.getColumnName();
+				if(!fieldJavaClass.startsWith("java.lang.")&&!byte[].class.getName().equals(fieldJavaClass)) addImportClass(packageName, fieldJavaClass, importSb, importedClass);
+				if(byte[].class.getName().equals(fieldJavaClass)) fieldJavaClass = "byte[]";
+				else
+				{
+					int tempLastDotIdx = fieldJavaClass.lastIndexOf('.');
+					fieldJavaClass = fieldJavaClass.substring(tempLastDotIdx+1);
+				}
+				methodSb.append(fieldJavaClass).append(' ').append(fieldColumnName);
+				if(i!=pkColList.size()-1) methodSb.append(", ");
+				tempSb.append('\t').append('\t').append("this.").append(fieldColumnName).append(" = ").append(fieldColumnName).append(';').append('\n');
+			}
+			methodSb.append(')').append('\n');
+			methodSb.append('\t').append('{').append('\n');
+			methodSb.append(tempSb);
+			methodSb.append('\t').append('}').append('\n');
+			methodSb.append('\n');
+		}
+		// 生成本表信息
+		for(DataSetColumn dsc : tableInfo.getDataColumnList())
+		{
+			// 生成属性
+			String fieldJavaClass = dsc.getJavaClass();
+			String fieldColumnName = dsc.getColumnName();
+			if(!fieldJavaClass.startsWith("java.lang.")&&!byte[].class.getName().equals(fieldJavaClass)) addImportClass(packageName, fieldJavaClass, importSb, importedClass);
+			fieldSb.append('\t').append("private ");
+			if(byte[].class.getName().equals(fieldJavaClass)) fieldJavaClass = "byte[]";
+			else
+			{
+				int tempLastDotIdx = fieldJavaClass.lastIndexOf('.');
+				fieldJavaClass = fieldJavaClass.substring(tempLastDotIdx+1);
+			}
+			fieldSb.append(fieldJavaClass).append(' ').append(fieldColumnName).append(';').append('\n');
+			// 生成get方法
+			methodSb.append('\t').append("public ").append(fieldJavaClass).append(" get").append(StringUtil.toInitialsUpperCase(fieldColumnName)).append("()").append('\n');
+			methodSb.append('\t').append('{').append('\n');
+			methodSb.append('\t').append('\t').append("return ").append(fieldColumnName).append(';').append('\n');
+			methodSb.append('\t').append('}').append('\n');
+			methodSb.append('\n');
+			// 生成set方法
+			methodSb.append('\t');
+			if(dsc.isPrimaryKey()) methodSb.append("protected");
+			else methodSb.append("public");
+			methodSb.append(" void set").append(StringUtil.toInitialsUpperCase(fieldColumnName)).append('(').append(fieldJavaClass).append(' ').append(fieldColumnName).append(')').append('\n');
+			methodSb.append('\t').append('{').append('\n');
+			methodSb.append('\t').append('\t').append("this.").append(fieldColumnName).append(" = ").append(fieldColumnName).append(';').append('\n');
+			methodSb.append('\t').append('}').append('\n');
+			methodSb.append('\n');
+		}
+		// 生成子表信息
+		if(childrenModelList!=null&&!childrenModelList.isEmpty())
+		{
+			addImportClass(packageName, "java.util.List", importSb, importedClass);
+			addImportClass(packageName, "java.util.ArrayList", importSb, importedClass);
+			for(String childModelFullName :childrenModelList)
+			{
+				// field
+				addImportClass(packageName, childModelFullName, importSb, importedClass);
+				int tempLastDotIdx = childModelFullName.lastIndexOf('.');
+				String childModelName = childModelFullName.substring(tempLastDotIdx+1);
+				String childFieldName = StringUtil.toInitialsLowerCase(childModelName);
+				if(childFieldName.endsWith("Model")) childFieldName = childFieldName.substring(0, childFieldName.length()-5);
+				String singleFieldName = childFieldName;
+				if(!childFieldName.endsWith("List")) childFieldName += "List";
+				else singleFieldName = childFieldName.substring(0, childFieldName.length()-4);
+				fieldSb.append('\t').append("private List<").append(childModelName).append("> ").append(childFieldName).append(';').append('\n');
+				// get
+				methodSb.append('\t').append("public List<").append(childModelName).append("> get").append(StringUtil.toInitialsUpperCase(childFieldName)).append("()").append('\n');
+				methodSb.append('\t').append('{').append('\n');
+				methodSb.append('\t').append('\t').append("return ").append(childFieldName).append(';').append('\n');
+				methodSb.append('\t').append('}').append('\n');
+				methodSb.append('\n');
+				// set
+				methodSb.append('\t').append("public void set").append(StringUtil.toInitialsUpperCase(childFieldName)).append("(List<").append(childModelName).append("> ").append(childFieldName).append(')').append('\n');
+				methodSb.append('\t').append('{').append('\n');
+				methodSb.append('\t').append('\t').append("this.").append(childFieldName).append(" = ").append(childFieldName).append(';').append('\n');
+				methodSb.append('\t').append('}').append('\n');
+				methodSb.append('\n');
+				// add
+				methodSb.append('\t').append("public void add").append(StringUtil.toInitialsUpperCase(singleFieldName)).append('(').append(childModelName).append(' ').append(singleFieldName).append(')').append('\n');
+				methodSb.append('\t').append('{').append('\n');
+				methodSb.append('\t').append('\t').append("if(").append(childFieldName).append("==null) ").append(childFieldName).append(" = new ArrayList<").append(childModelName).append(">()").append(';').append('\n');
+				methodSb.append('\t').append('\t').append(childFieldName).append(".add(").append(singleFieldName).append(')').append(';').append('\n');
+				methodSb.append('\t').append('}').append('\n');
+				methodSb.append('\n');
+			}
+		}
+		classSb.append(fieldSb).append('\n').append(methodSb);
 		// 生成类尾
 		classSb.append('}');
-		
-		return success;
+		sb.append(importSb).append('\n').append(classSb);
+		return sb.toString();
+	}
+	
+	public static void main(String[] args)
+	{
+		IDataBase dataBase = null;
+		try
+		{
+			dataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(1001)).getNewDataBase();
+			List<String> childList = new ArrayList<String>();
+			childList.add("xlsys.business.model.OACategoryRightModel");
+			childList.add("xlsys.business.model.OACMBelongModel");
+			String classStr = createModelClassFromDB(dataBase, "xlsys_oacategory", "xlsys.business.model.OACategoryModel", childList);
+			System.out.print(classStr);
+		}
+		catch(Exception e)
+		{
+			DBUtil.rollback(dataBase);
+			e.printStackTrace();
+		}
+		finally
+		{
+			DBUtil.close(dataBase);
+		}
+		System.exit(0);
 	}
 }
