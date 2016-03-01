@@ -5,8 +5,7 @@ public class TempTest
 
 	public static void main(String[] args) throws Exception
 	{
-		Integer i = null;
-		System.out.println(i==1);
+		System.out.println(byte[].class.getName());
 	}
 	
 }
