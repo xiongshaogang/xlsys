@@ -223,7 +223,7 @@ public class ModelUtil
 			}
 		}
 		// 生成接口方法
-		methodSb.append('\t').append("Override").append('\n');
+		methodSb.append('\t').append("@Override").append('\n');
 		methodSb.append('\t').append("public String getRefTableName()").append('\n');
 		methodSb.append('\t').append('{').append('\n');
 		methodSb.append('\t').append('\t').append("return \"").append(tableName).append("\";").append('\n');
