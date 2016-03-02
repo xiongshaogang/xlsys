@@ -1,9 +1,13 @@
 package xlsys.base.model;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +25,10 @@ import xlsys.base.database.util.DBUtil;
 import xlsys.base.database.util.TranslateUtil;
 import xlsys.base.dataset.DataSetColumn;
 import xlsys.base.dataset.IDataSet;
+import xlsys.base.dataset.StorableDataSet;
+import xlsys.base.io.util.FileUtil;
+import xlsys.base.io.util.IOUtil;
+import xlsys.base.test.model.TestModel;
 import xlsys.base.util.ObjectUtil;
 import xlsys.base.util.StringUtil;
 
@@ -80,6 +88,39 @@ public class ModelUtil
 	}
 	
 	/**
+	 * 创建表对应的model类, 如果类存在, 则会覆盖.
+	 * @param dataBase 数据库连接
+	 * @param tableName 对应的表名
+	 * @param classFullName 类全名
+	 * @param childrenModelList 子表model列表(全名)
+	 * @param srcRoot 创建类的根目录
+	 * @return
+	 * @throws Exception 
+	 */
+	public static void generateModelClass(IDataBase dataBase, String tableName, String classFullName, List<String> childrenModelList, String srcRoot) throws Exception
+	{
+		String classStr = createModelClass(dataBase, tableName, classFullName, childrenModelList);
+		String[] classNameArr = classFullName.split("\\.");
+		// 创建目录
+		File srcRootDir = new File(srcRoot);
+		String filePath = srcRootDir.getCanonicalPath();
+		for(int i=0;i<classNameArr.length;++i) filePath += File.separator + classNameArr[i];
+		filePath += ".java";
+		FileUtil.createParentPath(filePath);
+		FileOutputStream fos = null;
+		try
+		{
+			fos = IOUtil.getFileOutputStream(filePath, false);
+			fos.write(classStr.getBytes("UTF-8"));
+			fos.flush();
+		}
+		finally
+		{
+			IOUtil.close(fos);
+		}
+	}
+	
+	/**
 	 * 自动生成表对应的model类
 	 * @param dataBase 数据库连接
 	 * @param tableName 表名称
@@ -88,7 +129,7 @@ public class ModelUtil
 	 * @throws Exception
 	 * @return 类文本
 	 */
-	public static String createModelClassFromDB(IDataBase dataBase, String tableName, String classFullName, List<String> childrenModelList) throws Exception
+	public static String createModelClass(IDataBase dataBase, String tableName, String classFullName, List<String> childrenModelList) throws Exception
 	{
 		TableInfo tableInfo = dataBase.getTableInfo(tableName);
 		if(tableInfo==null) throw new RuntimeException("Can not find table : " + tableName);
@@ -111,7 +152,7 @@ public class ModelUtil
 		classSb.append(" *").append('\n');
 		classSb.append(" */").append('\n');
 		// 生成类头
-		classSb.append("public class").append(className).append(" implements ITableModel").append('\n');
+		classSb.append("public class ").append(className).append(" implements ITableModel").append('\n');
 		classSb.append('{').append('\n');
 		// 生成类主体
 		StringBuilder fieldSb = new StringBuilder();
@@ -235,17 +276,118 @@ public class ModelUtil
 		return sb.toString();
 	}
 	
+	private static Method findGetMethod(Method[] methods, String fieldName)
+	{
+		Method method = null;
+		String getMethodName = "get" + fieldName;
+		for(Method m : methods)
+		{
+			if(m.getName().equalsIgnoreCase(getMethodName))
+			{
+				method = m;
+				break;
+			}
+		}
+		return method;
+	}
+	
+	/**
+	 * 将model同步到数据库中
+	 * @param dataBase 数据库连接
+	 * @param model
+	 * @param synchronizeSubModel 是否同步子模型
+	 * @throws Exception
+	 * @return 成功返回true, 否则返回false
+	 */
+	public static boolean synchronizeModel(IDataBase dataBase, ITableModel model, boolean synchronizeSubModel) throws Exception
+	{
+		// 获取对应的表名
+		String tableName = model.getRefTableName();
+		// 获取主键字段
+		TableInfo tableInfo = dataBase.getTableInfo(tableName);
+		List<String> pkColList = new ArrayList<String>();
+		pkColList.addAll(tableInfo.getPkColSet());
+		// 按照主键字段查询数据库中的数据
+		StringBuilder selectSql = new StringBuilder();
+		selectSql.append("select * from ").append(tableName).append(" where ");
+		for(int i=0;i<pkColList.size();++i)
+		{
+			String pkColName = pkColList.get(i);
+			selectSql.append(pkColName).append("=?");
+			if(i!=pkColList.size()-1) selectSql.append(" and ");
+		}
+		ParamBean pb = new ParamBean(selectSql.toString());
+		pb.addParamGroup();
+		Method[] methods = model.getClass().getMethods();
+		for(int i=0;i<pkColList.size();++i)
+		{
+			String pkColName = pkColList.get(i);
+			Method getMethod = findGetMethod(methods, pkColName);
+			if(getMethod==null) throw new RuntimeException("Can not find get method of field : "+pkColName);
+			pb.setParam(i+1, (Serializable)getMethod.invoke(model));
+		}
+		StorableDataSet sds = new StorableDataSet(dataBase, pb, tableName);
+		sds.setSaveTransaction(false);
+		sds.open();
+		if(sds.getRowCount()>0)
+		{
+			// 有数据, 更新即可
+			sds.gotoRow(0);
+		}
+		else
+		{
+			// 没有数据, 写入新数据
+			sds.insertNewRowAfterLast();
+		}
+		for(DataSetColumn dsc :sds.getColumns())
+		{
+			String colName = dsc.getColumnName();
+			Method getMethod = findGetMethod(methods, colName);
+			if(getMethod==null) throw new RuntimeException("Can not find get method of field : "+colName);
+			sds.setValue(colName, (Serializable)getMethod.invoke(model));
+		}
+		boolean success = sds.save();
+		if(success&&synchronizeSubModel)
+		{
+			// 写入子模型数据
+			Field[] fields = model.getClass().getDeclaredFields();
+			for(Field field : fields)
+			{
+				Class<?> fieldClass = field.getType();
+				if(Collection.class.isAssignableFrom(fieldClass))
+				{
+					field.setAccessible(true);
+					Collection<?> fieldCollection = (Collection<?>) field.get(model);
+					if(fieldCollection==null) continue;
+					for(Object subModel : fieldCollection)
+					{
+						if(subModel instanceof ITableModel)
+						{
+							success = synchronizeModel(dataBase, (ITableModel)subModel, synchronizeSubModel);
+							if(!success) break;
+						}
+					}
+				}
+				if(!success) break;
+			}
+		}
+		return success;
+	}
+	
 	public static void main(String[] args)
 	{
 		IDataBase dataBase = null;
 		try
 		{
 			dataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(1001)).getNewDataBase();
-			List<String> childList = new ArrayList<String>();
-			childList.add("xlsys.business.model.OACategoryRightModel");
-			childList.add("xlsys.business.model.OACMBelongModel");
-			String classStr = createModelClassFromDB(dataBase, "xlsys_oacategory", "xlsys.business.model.OACategoryModel", childList);
-			System.out.print(classStr);
+			// generateModelClass(dataBase, "xlsys_test", "xlsys.base.test.model.TestModel", null, "D:/work/code/MyProject/xlsys.base/src");
+			String selectSql = "select * from xlsys_test where idx=?";
+			ParamBean pb = new ParamBean(selectSql);
+			pb.addParamGroup();
+			pb.setParam(1, 20);
+			TestModel testModel = ModelUtil.getModelFromData(dataBase, TestModel.class, pb);
+			testModel.setName("mac");
+			ModelUtil.synchronizeModel(dataBase, testModel, true);
 		}
 		catch(Exception e)
 		{
