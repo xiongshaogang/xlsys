@@ -42,13 +42,25 @@ public class TreeDataSet extends DataSet implements ITreeDataSet
 	@Override
 	public synchronized boolean setTreeColumn(String columnName)
 	{
-		return setTreeColumn(getColumnIndex(columnName));
+		return setTreeColumn(columnName, IDataSet.SORT_TYPE_ASC);
+	}
+	
+	@Override
+	public synchronized boolean setTreeColumn(String columnName, int sortType)
+	{
+		return setTreeColumn(getColumnIndex(columnName), sortType);
 	}
 	
 	@Override
 	public synchronized boolean setTreeColumn(int columnIdx)
 	{
-		return doSetTreeColumn(this, columnIdx);
+		return setTreeColumn(columnIdx, IDataSet.SORT_TYPE_ASC);
+	}
+	
+	@Override
+	public synchronized boolean setTreeColumn(int columnIdx, int sortType)
+	{
+		return doSetTreeColumn(this, columnIdx, sortType);
 	}
 	
 	@Override
@@ -57,13 +69,13 @@ public class TreeDataSet extends DataSet implements ITreeDataSet
 		this.treeColIdx = treeColIdx;
 	}
 	
-	protected static boolean doSetTreeColumn(ITreeDataSet treeDataSet, int columnIdx)
+	protected static boolean doSetTreeColumn(ITreeDataSet treeDataSet, int columnIdx, int sortType)
 	{
 		boolean success = false;
 		if(columnIdx>=0&&columnIdx<treeDataSet.getColumnCount())
 		{
 			Map<String, Integer> sortColMap = new HashMap<String, Integer>();
-			sortColMap.put(treeDataSet.getColumnName(columnIdx), IDataSet.SORT_TYPE_ASC);
+			sortColMap.put(treeDataSet.getColumnName(columnIdx), sortType);
 			treeDataSet.setSortColMap(sortColMap);
 			treeDataSet.sort();
 			treeDataSet.setTreeColIdx(columnIdx);

@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,12 +24,12 @@ import xlsys.base.database.TableInfo;
 import xlsys.base.database.bean.ParamBean;
 import xlsys.base.database.util.DBUtil;
 import xlsys.base.database.util.TranslateUtil;
+import xlsys.base.dataset.DataSet;
 import xlsys.base.dataset.DataSetColumn;
 import xlsys.base.dataset.IDataSet;
 import xlsys.base.dataset.StorableDataSet;
 import xlsys.base.io.util.FileUtil;
 import xlsys.base.io.util.IOUtil;
-import xlsys.base.test.model.TestModel;
 import xlsys.base.util.ObjectUtil;
 import xlsys.base.util.StringUtil;
 
@@ -374,20 +375,83 @@ public class ModelUtil
 		return success;
 	}
 	
+	public static <T extends IModel> T cloneModel(T model)
+	{
+		T cloneModel = null;
+		try
+		{
+			Constructor<?> c = model.getClass().getDeclaredConstructor();
+			c.setAccessible(true);
+			cloneModel = (T) c.newInstance();
+			Field[] fields = model.getClass().getDeclaredFields();
+			for(Field field : fields)
+			{
+				int modifiers = field.getModifiers();
+				if(Modifier.isStatic(modifiers)&&Modifier.isFinal(modifiers)) continue;
+				field.setAccessible(true);
+				field.set(cloneModel, field.get(model));
+			}
+		}
+		catch(Exception e) {}
+		return cloneModel;
+	}
+	
+	public static <T extends IModel> IDataSet modelListToDataSet(List<T> modelList) throws IllegalArgumentException, IllegalAccessException
+	{
+		if(modelList==null||modelList.isEmpty()) return null;
+		IDataSet dataSet = new DataSet();
+		T firstModel = modelList.get(0);
+		Field[] fields = firstModel.getClass().getDeclaredFields();
+		List<Field> colFieldList = new ArrayList<Field>();
+		for(Field field : fields)
+		{
+			int modifiers = field.getModifiers();
+			if(Modifier.isStatic(modifiers)&&Modifier.isFinal(modifiers)) continue;
+			Class<?> fieldClass = field.getType();
+			if(Collection.class.isAssignableFrom(fieldClass)||Map.class.isAssignableFrom(fieldClass)) continue;
+			field.setAccessible(true);
+			colFieldList.add(field);
+			DataSetColumn dsc = dataSet.insertNewColumnAfterLast();
+			dsc.setColumnName(field.getName());
+			dsc.setJavaClass(fieldClass.getName());
+		}
+		dataSet.buildColumnMap();
+		for(T model : modelList)
+		{
+			dataSet.insertNewRowAfterLast();
+			for(Field field : colFieldList)
+			{
+				dataSet.setValue(field.getName(), (Serializable) field.get(model));
+			}
+		}
+		return dataSet;
+	}
+	
 	public static void main(String[] args)
 	{
 		IDataBase dataBase = null;
 		try
 		{
 			dataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(1001)).getNewDataBase();
-			// generateModelClass(dataBase, "xlsys_test", "xlsys.base.test.model.TestModel", null, "D:/work/code/MyProject/xlsys.base/src");
-			String selectSql = "select * from xlsys_test where idx=?";
-			ParamBean pb = new ParamBean(selectSql);
-			pb.addParamGroup();
-			pb.setParam(1, 20);
-			TestModel testModel = ModelUtil.getModelFromData(dataBase, TestModel.class, pb);
-			testModel.setName("mac");
-			ModelUtil.synchronizeModel(dataBase, testModel, true);
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
+			ModelUtil.generateModelClass(dataBase, "xlsys_viewqueryparam", "xlsys.business.model.QueryParamModel", null, srcRoot);
+			ModelUtil.generateModelClass(dataBase, "xlsys_viewdetailparam", "xlsys.business.model.ViewDetailParamModel", null, srcRoot);
+			List<String> childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.business.model.ViewDetailParamModel");
+			ModelUtil.generateModelClass(dataBase, "xlsys_viewdetail", "xlsys.business.model.ViewDetailModel", childrenList, srcRoot);
+			childrenList.clear();
+			childrenList.add("xlsys.business.model.QueryParamModel");
+			childrenList.add("xlsys.business.model.ViewDetailModel");
+			ModelUtil.generateModelClass(dataBase, "xlsys_view", "xlsys.business.model.ViewModel", childrenList, srcRoot);
+			
+			ModelUtil.generateModelClass(dataBase, "xlsys_partdetail", "xlsys.business.model.PartDetailModel", null, srcRoot);
+			childrenList.clear();
+			childrenList.add("xlsys.business.model.PartDetailModel");
+			ModelUtil.generateModelClass(dataBase, "xlsys_part", "xlsys.business.model.PartModel", childrenList, srcRoot);*/
+			
+			String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
+			ModelUtil.generateModelClass(dataBase, "xlsys_flowjava", "xlsys.business.model.FlowJavaModel", null, srcRoot);
+			ModelUtil.generateModelClass(dataBase, "xlsys_flowjs", "xlsys.business.model.FlowJsModel", null, srcRoot);
 		}
 		catch(Exception e)
 		{

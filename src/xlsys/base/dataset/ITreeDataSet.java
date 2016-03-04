@@ -12,11 +12,27 @@ public interface ITreeDataSet extends IDataSet
 	public boolean setTreeColumn(String columnName);
 	
 	/**
+	 * 设置树结点列的列名以及对应的排序方式
+	 * @param columnName
+	 * @param sortType
+	 * @return
+	 */
+	public boolean setTreeColumn(String columnName, int sortType);
+	
+	/**
 	 * 设置树结点列的列号
 	 * @param columnIdx
 	 * @return
 	 */
 	public boolean setTreeColumn(int columnIdx);
+	
+	/**
+	 * 设置树结点列的列号以及对应的排序方式
+	 * @param columnIdx
+	 * @param sortType
+	 * @return
+	 */
+	public boolean setTreeColumn(int columnIdx, int sortType);
 	
 	/**
 	 * 设置树结点列的列号, 该方法为内部使用.

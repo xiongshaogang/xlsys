@@ -46,6 +46,8 @@ select * from xlsys_view;
 
 select * from xlsys_viewdetail;
 
+select * from xlsys_viewdetailparam;
+
 select * from xlsys_viewqueryparam;
 
 select * from xlsys_part;

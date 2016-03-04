@@ -72,13 +72,25 @@ public class StorableTreeDataSet extends StorableDataSet implements ITreeDataSet
 	@Override
 	public synchronized boolean setTreeColumn(String columnName)
 	{
-		return setTreeColumn(getColumnIndex(columnName));
+		return setTreeColumn(columnName, IDataSet.SORT_TYPE_ASC);
+	}
+	
+	@Override
+	public synchronized boolean setTreeColumn(String columnName, int sortType)
+	{
+		return setTreeColumn(getColumnIndex(columnName), sortType);
 	}
 	
 	@Override
 	public synchronized boolean setTreeColumn(int columnIdx)
 	{
-		return TreeDataSet.doSetTreeColumn(this, columnIdx);
+		return setTreeColumn(columnIdx, IDataSet.SORT_TYPE_ASC);
+	}
+	
+	@Override
+	public synchronized boolean setTreeColumn(int columnIdx, int sortType)
+	{
+		return TreeDataSet.doSetTreeColumn(this, columnIdx, sortType);
 	}
 	
 	@Override

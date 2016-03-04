@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.security.MessageDigest;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import xlsys.base.io.attachment.XlsysAttachment;
+import xlsys.base.script.XlsysClassLoader;
 import xlsys.base.util.StringUtil;
 
 /**
@@ -411,5 +414,33 @@ public class FileUtil
 	public static String fixFilePath(String filePath)
 	{
 		return filePath.replaceAll("/{2,}+", "/");
+	}
+	
+	public static String readTextContentChecked(String resource, ClassLoader classLoader) throws IOException
+	{
+		InputStream stream = classLoader.getResourceAsStream(resource);
+	    if(stream == null) throw new IllegalArgumentException("Not found: " + resource);
+	    try
+	    {
+	    	BufferedReader reader = new BufferedReader( new InputStreamReader(stream, "UTF-8"));
+	    	return readLines(reader);
+	    }
+	    finally
+	    {
+	      IOUtil.close(stream);
+	    }
+	}
+
+	private static String readLines(BufferedReader reader) throws IOException
+	{
+		StringBuilder builder = new StringBuilder();
+		String line = reader.readLine();
+		while(line != null)
+		{
+			builder.append(line);
+			builder.append('\n');
+			line = reader.readLine();
+	    }
+	    return builder.toString();
 	}
 }
