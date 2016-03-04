@@ -41,6 +41,7 @@ xlsys.base.service
 xlsys.base.session
 xlsys.base.task
 xlsys.base.test
+xlsys.base.test.model
 xlsys.base.thread
 xlsys.base.util
 xlsys.base.webservice
