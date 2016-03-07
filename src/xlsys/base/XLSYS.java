@@ -486,6 +486,26 @@ public interface XLSYS
 	public final static String WEB_COMMAND = "WEB_COMMAND";
 	public final static String WEB_SESSION = "WEB_SESSION";
 	public final static String WEB_DATA = "WEB_DATA";
+	/**
+	 * 客户端类型 : RAP
+	 */
+	public final static String CLIENT_TYPE_RAP = "RAP";
+	/**
+	 * 客户端类型 : RCP
+	 */
+	public final static String CLIENT_TYPE_RCP = "RCP";
+	/**
+	 * 客户端类型 : Android
+	 */
+	public final static String CLIENT_TYPE_ANDROID = "ANDROID";
+	/**
+	 * 客户端类型 : IOS
+	 */
+	public final static String CLIENT_TYPE_IOS = "IOS";
+	/**
+	 * 客户端类型　：WP
+	 */
+	public final static String CLIENT_TYPE_WP = "WP";
 	
 	/**
 	 * 统计方式 : 加总

@@ -450,8 +450,9 @@ public class ModelUtil
 			ModelUtil.generateModelClass(dataBase, "xlsys_part", "xlsys.business.model.PartModel", childrenList, srcRoot);*/
 			
 			String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
-			ModelUtil.generateModelClass(dataBase, "xlsys_flowjava", "xlsys.business.model.FlowJavaModel", null, srcRoot);
-			ModelUtil.generateModelClass(dataBase, "xlsys_flowjs", "xlsys.business.model.FlowJsModel", null, srcRoot);
+			/*ModelUtil.generateModelClass(dataBase, "xlsys_flowjava", "xlsys.business.model.FlowJavaModel", null, srcRoot);
+			ModelUtil.generateModelClass(dataBase, "xlsys_flowjs", "xlsys.business.model.FlowJsModel", null, srcRoot);*/
+			ModelUtil.generateModelClass(dataBase, "xlsys_flowpart", "xlsys.business.model.FlowPartModel", null, srcRoot);
 		}
 		catch(Exception e)
 		{

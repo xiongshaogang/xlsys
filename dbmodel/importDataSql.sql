@@ -56,6 +56,8 @@ select * from xlsys_partdetail;
 
 select * from xlsys_flow;
 
+select * from xlsys_flowpart;
+
 select * from xlsys_flowsubtable;
 
 select * from xlsys_codealloc;
