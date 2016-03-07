@@ -906,6 +906,7 @@ public abstract class IEnvDataBase implements IDataBase
 	@Override
 	public boolean getAutoCommit() throws Exception
 	{
+		if(lastDbId==-1) return true;
 		return getAutoCommit(lastDbId);
 	}
 	
