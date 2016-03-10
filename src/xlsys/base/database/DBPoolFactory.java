@@ -96,6 +96,10 @@ public class DBPoolFactory extends XlsysFactory<Integer, ConnectionPool>
 		{
 			cp = new SQLiteConnectionPool(dbId, description, dataSource, user, password, corePoolSize, maximumPoolSize, keepAliveTime, queueCapacity);
 		}
+		else if(dataSource.toLowerCase().contains("mysql"))
+		{
+			cp = new MySqlConnectionPool(dbId, description, dataSource, user, password, corePoolSize, maximumPoolSize, keepAliveTime, queueCapacity);
+		}
 		else
 		{
 			throw new UnsupportedDataSourceException("系统暂不支持该数据源:"+dataSource);

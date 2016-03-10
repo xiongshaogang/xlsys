@@ -400,9 +400,11 @@ public class DataSetUtil
 		IDataBase dataBase = null;
 		try
 		{
-			dataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(1001)).getNewDataBase();
+			int dbid = 1009; // 目标库的数据库编号
+			String dataFilePath = "dbmodel/init_data.data"; // 要导入的数据文件的路径
+			dataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(dbid)).getNewDataBase();
 			dataBase.setAutoCommit(false);
-			List<StorableDataSet> sdsList = (List<StorableDataSet>) IOUtil.readObject(FileUtil.getByteFromFile("dbmodel/init_data.data"));
+			List<StorableDataSet> sdsList = (List<StorableDataSet>) IOUtil.readObject(FileUtil.getByteFromFile(dataFilePath));
 			for(StorableDataSet sds : sdsList)
 			{
 				DataSetUtil.importDataFromDataSet(dataBase, sds);

@@ -262,7 +262,7 @@ public class SqlUtil
 		sql = sb.toString();
 		// 去除单行注释
 		sb.setLength(0);
-		splitArr = StringUtil.split(sql, "\r\n|\n\r|\n|\r", 2);
+		splitArr = StringUtil.split(sql, "\r\n|\n\r|\n|\r");
 		for(String pieces : splitArr)
 		{
 			int idx = StringUtil.indexOfIgnoreMark(pieces, "--", 0, pieces.length(), "'");

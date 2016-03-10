@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import xlsys.base.io.util.IOUtil;
 
@@ -42,15 +44,14 @@ public class StringUtil
 	 * 按照匹配正则表达式的值将字符串进行拆分
 	 * @param src 原始字符串
 	 * @param regex 正则表达式
-	 * @param maxLen 匹配正则表达式的最大字符串长度，-1为不限定，如果不限定则性能较低
 	 * @return
 	 */
-	public static String[] split(String src, String regex, int maxLen)
+	public static String[] split(String src, String regex)
 	{
 		List<String> list = new ArrayList<String>();
 		int fromIndex = 0;
 		int[] idx = null;
-		while((idx=indexOf(src, regex, fromIndex, false, maxLen))[0]!=-1)
+		while((idx=indexOf(src, regex, fromIndex, false))[0]!=-1)
 		{
 			if(fromIndex!=idx[0]) list.add(src.substring(fromIndex, idx[0]));
 			list.add(src.substring(idx[0], idx[1]));
@@ -303,35 +304,32 @@ public class StringUtil
 	}
 	
 	/**
-	 * 通过给定的正则表达式和起始序号，查找指定的符合正则表达式的字符串 
-	 * @param str 源字符串
-	 * @param regex 要匹配的正则表达式
-	 * @param fromIndex 查找开始序号
-	 * @param ignoreCase 是否忽略大小写
-	 * @return 返回一个大小为2的数组，第一个元素是该匹配字符串的起始位置，第二个参数是结束位置,如果没有找到则都返回-1
-	 */
-	public static int[] indexOf(String str, String regex, int fromIndex, boolean ignoreCase)
-	{
-		return indexOf(str, regex, fromIndex, ignoreCase, -1);
-	}
-	
-	/**
 	 * 查找符合正则表达式的值所在的起始位置
 	 * @param str 要查找的原始字符串
 	 * @param regex 要匹配的正则表达式
 	 * @param fromIndex 开始位置
 	 * @param ignoreCase 是否忽略大小写
-	 * @param maxLen 匹配值的最大长度，-1为不限制
 	 * @return 返回一个大小为2的数组，第一个元素是该匹配字符串的起始位置，第二个参数是结束位置,如果没有找到则都返回-1
 	 */
-	public static int[] indexOf(String str, String regex, int fromIndex, boolean ignoreCase, int maxLen)
+	public static int[] indexOf(String str, String regex, int fromIndex, boolean ignoreCase)
 	{
 		if(ignoreCase)
 		{
 			str = str.toLowerCase();
 			regex = regex.toLowerCase();
 		}
-		int[] idx = new int[2];
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(str);
+		int[] indices = new int[2];
+		indices[0] = -1;
+		indices[1] = -1;
+		if(m.find(fromIndex))
+		{
+			indices[0] = m.start();
+			indices[1] = m.end();
+		}
+		return indices;
+		/*int[] idx = new int[2];
 		idx[0] = -1;
 		idx[1] = -1;
 		boolean match = false;
@@ -358,7 +356,7 @@ public class StringUtil
 			}
 			if(idx[0]!=-1) break;
 		}
-		return idx;
+		return idx;*/
 	}
 
 	/**
