@@ -1,3159 +1,2420 @@
 /*==============================================================*/
-/* DBMS name:      ORACLE Version 11g                           */
-/* Created on:     2016/3/10 14:43:45                           */
+/* DBMS name:      MySQL 5.0                                    */
+/* Created on:     2016/3/11 17:44:57                           */
 /*==============================================================*/
 
 
-alter table xlem_buyer
-   drop constraint FK_BR_REFERENCE_U;
+drop table if exists xlem_atomicunit;
 
-alter table xlem_buyer
-   drop constraint FK_BR_REFERENCE_UL;
+drop table if exists xlem_buyer;
 
-alter table xlem_item
-   drop constraint FK_I_REFERENCE_SL;
+drop table if exists xlem_item;
 
-alter table xlem_itemsku
-   drop constraint FK_ISKU_REFERENCE_I;
+drop table if exists xlem_itemsku;
 
-alter table xlem_itemsku
-   drop constraint FK_ISKU_REFERENCE_SKU;
+drop table if exists xlem_prepsynonym;
 
-alter table xlem_seller
-   drop constraint FK_SL_REFERENCE_U;
+drop table if exists xlem_searchkeyword;
 
-alter table xlem_seller
-   drop constraint FK_SL_REFERENCE_UL;
+drop table if exists xlem_searchtext;
 
-alter table xlem_sku
-   drop constraint FK_SKU_REFERENCE_AUNIT;
+drop index UN_SELLER_U on xlem_seller;
 
-alter table xlem_sku
-   drop constraint FK_SKU_REFERENCE_SPU;
+drop table if exists xlem_seller;
 
-alter table xlem_spu
-   drop constraint FK_SPU_REFERENCE_SPUC;
+drop table if exists xlem_sku;
 
-alter table xlem_stock
-   drop constraint FK_STK_REFERENCE_SKU;
+drop table if exists xlem_spu;
 
-alter table xlem_stockhistory
-   drop constraint FK_STKH_REFERENCE_SKU;
+drop table if exists xlem_spucategory;
 
-alter table xlem_unit
-   drop constraint FK_UNIT_REFERENCE_AUNIT;
+drop table if exists xlem_spuindex;
 
-alter table xlem_userlevel
-   drop constraint FK_UL_REFERENCE_UL;
+drop table if exists xlem_stock;
 
-alter table xlfin_accountcondition
-   drop constraint FK_AC_REFERENCE_KD;
+drop table if exists xlem_stockhistory;
 
-alter table xlfin_balance
-   drop constraint FK_B_REFERENCE_A;
+drop table if exists xlem_synonym;
 
-alter table xlfin_balance
-   drop constraint FK_B_REFERENCE_C;
+drop table if exists xlem_unit;
 
-alter table xlfin_balance
-   drop constraint FK_B_REFERENCE_KD;
+drop table if exists xlem_user;
 
-alter table xlfin_bankstmt
-   drop constraint FK_BS_REFERENCE_A;
+drop table if exists xlem_userlevel;
 
-alter table xlfin_bankstmt
-   drop constraint FK_BS_REFERENCE_C;
+drop table if exists xlfin_account;
 
-alter table xlfin_bankstmt
-   drop constraint FK_BS_REFERENCE_KD;
+drop table if exists xlfin_accountcondition;
 
-alter table xlfin_bankstmt
-   drop constraint FK_BS_REFERENCE_U;
+drop table if exists xlfin_accountingitem;
 
-alter table xlfin_bankstmt
-   drop constraint FK_BS_REFERENCE_VD;
+drop table if exists xlfin_balance;
 
-alter table xlfin_bankstmtbalance
-   drop constraint FK_BSB_REFERENCE_A;
+drop table if exists xlfin_balanceitem;
 
-alter table xlfin_bankstmtbalance
-   drop constraint FK_BSB_REFERENCE_C;
+drop table if exists xlfin_bankstmt;
 
-alter table xlfin_bankstmtbalance
-   drop constraint FK_BSB_REFERENCE_KD;
+drop table if exists xlfin_bankstmtbalance;
 
-alter table xlfin_bstldt
-   drop constraint FK_BSTLDT_REFERENCE_BSTL;
+drop table if exists xlfin_bankstmttemplet;
 
-alter table xlfin_exchangerate
-   drop constraint FK_ER_REFERENCE_C;
+drop table if exists xlfin_bstldt;
 
-alter table xlfin_karaccdt
-   drop constraint FK_KARADT_REFERENCE_KAR;
+drop table if exists xlfin_currency;
 
-alter table xlfin_kardt
-   drop constraint FK_KARDT_REFERENCE_KAR;
+drop table if exists xlfin_exchangerate;
 
-alter table xlfin_kardt
-   drop constraint FK_KARDT_REFERENCE_VDTECA;
+drop table if exists xlfin_karaccdt;
 
-alter table xlfin_keepdept
-   drop constraint FK_KD_REFERENCE_C1;
+drop table if exists xlfin_kardt;
 
-alter table xlfin_keepdept
-   drop constraint FK_KD_REFERENCE_C2;
+drop table if exists xlfin_kdeptaccrealtion;
 
-alter table xlfin_keepdept
-   drop constraint FK_KD_REFERENCE_KDAR1;
+drop table if exists xlfin_keepdept;
 
-alter table xlfin_keepdept
-   drop constraint FK_KD_REFERENCE_KDAR2;
+drop index un_rrbe on xlfin_reportdata;
 
-alter table xlfin_keepdept
-   drop constraint FK_KD_REFERENCE_KDAR3;
+drop table if exists xlfin_reportdata;
 
-alter table xlfin_reportdata
-   drop constraint FK_RD_REFERENCE_RDEPT;
+drop table if exists xlfin_reportdatadetail;
 
-alter table xlfin_reportdata
-   drop constraint FK_RD_REFERENCE_RF;
+drop table if exists xlfin_reportdept;
 
-alter table xlfin_reportdatadetail
-   drop constraint FK_RDD_REFERENCE_RD;
+drop table if exists xlfin_reportform;
 
-alter table xlfin_reportformcol
-   drop constraint FK_RFC_REFERENCE_RF;
+drop table if exists xlfin_reportformcol;
 
-alter table xlfin_reportformformula
-   drop constraint FK_RFF_REFERENCE_RF;
+drop table if exists xlfin_reportformformula;
 
-alter table xlfin_reportformrow
-   drop constraint FK_RFR_REFERENCE_RF;
+drop table if exists xlfin_reportformrow;
 
-alter table xlfin_vdtextra
-   drop constraint FK_VDTE_REFERENCE_VDT;
+drop table if exists xlfin_vdtextra;
 
-alter table xlfin_vdtextra
-   drop constraint FK_VDTE_REFERENCE_VEC;
+drop table if exists xlfin_vdtextracol;
 
-alter table xlfin_vdtextracolattr
-   drop constraint FK_VDTECA_REFERENCE_VDTEC;
+drop table if exists xlfin_vdtextracolattr;
 
-alter table xlfin_voucher
-   drop constraint FK_V_REFERENCE_F;
+drop table if exists xlfin_voucher;
 
-alter table xlfin_voucher
-   drop constraint FK_V_REFERENCE_ID;
+drop table if exists xlfin_voucherdetail;
 
-alter table xlfin_voucher
-   drop constraint FK_V_REFERENCE_KD;
+drop table if exists xlfin_vouchertemplet;
 
-alter table xlfin_voucher
-   drop constraint FK_V_REFERENCE_U1;
+drop table if exists xlfin_vtempletdt;
 
-alter table xlfin_voucher
-   drop constraint FK_V_REFERENCE_U2;
+drop table if exists xlfin_vtldtcol;
 
-alter table xlfin_voucherdetail
-   drop constraint FK_VD_REFERENCE_A;
+drop table if exists xlsys_attachment;
 
-alter table xlfin_voucherdetail
-   drop constraint FK_VD_REFERENCE_BS;
+drop table if exists xlsys_authorisedright;
 
-alter table xlfin_voucherdetail
-   drop constraint FK_VD_REFERENCE_C;
+drop table if exists xlsys_authorize;
 
-alter table xlfin_voucherdetail
-   drop constraint FK_VDT_REFERENCE_KD;
+drop index un_ad_fci on xlsys_authorizedetail;
 
-alter table xlfin_voucherdetail
-   drop constraint FK_VDT_REFERENCE_U;
+drop table if exists xlsys_authorizedetail;
 
-alter table xlfin_voucherdetail
-   drop constraint FK_VOD_REFERENCE_VO;
+drop table if exists xlsys_basebusi;
 
-alter table xlfin_vtempletdt
-   drop constraint FK_VTLDT_REFERENCE_VTL;
+drop table if exists xlsys_codealloc;
 
-alter table xlfin_vtldtcol
-   drop constraint FK_VTLDTC_REFERENCE_VTLDT;
+drop table if exists xlsys_department;
 
-alter table xlsys_authorisedright
-   drop constraint FK_AR_REFERENCE_AD;
+drop table if exists xlsys_dict;
 
-alter table xlsys_authorisedright
-   drop constraint FK_AR_REFERENCE_R;
+drop table if exists xlsys_dictdetail;
 
-alter table xlsys_authorize
-   drop constraint FK_A_REFERENCE_F;
+drop table if exists xlsys_emailtemplate;
 
-alter table xlsys_authorize
-   drop constraint FK_A_REFERENCE_I1;
+drop table if exists xlsys_extracmd;
 
-alter table xlsys_authorize
-   drop constraint FK_A_REFERENCE_I2;
+drop table if exists xlsys_exttableinfo;
 
-alter table xlsys_authorize
-   drop constraint FK_A_REFERENCE_U;
+drop table if exists xlsys_exttableinfodetail;
 
-alter table xlsys_authorizedetail
-   drop constraint FK_AD_REFERENCE_A;
+drop table if exists xlsys_flow;
 
-alter table xlsys_basebusi
-   drop constraint FK_BB_REFERENCE_F;
+drop table if exists xlsys_flowcodealloc;
 
-alter table xlsys_basebusi
-   drop constraint FK_BB_REFERENCE_I;
+drop table if exists xlsys_flowcondition;
 
-alter table xlsys_basebusi
-   drop constraint FK_BB_REFERENCE_U;
+drop table if exists xlsys_flowjava;
 
-alter table xlsys_dictdetail
-   drop constraint FK_DD_REFERENCE_D;
+drop table if exists xlsys_flowjs;
 
-alter table xlsys_exttableinfodetail
-   drop constraint FK_ETI_REFERENCE_ETID;
+drop table if exists xlsys_flowlogic;
 
-alter table xlsys_flow
-   drop constraint FK_F_REFERENCE_V1;
+drop table if exists xlsys_flowpart;
 
-alter table xlsys_flow
-   drop constraint FK_F_REFERENCE_V2;
+drop table if exists xlsys_flowright;
 
-alter table xlsys_flow
-   drop constraint FK_FL_REFERENCE_P1;
+drop table if exists xlsys_flowsubtable;
 
-alter table xlsys_flow
-   drop constraint FK_FL_REFERENCE_P2;
+drop table if exists xlsys_identity;
 
-alter table xlsys_flowcodealloc
-   drop constraint FK_FCA_REFERENCE_CA;
+drop index xlsys_idrelation_tcv on xlsys_idrelation;
 
-alter table xlsys_flowcodealloc
-   drop constraint FK_FCA_REFERENCE_F;
+drop index xlsys_idrelation_uq on xlsys_idrelation;
 
-alter table xlsys_flowcondition
-   drop constraint FK_FC_REFERENCE_F;
+drop table if exists xlsys_idrelation;
 
-alter table xlsys_flowjava
-   drop constraint FK_FJAVA_REFERENCE_F;
+drop table if exists xlsys_image;
 
-alter table xlsys_flowjava
-   drop constraint FK_FJAVA_REFERENCE_V;
+drop table if exists xlsys_ipresource;
 
-alter table xlsys_flowjs
-   drop constraint FK_FJS_REFERENCE_F;
+drop table if exists xlsys_javaclass;
 
-alter table xlsys_flowjs
-   drop constraint FK_FJS_REFERENCE_V;
+drop table if exists xlsys_menu;
 
-alter table xlsys_flowlogic
-   drop constraint FK_FL_REFERENCE_F;
+drop table if exists xlsys_menuright;
 
-alter table xlsys_flowpart
-   drop constraint FK_FP_REFERENCE_F;
+drop table if exists xlsys_oacategory;
 
-alter table xlsys_flowpart
-   drop constraint FK_FP_REFERENCE_P1;
+drop table if exists xlsys_oacategoryright;
 
-alter table xlsys_flowpart
-   drop constraint FK_FP_REFERENCE_P2;
+drop table if exists xlsys_oacmbelong;
 
-alter table xlsys_flowpart
-   drop constraint FK_FP_REFERENCE_R;
+drop table if exists xlsys_oacmrelation;
 
-alter table xlsys_flowpart
-   drop constraint FK_FP_REFERENCE_V1;
+drop table if exists xlsys_oamodule;
 
-alter table xlsys_flowpart
-   drop constraint FK_FP_REFERENCE_V2;
+drop table if exists xlsys_oamoduleextra;
 
-alter table xlsys_flowright
-   drop constraint FK_FR_REFERENCE_R;
+drop table if exists xlsys_oamoduleright;
 
-alter table xlsys_flowright
-   drop constraint FK_FR_REFERENCE_FC;
+drop table if exists xlsys_part;
 
-alter table xlsys_flowsubtable
-   drop constraint FK_FST_REFERENCE_F;
+drop table if exists xlsys_partdetail;
 
-alter table xlsys_identity
-   drop constraint FK_I_REFERENCE_M;
+drop table if exists xlsys_position;
 
-alter table xlsys_idrelation
-   drop constraint FK_IR_REFERENCE_R;
+drop table if exists xlsys_print;
 
-alter table xlsys_idrelation
-   drop constraint FK_IR_REFERENCE_I;
+drop table if exists xlsys_queryparamsave;
 
-alter table xlsys_menuright
-   drop constraint FK_MR_REFERENCE_M;
+drop table if exists xlsys_ratify;
 
-alter table xlsys_oacategoryright
-   drop constraint FK_OACR_REFERENCE_OAC;
+drop table if exists xlsys_ratifydetail;
 
-alter table xlsys_oacmbelong
-   drop constraint FK_OACMB_REFERENCE_OAM;
+drop index UN_RIGHT_SK on xlsys_right;
 
-alter table xlsys_oacmbelong
-   drop constraint FK_OACMBL_REFERENCE_OAC;
+drop index UN_RIGHT_RC on xlsys_right;
 
-alter table xlsys_oacmrelation
-   drop constraint FK_OACMR_REFERENCE_ID;
+drop table if exists xlsys_right;
 
-alter table xlsys_oacmrelation
-   drop constraint FK_OACMR_REFERENCE_OACMBL;
+drop table if exists xlsys_translator;
 
-alter table xlsys_oamoduleextra
-   drop constraint FK_OAME_REFERENCE_OAM;
+drop table if exists xlsys_transport;
 
-alter table xlsys_oamoduleextra
-   drop constraint FK_OAME_REFERENCE_V;
+drop table if exists xlsys_transportdetail;
 
-alter table xlsys_oamoduleright
-   drop constraint FK_OAMR_REFERENCE_OAM;
+drop table if exists xlsys_transportdtcolmap;
 
-alter table xlsys_partdetail
-   drop constraint FK_PD_REFERENCE_P;
+drop table if exists xlsys_transportkey;
 
-alter table xlsys_partdetail
-   drop constraint FK_PD_REFERENCE_V1;
+drop table if exists xlsys_transportkeysynonym;
 
-alter table xlsys_partdetail
-   drop constraint FK_PD_REFERENCE_V2;
+drop table if exists xlsys_transportmap;
 
-alter table xlsys_queryparamsave
-   drop constraint FK_QPS_REFERENCE_ID;
+drop table if exists xlsys_transportrun;
 
-alter table xlsys_queryparamsave
-   drop constraint FK_QPS_REFERENCE_V;
+drop table if exists xlsys_user;
 
-alter table xlsys_ratify
-   drop constraint FK_R_REFERENCE_FC_F;
+drop table if exists xlsys_useremail;
 
-alter table xlsys_ratify
-   drop constraint FK_R_REFERENCE_FC_T;
+drop table if exists xlsys_view;
 
-alter table xlsys_ratify
-   drop constraint FK_R_REFERENCE_U;
+drop index un_vd on xlsys_viewdetail;
 
-alter table xlsys_ratifydetail
-   drop constraint FK_RD_REFERENCE_R;
+drop table if exists xlsys_viewdetail;
 
-alter table xlsys_ratifydetail
-   drop constraint FK_RD_REFERENCE_U1;
+drop table if exists xlsys_viewdetailparam;
 
-alter table xlsys_ratifydetail
-   drop constraint FK_RD_REFERENCE_U2;
+drop table if exists xlsys_viewqueryparam;
 
-alter table xlsys_transportdetail
-   drop constraint FK_TSDT_REFERENCE_TS;
+drop table if exists xlsys_wdtcolumn;
 
-alter table xlsys_transportdtcolmap
-   drop constraint FK_TSDTCM_REFERENCE_TSDT;
+drop table if exists xlsys_wizard;
 
-alter table xlsys_transportkeysynonym
-   drop constraint FK_TSKS_REFERENCE_TSK;
-
-alter table xlsys_transportmap
-   drop constraint FK_TSK_REFERENCE_TSM;
-
-alter table xlsys_transportrun
-   drop constraint FK_TSR_REFERENCE_TS;
-
-alter table xlsys_useremail
-   drop constraint FK_UE_REFERENCE_U;
-
-alter table xlsys_viewdetail
-   drop constraint FK_VD_REFERENCE_V;
-
-alter table xlsys_viewdetailparam
-   drop constraint FK_VDP_REFERENCE_VD;
-
-alter table xlsys_viewqueryparam
-   drop constraint FK_VQP_REFERENCE_V;
-
-alter table xlsys_wdtcolumn
-   drop constraint FK_WDC_REFERENCE_WD;
-
-alter table xlsys_wizarddetail
-   drop constraint FK_WD_REFERENCE_V;
-
-alter table xlsys_wizarddetail
-   drop constraint FK_WD_REFERENCE_W1;
-
-drop table xlem_atomicunit cascade constraints;
-
-drop table xlem_buyer cascade constraints;
-
-drop table xlem_item cascade constraints;
-
-drop table xlem_itemsku cascade constraints;
-
-drop table xlem_prepsynonym cascade constraints;
-
-drop table xlem_searchkeyword cascade constraints;
-
-drop table xlem_searchtext cascade constraints;
-
-drop index UN_SELLER_U;
-
-drop table xlem_seller cascade constraints;
-
-drop table xlem_sku cascade constraints;
-
-drop table xlem_spu cascade constraints;
-
-drop table xlem_spucategory cascade constraints;
-
-drop table xlem_spuindex cascade constraints;
-
-drop table xlem_stock cascade constraints;
-
-drop table xlem_stockhistory cascade constraints;
-
-drop table xlem_synonym cascade constraints;
-
-drop table xlem_unit cascade constraints;
-
-drop table xlem_user cascade constraints;
-
-drop table xlem_userlevel cascade constraints;
-
-drop table xlfin_account cascade constraints;
-
-drop table xlfin_accountcondition cascade constraints;
-
-drop table xlfin_accountingitem cascade constraints;
-
-drop table xlfin_balance cascade constraints;
-
-drop table xlfin_balanceitem cascade constraints;
-
-drop table xlfin_bankstmt cascade constraints;
-
-drop table xlfin_bankstmtbalance cascade constraints;
-
-drop table xlfin_bankstmttemplet cascade constraints;
-
-drop table xlfin_bstldt cascade constraints;
-
-drop table xlfin_currency cascade constraints;
-
-drop table xlfin_exchangerate cascade constraints;
-
-drop table xlfin_karaccdt cascade constraints;
-
-drop table xlfin_kardt cascade constraints;
-
-drop table xlfin_kdeptaccrealtion cascade constraints;
-
-drop table xlfin_keepdept cascade constraints;
-
-drop index un_rrbe;
-
-drop table xlfin_reportdata cascade constraints;
-
-drop table xlfin_reportdatadetail cascade constraints;
-
-drop table xlfin_reportdept cascade constraints;
-
-drop table xlfin_reportform cascade constraints;
-
-drop table xlfin_reportformcol cascade constraints;
-
-drop table xlfin_reportformformula cascade constraints;
-
-drop table xlfin_reportformrow cascade constraints;
-
-drop table xlfin_vdtextra cascade constraints;
-
-drop table xlfin_vdtextracol cascade constraints;
-
-drop table xlfin_vdtextracolattr cascade constraints;
-
-drop table xlfin_voucher cascade constraints;
-
-drop table xlfin_voucherdetail cascade constraints;
-
-drop table xlfin_vouchertemplet cascade constraints;
-
-drop table xlfin_vtempletdt cascade constraints;
-
-drop table xlfin_vtldtcol cascade constraints;
-
-drop table xlsys_attachment cascade constraints;
-
-drop table xlsys_authorisedright cascade constraints;
-
-drop table xlsys_authorize cascade constraints;
-
-drop index un_ad_fci;
-
-drop table xlsys_authorizedetail cascade constraints;
-
-drop table xlsys_basebusi cascade constraints;
-
-drop table xlsys_codealloc cascade constraints;
-
-drop table xlsys_department cascade constraints;
-
-drop table xlsys_dict cascade constraints;
-
-drop table xlsys_dictdetail cascade constraints;
-
-drop table xlsys_emailtemplate cascade constraints;
-
-drop table xlsys_extracmd cascade constraints;
-
-drop table xlsys_exttableinfo cascade constraints;
-
-drop table xlsys_exttableinfodetail cascade constraints;
-
-drop table xlsys_flow cascade constraints;
-
-drop table xlsys_flowcodealloc cascade constraints;
-
-drop table xlsys_flowcondition cascade constraints;
-
-drop table xlsys_flowjava cascade constraints;
-
-drop table xlsys_flowjs cascade constraints;
-
-drop table xlsys_flowlogic cascade constraints;
-
-drop table xlsys_flowpart cascade constraints;
-
-drop table xlsys_flowright cascade constraints;
-
-drop table xlsys_flowsubtable cascade constraints;
-
-drop table xlsys_identity cascade constraints;
-
-drop index xlsys_idrelation_tcv;
-
-drop index xlsys_idrelation_uq;
-
-drop table xlsys_idrelation cascade constraints;
-
-drop table xlsys_image cascade constraints;
-
-drop table xlsys_ipresource cascade constraints;
-
-drop table xlsys_javaclass cascade constraints;
-
-drop table xlsys_menu cascade constraints;
-
-drop table xlsys_menuright cascade constraints;
-
-drop table xlsys_oacategory cascade constraints;
-
-drop table xlsys_oacategoryright cascade constraints;
-
-drop table xlsys_oacmbelong cascade constraints;
-
-drop table xlsys_oacmrelation cascade constraints;
-
-drop table xlsys_oamodule cascade constraints;
-
-drop table xlsys_oamoduleextra cascade constraints;
-
-drop table xlsys_oamoduleright cascade constraints;
-
-drop table xlsys_part cascade constraints;
-
-drop table xlsys_partdetail cascade constraints;
-
-drop table xlsys_position cascade constraints;
-
-drop table xlsys_print cascade constraints;
-
-drop table xlsys_queryparamsave cascade constraints;
-
-drop table xlsys_ratify cascade constraints;
-
-drop table xlsys_ratifydetail cascade constraints;
-
-drop index UN_RIGHT_SK;
-
-drop index UN_RIGHT_RC;
-
-drop table xlsys_right cascade constraints;
-
-drop table xlsys_translator cascade constraints;
-
-drop table xlsys_transport cascade constraints;
-
-drop table xlsys_transportdetail cascade constraints;
-
-drop table xlsys_transportdtcolmap cascade constraints;
-
-drop table xlsys_transportkey cascade constraints;
-
-drop table xlsys_transportkeysynonym cascade constraints;
-
-drop table xlsys_transportmap cascade constraints;
-
-drop table xlsys_transportrun cascade constraints;
-
-drop table xlsys_user cascade constraints;
-
-drop table xlsys_useremail cascade constraints;
-
-drop table xlsys_view cascade constraints;
-
-drop index un_vd;
-
-drop table xlsys_viewdetail cascade constraints;
-
-drop table xlsys_viewdetailparam cascade constraints;
-
-drop table xlsys_viewqueryparam cascade constraints;
-
-drop table xlsys_wdtcolumn cascade constraints;
-
-drop table xlsys_wizard cascade constraints;
-
-drop table xlsys_wizarddetail cascade constraints;
+drop table if exists xlsys_wizarddetail;
 
 /*==============================================================*/
-/* Table: xlem_atomicunit                                     */
+/* Table: xlem_atomicunit                                       */
 /*==============================================================*/
-create table xlem_atomicunit 
+create table xlem_atomicunit
 (
-   aunitid            VARCHAR2(32)         not null,
-   name               VARCHAR2(256),
-   constraint PK_XLEM_ATOMICUNIT primary key (aunitid)
+   aunitid              varchar(32) not null,
+   name                 varchar(256),
+   primary key (aunitid)
 );
 
-comment on table xlem_atomicunit is
-'不可拆分的单位定义表';
+alter table xlem_atomicunit comment '不可拆分的单位定义表';
 
 /*==============================================================*/
-/* Table: xlem_buyer                                          */
+/* Table: xlem_buyer                                            */
 /*==============================================================*/
-create table xlem_buyer 
+create table xlem_buyer
 (
-   buyerid            VARCHAR2(256)        not null,
-   name               VARCHAR2(256),
-   userid             VARCHAR2(256),
-   levelid            VARCHAR2(256),
-   experience         NUMBER(18,6),
-   constraint PK_XLEM_BUYER primary key (buyerid)
+   buyerid              varchar(256) not null,
+   name                 varchar(256),
+   userid               varchar(256),
+   levelid              varchar(256),
+   experience           numeric(18,6),
+   primary key (buyerid)
 );
 
-comment on table xlem_buyer is
-'电子商务买家表, 主要记录买家相关信息';
+alter table xlem_buyer comment '电子商务买家表, 主要记录买家相关信息';
 
 /*==============================================================*/
-/* Table: xlem_item                                           */
+/* Table: xlem_item                                             */
 /*==============================================================*/
-create table xlem_item 
+create table xlem_item
 (
-   itemid             VARCHAR2(32)         not null,
-   sellerid           VARCHAR2(256),
-   name               VARCHAR2(256),
-   description        VARCHAR2(4000),
-   constraint PK_XLEM_ITEM primary key (itemid)
+   itemid               varchar(32) not null,
+   sellerid             varchar(256),
+   name                 varchar(256),
+   description          varchar(4000),
+   primary key (itemid)
 );
 
-comment on table xlem_item is
-'电子商务商品表.
+alter table xlem_item comment '电子商务商品表.
 一个商品对应多个SKU';
 
 /*==============================================================*/
-/* Table: xlem_itemsku                                        */
+/* Table: xlem_itemsku                                          */
 /*==============================================================*/
-create table xlem_itemsku 
+create table xlem_itemsku
 (
-   itemid             VARCHAR2(32)         not null,
-   sku                VARCHAR2(32)         not null,
-   constraint PK_XLEM_ITEMSKU primary key (itemid, sku)
+   itemid               varchar(32) not null,
+   sku                  varchar(32) not null,
+   primary key (itemid, sku)
 );
 
-comment on table xlem_itemsku is
-'商品对应的SKU';
+alter table xlem_itemsku comment '商品对应的SKU';
 
 /*==============================================================*/
-/* Table: xlem_prepsynonym                                    */
+/* Table: xlem_prepsynonym                                      */
 /*==============================================================*/
-create table xlem_prepsynonym 
+create table xlem_prepsynonym
 (
-   mergehash          NUMBER(8,0)          not null,
-   srcword            VARCHAR2(32)         not null,
-   synword            VARCHAR2(32)         not null,
-   heat               NUMBER(8,0),
-   constraint PK_XLEM_PREPSYNONYM primary key (mergehash)
+   mergehash            numeric(8,0) not null,
+   srcword              varchar(32) not null,
+   synword              varchar(32) not null,
+   heat                 numeric(8,0),
+   primary key (mergehash)
 );
 
-comment on table xlem_prepsynonym is
-'预备同义词库. 该库中的同义词热度累计到达一定数量后, 则会转移到同义词库中';
+alter table xlem_prepsynonym comment '预备同义词库. 该库中的同义词热度累计到达一定数量后, 则会转移到同义词库中';
 
 /*==============================================================*/
-/* Table: xlem_searchkeyword                                  */
+/* Table: xlem_searchkeyword                                    */
 /*==============================================================*/
-create table xlem_searchkeyword 
+create table xlem_searchkeyword
 (
-   keyword            VARCHAR2(64)         not null,
-   heat               NUMBER(8,0)          not null,
-   constraint PK_XLEM_SEARCHKEYWORD primary key (keyword)
+   keyword              varchar(64) not null,
+   heat                 numeric(8,0) not null,
+   primary key (keyword)
 );
 
-comment on table xlem_searchkeyword is
-'查询关键字热度表, 此表中存的都是独立的不需要进行拆分的查询关键字信息';
+alter table xlem_searchkeyword comment '查询关键字热度表, 此表中存的都是独立的不需要进行拆分的查询关键字信息';
 
 /*==============================================================*/
-/* Table: xlem_searchtext                                     */
+/* Table: xlem_searchtext                                       */
 /*==============================================================*/
-create table xlem_searchtext 
+create table xlem_searchtext
 (
-   searchtext         VARCHAR2(1000)       not null,
-   heat               NUMBER(8,0)          not null,
-   constraint PK_XLEM_SEARCHTEXT primary key (searchtext)
+   searchtext           varchar(1000) not null,
+   heat                 numeric(8,0) not null,
+   primary key (searchtext)
 );
 
-comment on table xlem_searchtext is
-'查询热度表. 此表保存了所有查询字符串以及对应的热度';
+alter table xlem_searchtext comment '查询热度表. 此表保存了所有查询字符串以及对应的热度';
 
 /*==============================================================*/
-/* Table: xlem_seller                                         */
+/* Table: xlem_seller                                           */
 /*==============================================================*/
-create table xlem_seller 
+create table xlem_seller
 (
-   sellerid           VARCHAR2(256)        not null,
-   name               VARCHAR2(256),
-   userid             VARCHAR2(256),
-   levelid            VARCHAR2(256),
-   experience         NUMBER(18,6),
-   constraint PK_XLEM_SELLER primary key (sellerid)
+   sellerid             varchar(256) not null,
+   name                 varchar(256),
+   userid               varchar(256),
+   levelid              varchar(256),
+   experience           numeric(18,6),
+   primary key (sellerid)
 );
 
-comment on table xlem_seller is
-'电子商务卖家表, 主要记录卖家相关信息';
+alter table xlem_seller comment '电子商务卖家表, 主要记录卖家相关信息';
 
 /*==============================================================*/
 /* Index: UN_SELLER_U                                           */
 /*==============================================================*/
-create unique index UN_SELLER_U on xlem_seller (
-   userid ASC
-);
-
-/*==============================================================*/
-/* Table: xlem_sku                                            */
-/*==============================================================*/
-create table xlem_sku 
+create unique index UN_SELLER_U on xlem_seller
 (
-   sku                VARCHAR2(32)         not null,
-   spu                VARCHAR2(32)         not null,
-   aunitid            VARCHAR2(32)         not null,
-   name               VARCHAR2(256),
-   description        VARCHAR2(4000),
-   constraint PK_XLEM_SKU primary key (sku)
+   userid
 );
 
-comment on table xlem_sku is
-'电子商务SKU.
+/*==============================================================*/
+/* Table: xlem_sku                                              */
+/*==============================================================*/
+create table xlem_sku
+(
+   sku                  varchar(32) not null,
+   spu                  varchar(32) not null,
+   aunitid              varchar(32) not null,
+   name                 varchar(256),
+   description          varchar(4000),
+   primary key (sku)
+);
+
+alter table xlem_sku comment '电子商务SKU.
 库存量单位, 最小单位, 不可分割
 一个SKU对应一个SPU.
-一个SPU对应多个SKU.';
+一';
 
 /*==============================================================*/
-/* Table: xlem_spu                                            */
+/* Table: xlem_spu                                              */
 /*==============================================================*/
-create table xlem_spu 
+create table xlem_spu
 (
-   spu                VARCHAR2(32)         not null,
-   categoryid         VARCHAR2(256),
-   name               VARCHAR2(256),
-   description        VARCHAR2(4000),
-   constraint PK_XLEM_SPU primary key (spu)
+   spu                  varchar(32) not null,
+   categoryid           varchar(256),
+   name                 varchar(256),
+   description          varchar(4000),
+   primary key (spu)
 );
 
-comment on table xlem_spu is
-'电子商务SPU表.一个SPU对应多个SKU, 一个SKU只对应一个SPU';
+alter table xlem_spu comment '电子商务SPU表.一个SPU对应多个SKU, 一个SKU只对应一个SPU';
 
 /*==============================================================*/
-/* Table: xlem_spucategory                                    */
+/* Table: xlem_spucategory                                      */
 /*==============================================================*/
-create table xlem_spucategory 
+create table xlem_spucategory
 (
-   categoryid         VARCHAR2(256)        not null,
-   name               VARCHAR2(256),
-   constraint PK_XLEM_SPUCATEGORY primary key (categoryid)
+   categoryid           varchar(256) not null,
+   name                 varchar(256),
+   primary key (categoryid)
 );
 
-comment on table xlem_spucategory is
-'SPU分类';
+alter table xlem_spucategory comment 'SPU分类';
 
 /*==============================================================*/
-/* Table: xlem_spuindex                                       */
+/* Table: xlem_spuindex                                         */
 /*==============================================================*/
-create table xlem_spuindex 
+create table xlem_spuindex
 (
-   filename           VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   content            BLOB,
-   constraint PK_XLEM_SPUINDEX primary key (filename, idx)
+   filename             varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   content              longblob,
+   primary key (filename, idx)
 );
 
-comment on table xlem_spuindex is
-'电子商务SPU索引';
+alter table xlem_spuindex comment '电子商务SPU索引';
 
 /*==============================================================*/
-/* Table: xlem_stock                                          */
+/* Table: xlem_stock                                            */
 /*==============================================================*/
-create table xlem_stock 
+create table xlem_stock
 (
-   stkid              NUMBER(16,0)         not null,
-   sku                VARCHAR2(32)         not null,
-   quantity           NUMBER(18,6)         not null,
-   direction          NUMBER(2,0)          not null,
-   aunitprice         NUMBER(18,6)         not null,
-   constraint PK_XLEM_STOCK primary key (stkid)
+   stkid                numeric(16,0) not null,
+   sku                  varchar(32) not null,
+   quantity             numeric(18,6) not null,
+   direction            numeric(2,0) not null,
+   aunitprice           numeric(18,6) not null,
+   primary key (stkid)
 );
 
-comment on table xlem_stock is
-'电子商务库存表';
+alter table xlem_stock comment '电子商务库存表';
 
 /*==============================================================*/
-/* Table: xlem_stockhistory                                   */
+/* Table: xlem_stockhistory                                     */
 /*==============================================================*/
-create table xlem_stockhistory 
+create table xlem_stockhistory
 (
-   stkid              NUMBER(16,0)         not null,
-   sku                VARCHAR2(32),
-   quantity           NUMBER(18,6),
-   direction          NUMBER(2,0),
-   aunitprice         NUMBER(18,6),
-   constraint PK_XLEM_STOCKHISTORY primary key (stkid)
+   stkid                numeric(16,0) not null,
+   sku                  varchar(32),
+   quantity             numeric(18,6),
+   direction            numeric(2,0),
+   aunitprice           numeric(18,6),
+   primary key (stkid)
 );
 
-comment on table xlem_stockhistory is
-'库存历史记录表';
+alter table xlem_stockhistory comment '库存历史记录表';
 
 /*==============================================================*/
-/* Table: xlem_synonym                                        */
+/* Table: xlem_synonym                                          */
 /*==============================================================*/
-create table xlem_synonym 
+create table xlem_synonym
 (
-   mergehash          NUMBER(8,0)          not null,
-   srcword            VARCHAR2(32)         not null,
-   synword            VARCHAR2(32)         not null,
-   heat               NUMBER(8,0),
-   constraint PK_XLEM_SYNONYM primary key (mergehash)
+   mergehash            numeric(8,0) not null comment '原词和同义词经过排序连接后的hash值, 防止重复添加同义词',
+   srcword              varchar(32) not null,
+   synword              varchar(32) not null,
+   heat                 numeric(8,0) comment '该同义词的使用热度',
+   primary key (mergehash)
 );
 
-comment on table xlem_synonym is
-'同义词表';
-
-comment on column xlem_synonym.mergehash is
-'原词和同义词经过排序连接后的hash值, 防止重复添加同义词';
-
-comment on column xlem_synonym.heat is
-'该同义词的使用热度';
+alter table xlem_synonym comment '同义词表';
 
 /*==============================================================*/
-/* Table: xlem_unit                                           */
+/* Table: xlem_unit                                             */
 /*==============================================================*/
-create table xlem_unit 
+create table xlem_unit
 (
-   unitid             VARCHAR2(32)         not null,
-   aunitid            VARCHAR2(32)         not null,
-   name               VARCHAR2(256),
-   exchangerate       NUMBER(18,6)         not null,
-   constraint PK_XLEM_UNIT primary key (unitid)
+   unitid               varchar(32) not null,
+   aunitid              varchar(32) not null,
+   name                 varchar(256),
+   exchangerate         numeric(18,6) not null comment '单位对原子单位的兑换率',
+   primary key (unitid)
 );
 
-comment on table xlem_unit is
-'单位表';
-
-comment on column xlem_unit.exchangerate is
-'单位对原子单位的兑换率';
+alter table xlem_unit comment '单位表';
 
 /*==============================================================*/
-/* Table: xlem_user                                           */
+/* Table: xlem_user                                             */
 /*==============================================================*/
-create table xlem_user 
+create table xlem_user
 (
-   userid             VARCHAR2(256)        not null,
-   name               VARCHAR2(256),
-   constraint PK_XLEM_USER primary key (userid)
+   userid               varchar(256) not null,
+   name                 varchar(256),
+   primary key (userid)
 );
 
-comment on table xlem_user is
-'电子商城用户表, 主要记录用户基本资料';
+alter table xlem_user comment '电子商城用户表, 主要记录用户基本资料';
 
 /*==============================================================*/
-/* Table: xlem_userlevel                                      */
+/* Table: xlem_userlevel                                        */
 /*==============================================================*/
-create table xlem_userlevel 
+create table xlem_userlevel
 (
-   levelid            VARCHAR2(256)        not null,
-   name               VARCHAR2(256),
-   nextlevel          VARCHAR2(256),
-   exprequire         NUMBER(18,6),
-   constraint PK_XLEM_USERLEVEL primary key (levelid)
+   levelid              varchar(256) not null,
+   name                 varchar(256),
+   nextlevel            varchar(256),
+   exprequire           numeric(18,6),
+   primary key (levelid)
 );
 
-comment on table xlem_userlevel is
-'等级定义表';
+alter table xlem_userlevel comment '等级定义表';
 
 /*==============================================================*/
-/* Table: xlfin_account                                       */
+/* Table: xlfin_account                                         */
 /*==============================================================*/
-create table xlfin_account 
+create table xlfin_account
 (
-   accid              VARCHAR2(256)        not null,
-   name               VARCHAR2(1024),
-   adc                NUMBER(2,0),
-   vdc                NUMBER(2,0),
-   acctype            NUMBER(2,0),
-   forbankstmt        NUMBER(2,0),
-   constraint PK_XLFIN_ACCOUNT primary key (accid)
+   accid                varchar(256) not null,
+   name                 varchar(1024),
+   adc                  numeric(2,0),
+   vdc                  numeric(2,0),
+   acctype              numeric(2,0),
+   forbankstmt          numeric(2,0),
+   primary key (accid)
 );
 
-comment on table xlfin_account is
-'科目表';
+alter table xlfin_account comment '科目表';
 
 /*==============================================================*/
-/* Table: xlfin_accountcondition                              */
+/* Table: xlfin_accountcondition                                */
 /*==============================================================*/
-create table xlfin_accountcondition 
+create table xlfin_accountcondition
 (
-   kdeptid            VARCHAR2(256)        not null,
-   year               NUMBER(8,0)          not null,
-   month              NUMBER(2,0)          not null,
-   condition          VARCHAR2(256),
-   constraint PK_XLFIN_ACCOUNTCONDITION primary key (kdeptid, year, month)
+   kdeptid              varchar(256) not null,
+   year                 numeric(8,0) not null,
+   month                numeric(2,0) not null,
+   "condition"          varchar(256) comment '400:已记账;800:已结账',
+   primary key (kdeptid, year, month)
 );
 
-comment on table xlfin_accountcondition is
-'记账状态记录表';
-
-comment on column xlfin_accountcondition.condition is
-'400:已记账;800:已结账';
+alter table xlfin_accountcondition comment '记账状态记录表';
 
 /*==============================================================*/
-/* Table: xlfin_accountingitem                                */
+/* Table: xlfin_accountingitem                                  */
 /*==============================================================*/
-create table xlfin_accountingitem 
+create table xlfin_accountingitem
 (
-   vdcol              VARCHAR2(256)        not null,
-   kdeptids           VARCHAR2(4000),
-   accids             VARCHAR2(4000),
-   nasm               NUMBER(2,0),
-   dbcol              VARCHAR2(64),
-   cbcol              VARCHAR2(64),
-   bcol               VARCHAR2(64),
-   dvkdeptids         VARCHAR2(4000),
-   dvaccids           VARCHAR2(4000),
-   constraint PK_XLFIN_ACCOUNTINGITEM primary key (vdcol)
+   vdcol                varchar(256) not null comment '凭证明细字段',
+   kdeptids             varchar(4000),
+   accids               varchar(4000),
+   nasm                 numeric(2,0) comment 'Non accounting statistics method
+            非核算项的统计方式
+            1:sum;2:max;3:min;4:avg',
+   dbcol                varchar(64) comment '当vdc=1时统计放入balance表的字段',
+   cbcol                varchar(64) comment '当vdc=-1时统计放入balance的字段',
+   bcol                 varchar(64) comment '忽略vdc时统计放入balance表的字段',
+   dvkdeptids           varchar(4000) comment '使用该字段进行往来核销的记账部门',
+   dvaccids             varchar(4000) comment '使用该字段进行往来核销的科目',
+   primary key (vdcol)
 );
 
-comment on table xlfin_accountingitem is
-'核算项设置';
-
-comment on column xlfin_accountingitem.vdcol is
-'凭证明细字段';
-
-comment on column xlfin_accountingitem.nasm is
-'Non accounting statistics method
-非核算项的统计方式
-1:sum;2:max;3:min;4:avg';
-
-comment on column xlfin_accountingitem.dbcol is
-'当vdc=1时统计放入balance表的字段';
-
-comment on column xlfin_accountingitem.cbcol is
-'当vdc=-1时统计放入balance的字段';
-
-comment on column xlfin_accountingitem.bcol is
-'忽略vdc时统计放入balance表的字段';
-
-comment on column xlfin_accountingitem.dvkdeptids is
-'使用该字段进行往来核销的记账部门';
-
-comment on column xlfin_accountingitem.dvaccids is
-'使用该字段进行往来核销的科目';
+alter table xlfin_accountingitem comment '核算项设置';
 
 /*==============================================================*/
-/* Table: xlfin_balance                                       */
+/* Table: xlfin_balance                                         */
 /*==============================================================*/
-create table xlfin_balance 
+create table xlfin_balance
 (
-   balanceid          VARCHAR2(256)        not null,
-   year               NUMBER(8,0),
-   month              NUMBER(2,0),
-   kdeptid            VARCHAR2(256),
-   fcrcid             VARCHAR2(256),
-   accid              VARCHAR2(256),
-   dfca               NUMBER(18,6),
-   cfca               NUMBER(18,6),
-   fcb                NUMBER(18,6),
-   dsca               NUMBER(18,6),
-   csca               NUMBER(18,6),
-   scb                NUMBER(18,6),
-   drca               NUMBER(18,6),
-   crca               NUMBER(18,6),
-   rcb                NUMBER(18,6),
-   dusda              NUMBER(18,6),
-   cusda              NUMBER(18,6),
-   usdb               NUMBER(18,6),
-   dquantitya         NUMBER(18,6),
-   cquantitya         NUMBER(18,6),
-   quantityb          NUMBER(18,6),
-   constraint PK_XLFIN_BALANCE primary key (balanceid)
+   balanceid            varchar(256) not null,
+   year                 numeric(8,0),
+   month                numeric(2,0),
+   kdeptid              varchar(256),
+   fcrcid               varchar(256),
+   accid                varchar(256),
+   dfca                 numeric(18,6),
+   cfca                 numeric(18,6),
+   fcb                  numeric(18,6),
+   dsca                 numeric(18,6),
+   csca                 numeric(18,6),
+   scb                  numeric(18,6),
+   drca                 numeric(18,6),
+   crca                 numeric(18,6),
+   rcb                  numeric(18,6),
+   dusda                numeric(18,6),
+   cusda                numeric(18,6),
+   usdb                 numeric(18,6),
+   dquantitya           numeric(18,6),
+   cquantitya           numeric(18,6),
+   quantityb            numeric(18,6),
+   primary key (balanceid)
 );
 
-comment on table xlfin_balance is
-'余额表';
+alter table xlfin_balance comment '余额表';
 
 /*==============================================================*/
-/* Table: xlfin_balanceitem                                   */
+/* Table: xlfin_balanceitem                                     */
 /*==============================================================*/
-create table xlfin_balanceitem 
+create table xlfin_balanceitem
 (
-   bcol               VARCHAR2(64)         not null,
-   operatormode       NUMBER(2,0),
-   constraint PK_XLFIN_BALANCEITEM primary key (bcol)
+   bcol                 varchar(64) not null,
+   operatormode         numeric(2,0) comment 'balance column operator mode
+            余额表列的运算方式
+            1:add;2:max;3:min;4:cover',
+   primary key (bcol)
 );
 
-comment on table xlfin_balanceitem is
-'余额表项的配置';
-
-comment on column xlfin_balanceitem.operatormode is
-'balance column operator mode
-余额表列的运算方式
-1:add;2:max;3:min;4:cover';
+alter table xlfin_balanceitem comment '余额表项的配置';
 
 /*==============================================================*/
-/* Table: xlfin_bankstmt                                      */
+/* Table: xlfin_bankstmt                                        */
 /*==============================================================*/
-create table xlfin_bankstmt 
+create table xlfin_bankstmt
 (
-   bsid               VARCHAR2(256)        not null,
-   year               NUMBER(8,0),
-   month              NUMBER(2,0),
-   tradedate          DATE,
-   kdeptid            VARCHAR2(256),
-   userid             VARCHAR2(256),
-   accid              VARCHAR2(256),
-   bdc                NUMBER(2,0),
-   fcrcid             VARCHAR2(256),
-   fcrcamount         NUMBER(18,6),
-   remark             VARCHAR2(256),
-   vid                VARCHAR2(256),
-   vidx               NUMBER(8,0),
-   bcdate             DATE,
-   bctype             NUMBER(2,0),
-   constraint PK_XLFIN_BANKSTMT primary key (bsid)
+   bsid                 varchar(256) not null,
+   year                 numeric(8,0),
+   month                numeric(2,0),
+   tradedate            datetime,
+   kdeptid              varchar(256),
+   userid               varchar(256),
+   accid                varchar(256),
+   bdc                  numeric(2,0),
+   fcrcid               varchar(256),
+   fcrcamount           numeric(18,6),
+   remark               varchar(256),
+   vid                  varchar(256),
+   vidx                 numeric(8,0),
+   bcdate               datetime comment '对账日期',
+   bctype               numeric(2,0) comment '对账类型
+            0:手动;1:自动',
+   primary key (bsid)
 );
 
-comment on table xlfin_bankstmt is
-'银行对账单表';
-
-comment on column xlfin_bankstmt.bcdate is
-'对账日期';
-
-comment on column xlfin_bankstmt.bctype is
-'对账类型
-0:手动;1:自动';
+alter table xlfin_bankstmt comment '银行对账单表';
 
 /*==============================================================*/
-/* Table: xlfin_bankstmtbalance                               */
+/* Table: xlfin_bankstmtbalance                                 */
 /*==============================================================*/
-create table xlfin_bankstmtbalance 
+create table xlfin_bankstmtbalance
 (
-   bsbid              VARCHAR2(256)        not null,
-   kdeptid            VARCHAR2(256),
-   fcrcid             VARCHAR2(256),
-   accid              VARCHAR2(256),
-   year               NUMBER(8,0),
-   month              NUMBER(2,0),
-   fcb                NUMBER(18,6),
-   constraint PK_XLFIN_BANKSTMTBALANCE primary key (bsbid)
+   bsbid                varchar(256) not null,
+   kdeptid              varchar(256),
+   fcrcid               varchar(256),
+   accid                varchar(256),
+   year                 numeric(8,0),
+   month                numeric(2,0),
+   fcb                  numeric(18,6),
+   primary key (bsbid)
 );
 
-comment on table xlfin_bankstmtbalance is
-'银行对账单余额表';
+alter table xlfin_bankstmtbalance comment '银行对账单余额表';
 
 /*==============================================================*/
-/* Table: xlfin_bankstmttemplet                               */
+/* Table: xlfin_bankstmttemplet                                 */
 /*==============================================================*/
-create table xlfin_bankstmttemplet 
+create table xlfin_bankstmttemplet
 (
-   bstlid             VARCHAR2(256)        not null,
-   name               VARCHAR2(64),
-   javalistener       VARCHAR2(4000),
-   jslistener         BLOB,
-   constraint PK_XLFIN_BANKSTMTTEMPLET primary key (bstlid)
+   bstlid               varchar(256) not null,
+   name                 varchar(64),
+   javalistener         varchar(4000),
+   jslistener           longblob,
+   primary key (bstlid)
 );
 
-comment on table xlfin_bankstmttemplet is
-'银行对账单模板主表';
+alter table xlfin_bankstmttemplet comment '银行对账单模板主表';
 
 /*==============================================================*/
-/* Table: xlfin_bstldt                                        */
+/* Table: xlfin_bstldt                                          */
 /*==============================================================*/
-create table xlfin_bstldt 
+create table xlfin_bstldt
 (
-   bstlid             VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   templetcol         VARCHAR2(256),
-   bscol              VARCHAR2(256),
-   constraint PK_XLFIN_BSTLDT primary key (bstlid, idx)
+   bstlid               varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   templetcol           varchar(256),
+   bscol                varchar(256),
+   primary key (bstlid, idx)
 );
 
-comment on table xlfin_bstldt is
-'银行对账单模板明细';
+alter table xlfin_bstldt comment '银行对账单模板明细';
 
 /*==============================================================*/
-/* Table: xlfin_currency                                      */
+/* Table: xlfin_currency                                        */
 /*==============================================================*/
-create table xlfin_currency 
+create table xlfin_currency
 (
-   crcid              VARCHAR2(256)        not null,
-   name               VARCHAR2(128),
-   crccode            VARCHAR2(8),
-   constraint PK_XLFIN_CURRENCY primary key (crcid)
+   crcid                varchar(256) not null,
+   name                 varchar(128),
+   crccode              varchar(8),
+   primary key (crcid)
 );
 
-comment on table xlfin_currency is
-'币种表';
+alter table xlfin_currency comment '币种表';
 
 /*==============================================================*/
-/* Table: xlfin_exchangerate                                  */
+/* Table: xlfin_exchangerate                                    */
 /*==============================================================*/
-create table xlfin_exchangerate 
+create table xlfin_exchangerate
 (
-   erid               VARCHAR2(256)        not null,
-   crcid              VARCHAR2(256),
-   buyingrate         NUMBER(18,6),
-   cashbuyingrate     NUMBER(18,6),
-   sellingrate        NUMBER(18,6),
-   cashsellingrate    NUMBER(18,6),
-   middlerate         NUMBER(18,6),
-   pubtime            DATE,
-   constraint PK_XLFIN_EXCHANGERATE primary key (erid)
+   erid                 varchar(256) not null,
+   crcid                varchar(256),
+   buyingrate           numeric(18,6),
+   cashbuyingrate       numeric(18,6),
+   sellingrate          numeric(18,6),
+   cashsellingrate      numeric(18,6),
+   middlerate           numeric(18,6),
+   pubtime              datetime,
+   primary key (erid)
 );
 
-comment on table xlfin_exchangerate is
-'汇率表
+alter table xlfin_exchangerate comment '汇率表
 http://www.boc.cn/sourcedb/whpj/enindex.html';
 
 /*==============================================================*/
-/* Table: xlfin_karaccdt                                      */
+/* Table: xlfin_karaccdt                                        */
 /*==============================================================*/
-create table xlfin_karaccdt 
+create table xlfin_karaccdt
 (
-   karid              VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   accids             VARCHAR2(4000),
-   showcolumns        VARCHAR2(4000),
-   constraint PK_XLFIN_KARACCDT primary key (karid, idx)
+   karid                varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   accids               varchar(4000),
+   showcolumns          varchar(4000),
+   primary key (karid, idx)
 );
 
-comment on table xlfin_karaccdt is
-'记账部门科目关系明细配置';
+alter table xlfin_karaccdt comment '记账部门科目关系明细配置';
 
 /*==============================================================*/
-/* Table: xlfin_kardt                                         */
+/* Table: xlfin_kardt                                           */
 /*==============================================================*/
-create table xlfin_kardt 
+create table xlfin_kardt
 (
-   karid              VARCHAR2(256)        not null,
-   vdtecaid           VARCHAR2(256)        not null,
-   name               VARCHAR2(64),
-   constraint PK_XLFIN_KARDT primary key (karid, vdtecaid)
+   karid                varchar(256) not null,
+   vdtecaid             varchar(256) not null,
+   name                 varchar(64),
+   primary key (karid, vdtecaid)
 );
 
-comment on table xlfin_kardt is
-'记账部门对应科目所拥有的字段关系表';
+alter table xlfin_kardt comment '记账部门对应科目所拥有的字段关系表';
 
 /*==============================================================*/
-/* Table: xlfin_kdeptaccrealtion                              */
+/* Table: xlfin_kdeptaccrealtion                                */
 /*==============================================================*/
-create table xlfin_kdeptaccrealtion 
+create table xlfin_kdeptaccrealtion
 (
-   karid              VARCHAR2(256)        not null,
-   name               VARCHAR2(64),
-   accids             VARCHAR2(4000),
-   constraint PK_XLFIN_KDEPTACCREALTION primary key (karid)
+   karid                varchar(256) not null,
+   name                 varchar(64),
+   accids               varchar(4000),
+   primary key (karid)
 );
 
-comment on table xlfin_kdeptaccrealtion is
-'科目关系定义主表';
+alter table xlfin_kdeptaccrealtion comment '科目关系定义主表';
 
 /*==============================================================*/
-/* Table: xlfin_keepdept                                      */
+/* Table: xlfin_keepdept                                        */
 /*==============================================================*/
-create table xlfin_keepdept 
+create table xlfin_keepdept
 (
-   kdeptid            VARCHAR2(256)        not null,
-   name               VARCHAR2(64),
-   standardcrcid      VARCHAR2(256),
-   reportcrcid        VARCHAR2(256),
-   usedkarid          VARCHAR2(256),
-   nocarryoverkarid   VARCHAR2(256),
-   cockarid           VARCHAR2(256),
-   needdcequal        NUMBER(2,0),
-   vdatemode          NUMBER(2,0),
-   transfermode       NUMBER(2,0),
-   beginvdate         DATE,
-   kdepttype          NUMBER(2,0),
-   beginbsdate        DATE,
-   constraint PK_XLFIN_KEEPDEPT primary key (kdeptid)
+   kdeptid              varchar(256) not null,
+   name                 varchar(64),
+   standardcrcid        varchar(256),
+   reportcrcid          varchar(256),
+   usedkarid            varchar(256),
+   nocarryoverkarid     varchar(256),
+   cockarid             varchar(256),
+   needdcequal          numeric(2,0),
+   vdatemode            numeric(2,0) comment '凭证日期模式
+            0:与当前日期同月时使用当前日期
+            1:与当前日期同月时使用上一次凭证日期',
+   transfermode         numeric(2,0) comment '转账模式
+            0:转入时合并
+            1:转入时不合并',
+   beginvdate           datetime comment '期初日期，该记账部门的凭证日期只能大于等于该日期',
+   kdepttype            numeric(2,0) comment '记账部门类型, 0:记账部门下属;1:记账部门节点
+            只有为1时该条记录才是系统使用的真正的记账部门',
+   beginbsdate          datetime,
+   primary key (kdeptid)
 );
 
-comment on table xlfin_keepdept is
-'记账部门';
-
-comment on column xlfin_keepdept.vdatemode is
-'凭证日期模式
-0:与当前日期同月时使用当前日期
-1:与当前日期同月时使用上一次凭证日期';
-
-comment on column xlfin_keepdept.transfermode is
-'转账模式
-0:转入时合并
-1:转入时不合并';
-
-comment on column xlfin_keepdept.beginvdate is
-'期初日期，该记账部门的凭证日期只能大于等于该日期';
-
-comment on column xlfin_keepdept.kdepttype is
-'记账部门类型, 0:记账部门下属;1:记账部门节点
-只有为1时该条记录才是系统使用的真正的记账部门';
+alter table xlfin_keepdept comment '记账部门';
 
 /*==============================================================*/
-/* Table: xlfin_reportdata                                    */
+/* Table: xlfin_reportdata                                      */
 /*==============================================================*/
-create table xlfin_reportdata 
+create table xlfin_reportdata
 (
-   rdid               VARCHAR2(256)        not null,
-   rfid               VARCHAR2(256)        not null,
-   rdeptid            VARCHAR2(256)        not null,
-   timeperiod         NUMBER(2,0),
-   begindate          DATE                 not null,
-   enddate            DATE                 not null,
-   constraint PK_XLFIN_REPORTDATA primary key (rdid)
+   rdid                 varchar(256) not null,
+   rfid                 varchar(256) not null,
+   rdeptid              varchar(256) not null,
+   timeperiod           numeric(2,0),
+   begindate            datetime not null,
+   enddate              datetime not null,
+   primary key (rdid)
 );
 
-comment on table xlfin_reportdata is
-'报表数据';
+alter table xlfin_reportdata comment '报表数据';
 
 /*==============================================================*/
-/* Index: un_rrbe                                             */
+/* Index: un_rrbe                                               */
 /*==============================================================*/
-create unique index un_rrbe on xlfin_reportdata (
-   rfid ASC,
-   rdeptid ASC,
-   begindate ASC,
-   enddate ASC
-);
-
-/*==============================================================*/
-/* Table: xlfin_reportdatadetail                              */
-/*==============================================================*/
-create table xlfin_reportdatadetail 
+create unique index un_rrbe on xlfin_reportdata
 (
-   rdid               VARCHAR2(256)        not null,
-   idx                NUMBER(2,0)          not null,
-   rfrowid            VARCHAR2(256)        not null,
-   rfcolid            VARCHAR2(256)        not null,
-   value              VARCHAR2(4000),
-   constraint PK_XLFIN_REPORTDATADETAIL primary key (rdid, idx)
+   rfid,
+   rdeptid,
+   begindate,
+   enddate
 );
 
-comment on table xlfin_reportdatadetail is
-'报表数据明细';
-
 /*==============================================================*/
-/* Table: xlfin_reportdept                                    */
+/* Table: xlfin_reportdatadetail                                */
 /*==============================================================*/
-create table xlfin_reportdept 
+create table xlfin_reportdatadetail
 (
-   rdeptid            VARCHAR2(256)        not null,
-   name               VARCHAR2(256),
-   kdeptids           VARCHAR2(4000),
-   gatherrdeptids     VARCHAR2(4000),
-   constraint PK_XLFIN_REPORTDEPT primary key (rdeptid)
+   rdid                 varchar(256) not null,
+   idx                  numeric(2,0) not null,
+   rfrowid              varchar(256) not null,
+   rfcolid              varchar(256) not null,
+   value                varchar(4000),
+   primary key (rdid, idx)
 );
 
-comment on table xlfin_reportdept is
-'上报单位定义表';
+alter table xlfin_reportdatadetail comment '报表数据明细';
 
 /*==============================================================*/
-/* Table: xlfin_reportform                                    */
+/* Table: xlfin_reportdept                                      */
 /*==============================================================*/
-create table xlfin_reportform 
+create table xlfin_reportdept
 (
-   rfid               VARCHAR2(256)        not null,
-   name               VARCHAR2(64),
-   javalistener       VARCHAR2(4000),
-   jslistener         BLOB,
-   constraint PK_XLFIN_REPORTFORM primary key (rfid)
+   rdeptid              varchar(256) not null,
+   name                 varchar(256),
+   kdeptids             varchar(4000),
+   gatherrdeptids       varchar(4000),
+   primary key (rdeptid)
 );
 
-comment on table xlfin_reportform is
-'报表定义';
+alter table xlfin_reportdept comment '上报单位定义表';
 
 /*==============================================================*/
-/* Table: xlfin_reportformcol                                 */
+/* Table: xlfin_reportform                                      */
 /*==============================================================*/
-create table xlfin_reportformcol 
+create table xlfin_reportform
 (
-   rfid               VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   name               VARCHAR2(64),
-   rfcolid            VARCHAR2(256)        not null,
-   datatype           NUMBER(2,0)          not null,
-   param              VARCHAR2(4000),
-   constraint PK_XLFIN_REPORTFORMCOL primary key (rfid, idx)
+   rfid                 varchar(256) not null,
+   name                 varchar(64),
+   javalistener         varchar(4000),
+   jslistener           longblob,
+   primary key (rfid)
 );
 
-comment on table xlfin_reportformcol is
-'报表列定义';
+alter table xlfin_reportform comment '报表定义';
 
 /*==============================================================*/
-/* Table: xlfin_reportformformula                             */
+/* Table: xlfin_reportformcol                                   */
 /*==============================================================*/
-create table xlfin_reportformformula 
+create table xlfin_reportformcol
 (
-   rfid               VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   rfrowid            VARCHAR2(256)        not null,
-   rfcolid            VARCHAR2(256)        not null,
-   formula            BLOB,
-   constraint PK_XLFIN_REPORTFORMFORMULA primary key (rfid, idx)
+   rfid                 varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   name                 varchar(64),
+   rfcolid              varchar(256) not null,
+   datatype             numeric(2,0) not null,
+   param                varchar(4000),
+   primary key (rfid, idx)
 );
 
-comment on table xlfin_reportformformula is
-'报表公式定义';
+alter table xlfin_reportformcol comment '报表列定义';
 
 /*==============================================================*/
-/* Table: xlfin_reportformrow                                 */
+/* Table: xlfin_reportformformula                               */
 /*==============================================================*/
-create table xlfin_reportformrow 
+create table xlfin_reportformformula
 (
-   rfid               VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   name               VARCHAR2(64),
-   rfrowid            VARCHAR2(256)        not null,
-   constraint PK_XLFIN_REPORTFORMROW primary key (rfid, idx)
+   rfid                 varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   rfrowid              varchar(256) not null,
+   rfcolid              varchar(256) not null,
+   formula              longblob,
+   primary key (rfid, idx)
 );
 
-comment on table xlfin_reportformrow is
-'报表行定义';
+alter table xlfin_reportformformula comment '报表公式定义';
 
 /*==============================================================*/
-/* Table: xlfin_vdtextra                                      */
+/* Table: xlfin_reportformrow                                   */
 /*==============================================================*/
-create table xlfin_vdtextra 
+create table xlfin_reportformrow
 (
-   voucherid          VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   extracol           VARCHAR2(256)        not null,
-   colvalue           VARCHAR2(4000),
-   constraint PK_XLFIN_VDTEXTRA primary key (voucherid, idx, extracol)
+   rfid                 varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   name                 varchar(64),
+   rfrowid              varchar(256) not null,
+   primary key (rfid, idx)
 );
 
-comment on table xlfin_vdtextra is
-'凭证明细附加表';
+alter table xlfin_reportformrow comment '报表行定义';
 
 /*==============================================================*/
-/* Table: xlfin_vdtextracol                                   */
+/* Table: xlfin_vdtextra                                        */
 /*==============================================================*/
-create table xlfin_vdtextracol 
+create table xlfin_vdtextra
 (
-   extracol           VARCHAR2(256)        not null,
-   datatype           NUMBER(2,0)          not null,
-   name               VARCHAR2(64),
-   constraint PK_XLFIN_VDTEXTRACOL primary key (extracol)
+   voucherid            varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   extracol             varchar(256) not null,
+   colvalue             varchar(4000),
+   primary key (voucherid, idx, extracol)
 );
 
-comment on table xlfin_vdtextracol is
-'凭证明细可附加字段定义';
+alter table xlfin_vdtextra comment '凭证明细附加表';
 
 /*==============================================================*/
-/* Table: xlfin_vdtextracolattr                               */
+/* Table: xlfin_vdtextracol                                     */
 /*==============================================================*/
-create table xlfin_vdtextracolattr 
+create table xlfin_vdtextracol
 (
-   vdtecaid           VARCHAR2(256)        not null,
-   extracol           VARCHAR2(256)        not null,
-   name               VARCHAR2(64),
-   type               NUMBER(2,0),
-   param              VARCHAR2(4000),
-   supportvalue       VARCHAR2(4000),
-   constraint PK_XLFIN_VDTEXTRACOLATTR primary key (vdtecaid)
+   extracol             varchar(256) not null,
+   datatype             numeric(2,0) not null,
+   name                 varchar(64),
+   primary key (extracol)
 );
 
-comment on table xlfin_vdtextracolattr is
-'凭证明细附加字段属性定义';
+alter table xlfin_vdtextracol comment '凭证明细可附加字段定义';
 
 /*==============================================================*/
-/* Table: xlfin_voucher                                       */
+/* Table: xlfin_vdtextracolattr                                 */
 /*==============================================================*/
-create table xlfin_voucher 
+create table xlfin_vdtextracolattr
 (
-   voucherid          VARCHAR2(256)        not null,
-   flowid             VARCHAR2(256),
-   creater            VARCHAR2(256),
-   creationdate       DATE,
-   modifydate         DATE,
-   condition          VARCHAR2(256),
-   kdeptid            VARCHAR2(256),
-   id                 VARCHAR2(256),
-   vno                NUMBER(8,0),
-   year               NUMBER(8,0),
-   month              NUMBER(2,0),
-   vdate              DATE,
-   attachno           NUMBER(2,0),
-   accounter          VARCHAR2(256),
-   creationmode       NUMBER(2,0)          not null,
-   constraint PK_XLFIN_VOUCHER primary key (voucherid)
+   vdtecaid             varchar(256) not null,
+   extracol             varchar(256) not null,
+   name                 varchar(64),
+   type                 numeric(2,0),
+   param                varchar(4000),
+   supportvalue         varchar(4000),
+   primary key (vdtecaid)
 );
 
-comment on table xlfin_voucher is
-'凭证表';
-
-comment on column xlfin_voucher.creationmode is
-'凭证生成模式
-0:手动生成;90:年初结转的未达账数据;91:年初结转的往来未核销数据;1~89:业务各接口数据;90~99:财务自动生成数据';
+alter table xlfin_vdtextracolattr comment '凭证明细附加字段属性定义';
 
 /*==============================================================*/
-/* Table: xlfin_voucherdetail                                 */
+/* Table: xlfin_voucher                                         */
 /*==============================================================*/
-create table xlfin_voucherdetail 
+create table xlfin_voucher
 (
-   voucherid          VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   year               NUMBER(8,0),
-   month              NUMBER(2,0),
-   vno                NUMBER(8,0),
-   vdate              DATE,
-   kdeptid            VARCHAR2(256),
-   vdc                NUMBER(2,0),
-   fcrcid             VARCHAR2(256),
-   accid              VARCHAR2(256),
-   userid             VARCHAR2(256),
-   fcrcamount         NUMBER(18,6),
-   ftosrate           NUMBER(18,6),
-   ftorrate           NUMBER(18,6),
-   ftousdrate         NUMBER(18,6),
-   quantity           NUMBER(18,6),
-   remark             VARCHAR2(256),
-   bsid               VARCHAR2(256),
-   bcdate             DATE,
-   bctype             NUMBER(2,0),
-   constraint PK_XLFIN_VOUCHERDETAIL primary key (voucherid, idx)
+   voucherid            varchar(256) not null,
+   flowid               varchar(256),
+   creater              varchar(256),
+   creationdate         datetime,
+   modifydate           datetime,
+   "condition"          varchar(256),
+   kdeptid              varchar(256),
+   id                   varchar(256),
+   vno                  numeric(8,0),
+   year                 numeric(8,0),
+   month                numeric(2,0),
+   vdate                datetime,
+   attachno             numeric(2,0),
+   accounter            varchar(256),
+   creationmode         numeric(2,0) not null comment '凭证生成模式
+            0:手动生成;90:年初结转的未达账数据;91:年初结转的往来未核销数据;1~89:业务各接口数据;90~99:财务自动生成数据',
+   primary key (voucherid)
 );
 
-comment on table xlfin_voucherdetail is
-'凭证明细';
+alter table xlfin_voucher comment '凭证表';
 
 /*==============================================================*/
-/* Table: xlfin_vouchertemplet                                */
+/* Table: xlfin_voucherdetail                                   */
 /*==============================================================*/
-create table xlfin_vouchertemplet 
+create table xlfin_voucherdetail
 (
-   vtlid              VARCHAR2(256)        not null,
-   name               VARCHAR2(64),
-   javalistener       VARCHAR2(4000),
-   jslistener         BLOB,
-   querysql           VARCHAR2(4000),
-   creationmode       NUMBER(2,0)          not null,
-   constraint PK_XLFIN_VOUCHERTEMPLET primary key (vtlid)
+   voucherid            varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   year                 numeric(8,0),
+   month                numeric(2,0),
+   vno                  numeric(8,0),
+   vdate                datetime,
+   kdeptid              varchar(256),
+   vdc                  numeric(2,0),
+   fcrcid               varchar(256),
+   accid                varchar(256),
+   userid               varchar(256),
+   fcrcamount           numeric(18,6),
+   ftosrate             numeric(18,6),
+   ftorrate             numeric(18,6),
+   ftousdrate           numeric(18,6),
+   quantity             numeric(18,6),
+   remark               varchar(256),
+   bsid                 varchar(256),
+   bcdate               datetime,
+   bctype               numeric(2,0),
+   primary key (voucherid, idx)
 );
 
-comment on table xlfin_vouchertemplet is
-'凭证模板定义主表';
+alter table xlfin_voucherdetail comment '凭证明细';
 
 /*==============================================================*/
-/* Table: xlfin_vtempletdt                                    */
+/* Table: xlfin_vouchertemplet                                  */
 /*==============================================================*/
-create table xlfin_vtempletdt 
+create table xlfin_vouchertemplet
 (
-   vtlid              VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   name               VARCHAR2(64),
-   vrowid             VARCHAR2(256),
-   remark             VARCHAR2(256),
-   vdc                NUMBER(2,0),
-   accid              VARCHAR2(256),
-   querysql           VARCHAR2(4000),
-   formula            BLOB,
-   constraint PK_XLFIN_VTEMPLETDT primary key (idx, vtlid)
+   vtlid                varchar(256) not null,
+   name                 varchar(64),
+   javalistener         varchar(4000),
+   jslistener           longblob,
+   querysql             varchar(4000),
+   creationmode         numeric(2,0) not null,
+   primary key (vtlid)
 );
 
-comment on table xlfin_vtempletdt is
-'凭证模板明细配置';
+alter table xlfin_vouchertemplet comment '凭证模板定义主表';
 
 /*==============================================================*/
-/* Table: xlfin_vtldtcol                                      */
+/* Table: xlfin_vtempletdt                                      */
 /*==============================================================*/
-create table xlfin_vtldtcol 
+create table xlfin_vtempletdt
 (
-   vtlid              VARCHAR2(256)        not null,
-   vtldtidx           NUMBER(8,0)          not null,
-   idx                NUMBER(8,0)          not null,
-   mdscolname         VARCHAR2(256),
-   dtdscolname        VARCHAR2(256),
-   vdtcolname         VARCHAR2(256),
-   constraint PK_XLFIN_VTLDTCOL primary key (vtlid, vtldtidx, idx)
+   vtlid                varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   name                 varchar(64),
+   vrowid               varchar(256),
+   remark               varchar(256),
+   vdc                  numeric(2,0),
+   accid                varchar(256),
+   querysql             varchar(4000),
+   formula              longblob,
+   primary key (idx, vtlid)
 );
 
-comment on table xlfin_vtldtcol is
-'凭证模板明细字段配置';
+alter table xlfin_vtempletdt comment '凭证模板明细配置';
 
 /*==============================================================*/
-/* Table: xlsys_attachment                                    */
+/* Table: xlfin_vtldtcol                                        */
 /*==============================================================*/
-create table xlsys_attachment 
+create table xlfin_vtldtcol
 (
-   attachid           NUMBER(8,0)          not null,
-   name               VARCHAR2(256),
-   attachdata         BLOB,
-   constraint PK_XLSYS_ATTACHMENT primary key (attachid)
+   vtlid                varchar(256) not null,
+   vtldtidx             numeric(8,0) not null,
+   idx                  numeric(8,0) not null,
+   mdscolname           varchar(256),
+   dtdscolname          varchar(256),
+   vdtcolname           varchar(256),
+   primary key (vtlid, vtldtidx, idx)
 );
 
+alter table xlfin_vtldtcol comment '凭证模板明细字段配置';
+
 /*==============================================================*/
-/* Table: xlsys_authorisedright                               */
+/* Table: xlsys_attachment                                      */
 /*==============================================================*/
-create table xlsys_authorisedright 
+create table xlsys_attachment
 (
-   arid               VARCHAR2(256)        not null,
-   ardtidx            NUMBER(8,0)          not null,
-   idx                NUMBER(8,0)          not null,
-   righttype          NUMBER(2,0),
-   rightvalue         VARCHAR2(256),
-   constraint PK_XLSYS_AUTHORISEDRIGHT primary key (arid, ardtidx, idx)
+   attachid             numeric(8,0) not null,
+   name                 varchar(256),
+   attachdata           longblob,
+   primary key (attachid)
 );
 
-comment on table xlsys_authorisedright is
-'被授权权限';
-
 /*==============================================================*/
-/* Table: xlsys_authorize                                     */
+/* Table: xlsys_authorisedright                                 */
 /*==============================================================*/
-create table xlsys_authorize 
+create table xlsys_authorisedright
 (
-   arid               VARCHAR2(256)        not null,
-   arno               VARCHAR2(256),
-   flowid             VARCHAR2(256),
-   id                 VARCHAR2(256),
-   creater            VARCHAR2(256),
-   creationdate       DATE,
-   modifydate         DATE,
-   condition          VARCHAR2(256),
-   authorisedid       VARCHAR2(256),
-   begindate          DATE,
-   enddate            DATE,
-   remark             VARCHAR2(4000),
-   constraint PK_XLSYS_AUTHORIZE primary key (arid)
+   arid                 varchar(256) not null,
+   ardtidx              numeric(8,0) not null,
+   idx                  numeric(8,0) not null,
+   righttype            numeric(2,0),
+   rightvalue           varchar(256),
+   primary key (arid, ardtidx, idx)
 );
 
-comment on table xlsys_authorize is
-'授权主表';
-
-comment on column xlsys_authorize.authorisedid is
-'授权身份';
+alter table xlsys_authorisedright comment '被授权权限';
 
 /*==============================================================*/
-/* Table: xlsys_authorizedetail                               */
+/* Table: xlsys_authorize                                       */
 /*==============================================================*/
-create table xlsys_authorizedetail 
+create table xlsys_authorize
 (
-   arid               VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   arflowid           VARCHAR2(256),
-   arcondition        VARCHAR2(256),
-   beauthorizedid     VARCHAR2(256),
-   constraint PK_XLSYS_AUTHORIZEDETAIL primary key (arid, idx)
+   arid                 varchar(256) not null,
+   arno                 varchar(256),
+   flowid               varchar(256),
+   id                   varchar(256),
+   creater              varchar(256),
+   creationdate         datetime,
+   modifydate           datetime,
+   "condition"          varchar(256),
+   authorisedid         varchar(256) comment '授权身份',
+   begindate            datetime,
+   enddate              datetime,
+   remark               varchar(4000),
+   primary key (arid)
 );
 
-comment on table xlsys_authorizedetail is
-'授权明细表';
-
-comment on column xlsys_authorizedetail.arflowid is
-'授权流程';
-
-comment on column xlsys_authorizedetail.arcondition is
-'授权状态';
-
-comment on column xlsys_authorizedetail.beauthorizedid is
-'被授权身份';
+alter table xlsys_authorize comment '授权主表';
 
 /*==============================================================*/
-/* Index: un_ad_fci                                           */
+/* Table: xlsys_authorizedetail                                 */
 /*==============================================================*/
-create unique index un_ad_fci on xlsys_authorizedetail (
-   arflowid ASC,
-   arcondition ASC,
-   beauthorizedid ASC
-);
-
-/*==============================================================*/
-/* Table: xlsys_basebusi                                      */
-/*==============================================================*/
-create table xlsys_basebusi 
+create table xlsys_authorizedetail
 (
-   busiid             VARCHAR2(256)        not null,
-   busino             VARCHAR2(256),
-   name               VARCHAR2(64),
-   flowid             VARCHAR2(256)        not null,
-   id                 VARCHAR2(256),
-   creater            VARCHAR2(256),
-   creationdate       DATE                 not null,
-   modifydate         DATE                 not null,
-   condition          VARCHAR2(256)        not null,
-   constraint PK_XLSYS_BASEBUSI primary key (busiid)
+   arid                 varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   arflowid             varchar(256) comment '授权流程',
+   arcondition          varchar(256) comment '授权状态',
+   beauthorizedid       varchar(256) comment '被授权身份',
+   primary key (arid, idx)
 );
 
+alter table xlsys_authorizedetail comment '授权明细表';
+
 /*==============================================================*/
-/* Table: xlsys_codealloc                                     */
+/* Index: un_ad_fci                                             */
 /*==============================================================*/
-create table xlsys_codealloc 
+create unique index un_ad_fci on xlsys_authorizedetail
 (
-   caid               VARCHAR2(256)        not null,
-   name               VARCHAR2(256),
-   clientjavascript   BLOB,
-   clientjavamethod   VARCHAR2(4000),
-   serverjavascript   BLOB,
-   serverjavamethod   VARCHAR2(4000),
-   constraint PK_XLSYS_CODEALLOC primary key (caid)
+   arflowid,
+   arcondition,
+   beauthorizedid
 );
 
-comment on table xlsys_codealloc is
-'define alloc code method
-select ''insert into xlsys_codealloc(caid,name,javamethod) values(''''''||caid||'''''',''''''||name||'''''',''''''||javamethod||'''''');'' from xlsys_codealloc;';
-
 /*==============================================================*/
-/* Table: xlsys_department                                    */
+/* Table: xlsys_basebusi                                        */
 /*==============================================================*/
-create table xlsys_department 
+create table xlsys_basebusi
 (
-   deptid             VARCHAR2(256)        not null,
-   name               VARCHAR2(64)         not null,
-   constraint PK_XLSYS_DEPARTMENT primary key (deptid)
+   busiid               varchar(256) not null,
+   busino               varchar(256),
+   name                 varchar(64),
+   flowid               varchar(256) not null,
+   id                   varchar(256),
+   creater              varchar(256),
+   creationdate         datetime not null,
+   modifydate           datetime not null,
+   "condition"          varchar(256) not null,
+   primary key (busiid)
 );
 
-comment on table xlsys_department is
-'Department table';
-
 /*==============================================================*/
-/* Table: xlsys_dict                                          */
+/* Table: xlsys_codealloc                                       */
 /*==============================================================*/
-create table xlsys_dict 
+create table xlsys_codealloc
 (
-   dictid             VARCHAR2(256)        not null,
-   name               VARCHAR2(256),
-   constraint PK_XLSYS_DICT primary key (dictid)
+   caid                 varchar(256) not null,
+   name                 varchar(256),
+   clientjavascript     longblob,
+   clientjavamethod     varchar(4000),
+   serverjavascript     longblob,
+   serverjavamethod     varchar(4000),
+   primary key (caid)
 );
 
-comment on table xlsys_dict is
-'The dictionary of xlsys';
+alter table xlsys_codealloc comment 'define alloc code method
+select ''insert into xlsys_co';
 
 /*==============================================================*/
-/* Table: xlsys_dictdetail                                    */
+/* Table: xlsys_department                                      */
 /*==============================================================*/
-create table xlsys_dictdetail 
+create table xlsys_department
 (
-   dictid             VARCHAR2(256)        not null,
-   code               VARCHAR2(64)         not null,
-   name               VARCHAR2(256),
-   constraint PK_XLSYS_DICTDETAIL primary key (dictid, code)
+   deptid               varchar(256) not null,
+   name                 varchar(64) not null,
+   primary key (deptid)
 );
 
+alter table xlsys_department comment 'Department table';
+
 /*==============================================================*/
-/* Table: xlsys_emailtemplate                                 */
+/* Table: xlsys_dict                                            */
 /*==============================================================*/
-create table xlsys_emailtemplate 
+create table xlsys_dict
 (
-   etid               VARCHAR2(256)        not null,
-   name               VARCHAR2(256),
-   template           BLOB,
-   javalistener       VARCHAR2(4000),
-   jslistener         BLOB,
-   constraint PK_XLSYS_EMAILTEMPLATE primary key (etid)
+   dictid               varchar(256) not null,
+   name                 varchar(256),
+   primary key (dictid)
 );
 
-comment on table xlsys_emailtemplate is
-'Email模板定义';
+alter table xlsys_dict comment 'The dictionary of xlsys';
 
 /*==============================================================*/
-/* Table: xlsys_extracmd                                      */
+/* Table: xlsys_dictdetail                                      */
 /*==============================================================*/
-create table xlsys_extracmd 
+create table xlsys_dictdetail
 (
-   extracmd           VARCHAR2(256)        not null,
-   name               VARCHAR2(64),
-   dispatchpath       VARCHAR2(256),
-   javalistener       VARCHAR2(4000),
-   jslistener         BLOB,
-   constraint PK_XLSYS_EXTRACMD primary key (extracmd)
+   dictid               varchar(256) not null,
+   code                 varchar(64) not null,
+   name                 varchar(256),
+   primary key (dictid, code)
 );
 
 /*==============================================================*/
-/* Table: xlsys_exttableinfo                                  */
+/* Table: xlsys_emailtemplate                                   */
 /*==============================================================*/
-create table xlsys_exttableinfo 
+create table xlsys_emailtemplate
 (
-   tableid            NUMBER(8,0)          not null,
-   name               VARCHAR2(64),
-   tablename          VARCHAR2(256),
-   constraint PK_XLSYS_EXTTABLEINFO primary key (tableid)
+   etid                 varchar(256) not null,
+   name                 varchar(256),
+   template             longblob,
+   javalistener         varchar(4000),
+   jslistener           longblob,
+   primary key (etid)
 );
 
-comment on table xlsys_exttableinfo is
-'Exter table information';
+alter table xlsys_emailtemplate comment 'Email模板定义';
 
 /*==============================================================*/
-/* Table: xlsys_exttableinfodetail                            */
+/* Table: xlsys_extracmd                                        */
 /*==============================================================*/
-create table xlsys_exttableinfodetail 
+create table xlsys_extracmd
 (
-   tableid            NUMBER(8,0)          not null,
-   idx                NUMBER(8,0)          not null,
-   colname            VARCHAR2(64),
-   name               VARCHAR2(64),
-   primarykey         NUMBER(2,0),
-   nullable           NUMBER(2,0),
-   constraint PK_XLSYS_EXTTABLEINFODETAIL primary key (tableid, idx)
+   extracmd             varchar(256) not null,
+   name                 varchar(64),
+   dispatchpath         varchar(256),
+   javalistener         varchar(4000),
+   jslistener           longblob,
+   primary key (extracmd)
 );
 
-comment on table xlsys_exttableinfodetail is
-'The detail of exter table information';
-
 /*==============================================================*/
-/* Table: xlsys_flow                                          */
+/* Table: xlsys_exttableinfo                                    */
 /*==============================================================*/
-create table xlsys_flow 
+create table xlsys_exttableinfo
 (
-   flowid             VARCHAR2(256)        not null,
-   name               VARCHAR2(64),
-   listpartid         VARCHAR2(256),
-   mvidoflpart        NUMBER(8,0),
-   mainpartid         VARCHAR2(256),
-   mvidofmpart        NUMBER(8,0),
-   maintable          VARCHAR2(64),
-   innercodecol       VARCHAR2(64),
-   outtercodecol      VARCHAR2(64),
-   jslistener         BLOB,
-   javalistener       VARCHAR2(4000),
-   versionupdate      NUMBER(2,0),
-   cancopy            NUMBER(2,0),
-   constraint PK_XLSYS_FLOW primary key (flowid)
+   tableid              numeric(8,0) not null,
+   name                 varchar(64),
+   tablename            varchar(256),
+   primary key (tableid)
 );
 
-comment on table xlsys_flow is
-'Flow Define
-select ''insert into XLSYS_FLOW(FLOWID,NAME,LISTPARTID,MAINPARTID,MAINTABLE,INNERCODECOL,OUTTERCODECOL,JAVALISTENER) values(''''''||FLOWID||'''''',''''''||name||'''''',''''''||LISTPARTID||'''''',''''''||MAINPARTID||'''''',''''''||MAINTABLE||'''''',''''''||INNERCODECOL||'''''',''''''||OUTTERCODECOL||'''''',''''''||JAVALISTENER||'''''');'' from XLSYS_FLOW;';
-
-comment on column xlsys_flow.versionupdate is
-'是否允许版本更新';
+alter table xlsys_exttableinfo comment 'Exter table information';
 
 /*==============================================================*/
-/* Table: xlsys_flowcodealloc                                 */
+/* Table: xlsys_exttableinfodetail                              */
 /*==============================================================*/
-create table xlsys_flowcodealloc 
+create table xlsys_exttableinfodetail
 (
-   fcaid              VARCHAR2(256)        not null,
-   flowid             VARCHAR2(256),
-   tablename          VARCHAR2(64)         not null,
-   colname            VARCHAR2(64)         not null,
-   caid               VARCHAR2(256),
-   constraint PK_XLSYS_FLOWCODEALLOC primary key (fcaid)
+   tableid              numeric(8,0) not null,
+   idx                  numeric(8,0) not null,
+   colname              varchar(64),
+   name                 varchar(64),
+   primarykey           numeric(2,0),
+   nullable             numeric(2,0),
+   primary key (tableid, idx)
 );
 
-comment on table xlsys_flowcodealloc is
-'define code creation for flow';
+alter table xlsys_exttableinfodetail comment 'The detail of exter table information';
 
 /*==============================================================*/
-/* Table: xlsys_flowcondition                                 */
+/* Table: xlsys_flow                                            */
 /*==============================================================*/
-create table xlsys_flowcondition 
+create table xlsys_flow
 (
-   flowid             VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   condition          VARCHAR2(64)         not null,
-   name               VARCHAR2(256),
-   audittype          NUMBER(2,0),
-   voterate           NUMBER(18,6),
-   constraint PK_XLSYS_FLOWCONDITION primary key (flowid, idx)
+   flowid               varchar(256) not null,
+   name                 varchar(64),
+   listpartid           varchar(256),
+   mvidoflpart          numeric(8,0),
+   mainpartid           varchar(256),
+   mvidofmpart          numeric(8,0),
+   maintable            varchar(64),
+   innercodecol         varchar(64),
+   outtercodecol        varchar(64),
+   jslistener           longblob,
+   javalistener         varchar(4000),
+   versionupdate        numeric(2,0) comment '是否允许版本更新',
+   cancopy              numeric(2,0),
+   primary key (flowid)
 );
 
-comment on table xlsys_flowcondition is
-'The condition of flow';
-
-comment on column xlsys_flowcondition.audittype is
-'审批类型, 0:单审;1:会审;2:组单审;3:组会审;4:投票审
-[单审] : 任意一个人通过即可通过(提交时允许选择审批人)
-[会审] : 所有人通过才可通过(提交时不允许选择审批人)
-[组单审] : 任意一组人通过即可通过, 同一组里的人必须全部通过才算通过(提交时允许选择审批组，不允许选择审批人)
-[组会审] : 所有组的人都通过才可通过, 同一组里的人只有要任意一个人通过就算通过(提交时允许选择审批人，但是每个组都必须选择至少一个审批人)
-[投票审] : 按照一定比例票数通过后即可通过(提交时不允许选择)';
-
-comment on column xlsys_flowcondition.voterate is
-'投票率，当audittype为4:投票审时，此参数有效';
+alter table xlsys_flow comment 'Flow Define
+select ''insert into XLSYS_FLOW(FLOWID,NAM';
 
 /*==============================================================*/
-/* Table: xlsys_flowjava                                      */
+/* Table: xlsys_flowcodealloc                                   */
 /*==============================================================*/
-create table xlsys_flowjava 
+create table xlsys_flowcodealloc
 (
-   flowid             VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   viewid             NUMBER(8,0),
-   javalistener       VARCHAR2(4000),
-   constraint PK_XLSYS_FLOWJAVA primary key (flowid, idx)
+   fcaid                varchar(256) not null,
+   flowid               varchar(256),
+   tablename            varchar(64) not null,
+   colname              varchar(64) not null,
+   caid                 varchar(256),
+   primary key (fcaid)
 );
 
-comment on table xlsys_flowjava is
-'JavaListener for viewers of flow';
+alter table xlsys_flowcodealloc comment 'define code creation for flow';
 
 /*==============================================================*/
-/* Table: xlsys_flowjs                                        */
+/* Table: xlsys_flowcondition                                   */
 /*==============================================================*/
-create table xlsys_flowjs 
+create table xlsys_flowcondition
 (
-   flowid             VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   viewid             NUMBER(8,0),
-   jslistener         BLOB,
-   constraint PK_XLSYS_FLOWJS primary key (flowid, idx)
+   flowid               varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   "condition"          varchar(64) not null,
+   name                 varchar(256),
+   audittype            numeric(2,0) comment '审批类型, 0:单审;1:会审;2:组单审;3:组会审;4:投票审
+            [单审] : 任意一个人通过即可通过(提交时允许选择审批人)
+            [会审] : 所有人通过才可通过(提交时不允许选择审批人)
+            [组单审] : 任意一组人通过即可通过, 同一组里的人必须全部通过才算通过(提交时允许选择审批组，不允许选择审批人)
+            [组会审] : 所有组的人都通过才可通过, 同一组里的人只有要任意一个人通过就算通过(提交时允许选择审批人，但是每个组都必须选择至少一个审批人)
+            [投票审] : 按照一定比例票数通过后即可通过(提交时不允许选择)',
+   voterate             numeric(18,6) comment '投票率，当audittype为4:投票审时，此参数有效',
+   primary key (flowid, idx)
 );
 
-comment on table xlsys_flowjs is
-'JsListener for viewers of flow ';
+alter table xlsys_flowcondition comment 'The condition of flow';
 
 /*==============================================================*/
-/* Table: xlsys_flowlogic                                     */
+/* Table: xlsys_flowjava                                        */
 /*==============================================================*/
-create table xlsys_flowlogic 
+create table xlsys_flowjava
 (
-   flowid             VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   fromcondition      VARCHAR2(64),
-   tocondition        VARCHAR2(64),
-   passtype           NUMBER(2,0),
-   rejecttype         NUMBER(2,0),
-   canrejectto        VARCHAR2(64),
-   clientautotriggersubmit NUMBER(2,0),
-   constraint PK_XLSYS_FLOWLOGIC primary key (flowid, idx)
+   flowid               varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   viewid               numeric(8,0),
+   javalistener         varchar(4000),
+   primary key (flowid, idx)
 );
 
-comment on table xlsys_flowlogic is
-'The logic of each flow';
-
-comment on column xlsys_flowlogic.passtype is
-'0:手动;1:自动提交;2:自动审批;3:自动审批并自动提交';
-
-comment on column xlsys_flowlogic.rejecttype is
-'驳回类型,0:不允许驳回;1:可驳回到上一级;2:可驳回到任意上级;3:只允许驳回到自定义上级';
-
-comment on column xlsys_flowlogic.clientautotriggersubmit is
-'是否允许客户端自动触发提交按钮';
+alter table xlsys_flowjava comment 'JavaListener for viewers of flow';
 
 /*==============================================================*/
-/* Table: xlsys_flowpart                                      */
+/* Table: xlsys_flowjs                                          */
 /*==============================================================*/
-create table xlsys_flowpart 
+create table xlsys_flowjs
 (
-   flowid             VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   clienttype         VARCHAR2(32),
-   righttype          NUMBER(2,0),
-   rightvalue         VARCHAR2(256),
-   listpartid         VARCHAR2(256),
-   mvidoflpart        NUMBER(8,0),
-   mainpartid         VARCHAR2(256),
-   mvidofmpart        NUMBER(8,0),
-   constraint PK_XLSYS_FLOWPART primary key (flowid, idx)
+   flowid               varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   viewid               numeric(8,0),
+   jslistener           longblob,
+   primary key (flowid, idx)
 );
 
+alter table xlsys_flowjs comment 'JsListener for viewers of flow ';
+
 /*==============================================================*/
-/* Table: xlsys_flowright                                     */
+/* Table: xlsys_flowlogic                                       */
 /*==============================================================*/
-create table xlsys_flowright 
+create table xlsys_flowlogic
 (
-   flowid             VARCHAR2(256)        not null,
-   cdtidx             NUMBER(8,0)          not null,
-   idx                NUMBER(8,0)          not null,
-   belongrighttype    NUMBER(2,0),
-   belongrightvalue   VARCHAR2(256),
-   righttype          NUMBER(2,0),
-   rightvalue         VARCHAR2(256),
-   groupnm            VARCHAR2(256),
-   constraint PK_XLSYS_FLOWRIGHT primary key (flowid, cdtidx, idx)
+   flowid               varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   fromcondition        varchar(64),
+   tocondition          varchar(64),
+   passtype             numeric(2,0) comment '0:手动;1:自动提交;2:自动审批;3:自动审批并自动提交',
+   rejecttype           numeric(2,0) comment '驳回类型,0:不允许驳回;1:可驳回到上一级;2:可驳回到任意上级;3:只允许驳回到自定义上级',
+   canrejectto          varchar(64),
+   clientautotriggersubmit numeric(2,0) comment '是否允许客户端自动触发提交按钮',
+   primary key (flowid, idx)
 );
 
-comment on table xlsys_flowright is
-'The right of each flow condition';
-
-comment on column xlsys_flowright.belongrighttype is
-'0:identity;1:user;2:department;3:position';
-
-comment on column xlsys_flowright.righttype is
-'0:identity;1:user;2:department;3:position';
-
-comment on column xlsys_flowright.groupnm is
-'分组名称,当audittype选用 2:组单审和 3:组会审 时有效，用来标识当前权限为哪个组别所有，分组名称相同的视为同一组';
+alter table xlsys_flowlogic comment 'The logic of each flow';
 
 /*==============================================================*/
-/* Table: xlsys_flowsubtable                                  */
+/* Table: xlsys_flowpart                                        */
 /*==============================================================*/
-create table xlsys_flowsubtable 
+create table xlsys_flowpart
 (
-   flowid             VARCHAR2(256)        not null,
-   tablename          VARCHAR2(64)         not null,
-   relationinnercol   VARCHAR2(64),
-   constraint PK_XLSYS_FLOWSUBTABLE primary key (flowid, tablename)
+   flowid               varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   clienttype           varchar(32),
+   righttype            numeric(2,0),
+   rightvalue           varchar(256),
+   listpartid           varchar(256),
+   mvidoflpart          numeric(8,0),
+   mainpartid           varchar(256),
+   mvidofmpart          numeric(8,0),
+   primary key (flowid, idx)
 );
 
-comment on table xlsys_flowsubtable is
-'流程子表配置';
-
 /*==============================================================*/
-/* Table: xlsys_identity                                      */
+/* Table: xlsys_flowright                                       */
 /*==============================================================*/
-create table xlsys_identity 
+create table xlsys_flowright
 (
-   id                 VARCHAR2(256)        not null,
-   name               VARCHAR2(64)         not null,
-   welcomemenuid      VARCHAR2(256),
-   closedisable       NUMBER(2,0),
-   constraint PK_XLSYS_IDENTITY primary key (id)
+   flowid               varchar(256) not null,
+   cdtidx               numeric(8,0) not null,
+   idx                  numeric(8,0) not null,
+   belongrighttype      numeric(2,0) comment '0:identity;1:user;2:department;3:position',
+   belongrightvalue     varchar(256),
+   righttype            numeric(2,0) comment '0:identity;1:user;2:department;3:position',
+   rightvalue           varchar(256),
+   groupnm              varchar(256) comment '分组名称,当audittype选用 2:组单审和 3:组会审 时有效，用来标识当前权限为哪个组别所有，分组名称相同的视为同一组',
+   primary key (flowid, cdtidx, idx)
 );
 
-comment on table xlsys_identity is
-'Identity for Xue Lang System, it is unique for Xlsys';
+alter table xlsys_flowright comment 'The right of each flow condition';
 
 /*==============================================================*/
-/* Table: xlsys_idrelation                                    */
+/* Table: xlsys_flowsubtable                                    */
 /*==============================================================*/
-create table xlsys_idrelation 
+create table xlsys_flowsubtable
 (
-   id                 VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   name               VARCHAR2(64),
-   righttype          NUMBER(2,0)          not null,
-   relationvalue      VARCHAR2(32),
-   constraint PK_XLSYS_IDRELATION primary key (idx, id)
+   flowid               varchar(256) not null,
+   tablename            varchar(64) not null,
+   relationinnercol     varchar(64),
+   primary key (flowid, tablename)
 );
 
-comment on table xlsys_idrelation is
-'The relationship of Identity.';
+alter table xlsys_flowsubtable comment '流程子表配置';
 
 /*==============================================================*/
-/* Index: xlsys_idrelation_uq                                 */
+/* Table: xlsys_identity                                        */
 /*==============================================================*/
-create unique index xlsys_idrelation_uq on xlsys_idrelation (
-   id ASC,
-   righttype ASC,
-   relationvalue ASC
-);
-
-/*==============================================================*/
-/* Index: xlsys_idrelation_tcv                                */
-/*==============================================================*/
-create index xlsys_idrelation_tcv on xlsys_idrelation (
-   righttype ASC,
-   relationvalue ASC
-);
-
-/*==============================================================*/
-/* Table: xlsys_image                                         */
-/*==============================================================*/
-create table xlsys_image 
+create table xlsys_identity
 (
-   imageid            NUMBER(8,0)          not null,
-   name               VARCHAR2(256),
-   imagedata          BLOB,
-   constraint PK_XLSYS_IMAGE primary key (imageid)
+   id                   varchar(256) not null,
+   name                 varchar(64) not null,
+   welcomemenuid        varchar(256),
+   closedisable         numeric(2,0),
+   primary key (id)
 );
 
-comment on table xlsys_image is
-'图片库';
+alter table xlsys_identity comment 'Identity for Xue Lang System, it is unique for Xlsys';
 
 /*==============================================================*/
-/* Table: xlsys_ipresource                                    */
+/* Table: xlsys_idrelation                                      */
 /*==============================================================*/
-create table xlsys_ipresource 
+create table xlsys_idrelation
 (
-   ipaddress          VARCHAR2(64)         not null,
-   ipresource         BLOB,
-   constraint PK_XLSYS_IPRESOURCE primary key (ipaddress)
+   id                   varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   name                 varchar(64),
+   righttype            numeric(2,0) not null,
+   relationvalue        varchar(32),
+   primary key (idx, id)
 );
 
-comment on table xlsys_ipresource is
-'IP相关资源信息';
+alter table xlsys_idrelation comment 'The relationship of Identity.';
 
 /*==============================================================*/
-/* Table: xlsys_javaclass                                     */
+/* Index: xlsys_idrelation_uq                                   */
 /*==============================================================*/
-create table xlsys_javaclass 
+create unique index xlsys_idrelation_uq on xlsys_idrelation
 (
-   classid            VARCHAR2(512)        not null,
-   name               VARCHAR2(64),
-   javasource         BLOB,
-   javabinary         BLOB,
-   constraint PK_XLSYS_JAVACLASS primary key (classid)
+   id,
+   righttype,
+   relationvalue
 );
 
-comment on table xlsys_javaclass is
-'The Additional Java Class';
-
 /*==============================================================*/
-/* Table: xlsys_menu                                          */
+/* Index: xlsys_idrelation_tcv                                  */
 /*==============================================================*/
-create table xlsys_menu 
+create index xlsys_idrelation_tcv on xlsys_idrelation
 (
-   menuid             VARCHAR2(256)        not null,
-   name               VARCHAR2(64),
-   type               NUMBER(2,0),
-   cmd                VARCHAR2(256),
-   param              VARCHAR2(4000),
-   showninphone       NUMBER(1,0),
-   constraint PK_XLSYS_MENU primary key (menuid)
+   righttype,
+   relationvalue
 );
 
-comment on table xlsys_menu is
-'Define Menu';
-
 /*==============================================================*/
-/* Table: xlsys_menuright                                     */
+/* Table: xlsys_image                                           */
 /*==============================================================*/
-create table xlsys_menuright 
+create table xlsys_image
 (
-   menuid             VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   righttype          NUMBER(2,0),
-   rightvalue         VARCHAR2(256),
-   constraint PK_XLSYS_MENURIGHT primary key (menuid, idx)
+   imageid              numeric(8,0) not null,
+   name                 varchar(256),
+   imagedata            longblob,
+   primary key (imageid)
 );
 
-comment on column xlsys_menuright.righttype is
-'0:identity;1:user;2:department;3:position';
+alter table xlsys_image comment '图片库';
 
 /*==============================================================*/
-/* Table: xlsys_oacategory                                    */
+/* Table: xlsys_ipresource                                      */
 /*==============================================================*/
-create table xlsys_oacategory 
+create table xlsys_ipresource
 (
-   oacid              VARCHAR2(256)        not null,
-   name               VARCHAR2(256)        not null,
-   icon               BLOB,
-   constraint PK_XLSYS_OACATEGORY primary key (oacid)
+   ipaddress            varchar(64) not null,
+   ipresource           longblob,
+   primary key (ipaddress)
 );
 
-comment on table xlsys_oacategory is
-'OA类别定义表';
+alter table xlsys_ipresource comment 'IP相关资源信息';
 
 /*==============================================================*/
-/* Table: xlsys_oacategoryright                               */
+/* Table: xlsys_javaclass                                       */
 /*==============================================================*/
-create table xlsys_oacategoryright 
+create table xlsys_javaclass
 (
-   oacid              VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   righttype          NUMBER(2,0),
-   rightvalue         VARCHAR2(256),
-   constraint PK_XLSYS_OACATEGORYRIGHT primary key (oacid, idx)
+   classid              varchar(512) not null,
+   name                 varchar(64),
+   javasource           longblob,
+   javabinary           longblob,
+   primary key (classid)
 );
 
-comment on table xlsys_oacategoryright is
-'OA分类权限定义表';
+alter table xlsys_javaclass comment 'The Additional Java Class';
 
 /*==============================================================*/
-/* Table: xlsys_oacmbelong                                    */
+/* Table: xlsys_menu                                            */
 /*==============================================================*/
-create table xlsys_oacmbelong 
+create table xlsys_menu
 (
-   oacid              VARCHAR2(256)        not null,
-   oamid              VARCHAR2(256)        not null,
-   name               VARCHAR2(256),
-   constraint PK_XLSYS_OACMBELONG primary key (oacid, oamid)
+   menuid               varchar(256) not null,
+   name                 varchar(64),
+   type                 numeric(2,0),
+   cmd                  varchar(256),
+   param                varchar(4000),
+   showninphone         numeric(1,0),
+   primary key (menuid)
 );
 
-comment on table xlsys_oacmbelong is
-'OA分类和OA模块的所属关系表';
+alter table xlsys_menu comment 'Define Menu';
 
 /*==============================================================*/
-/* Table: xlsys_oacmrelation                                  */
+/* Table: xlsys_menuright                                       */
 /*==============================================================*/
-create table xlsys_oacmrelation 
+create table xlsys_menuright
 (
-   id                 VARCHAR2(256)        not null,
-   idx                NUMBER(2,0)          not null,
-   oacid              VARCHAR2(256),
-   oamid              VARCHAR2(256),
-   name               VARCHAR2(256),
-   sheetname          VARCHAR2(256),
-   hpercent           NUMBER(4,2),
-   vpixel             NUMBER(8,0),
-   constraint PK_XLSYS_OACMRELATION primary key (idx, id)
+   menuid               varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   righttype            numeric(2,0) comment '0:identity;1:user;2:department;3:position',
+   rightvalue           varchar(256),
+   primary key (menuid, idx)
 );
 
-comment on table xlsys_oacmrelation is
-'OA分类和OA模块的关系定义表';
-
-comment on column xlsys_oacmrelation.sheetname is
-'分页名称';
-
-comment on column xlsys_oacmrelation.hpercent is
-'横向占百分比';
-
-comment on column xlsys_oacmrelation.vpixel is
-'纵向占像素';
-
 /*==============================================================*/
-/* Table: xlsys_oamodule                                      */
+/* Table: xlsys_oacategory                                      */
 /*==============================================================*/
-create table xlsys_oamodule 
+create table xlsys_oacategory
 (
-   oamid              VARCHAR2(256)        not null,
-   name               VARCHAR2(256),
-   cmd                VARCHAR2(256),
-   param              VARCHAR2(4000),
-   constraint PK_XLSYS_OAMODULE primary key (oamid)
+   oacid                varchar(256) not null,
+   name                 varchar(256) not null,
+   icon                 longblob,
+   primary key (oacid)
 );
 
-comment on table xlsys_oamodule is
-'OA模块定义表';
+alter table xlsys_oacategory comment 'OA类别定义表';
 
 /*==============================================================*/
-/* Table: xlsys_oamoduleextra                                 */
+/* Table: xlsys_oacategoryright                                 */
 /*==============================================================*/
-create table xlsys_oamoduleextra 
+create table xlsys_oacategoryright
 (
-   oamid              VARCHAR2(256)        not null,
-   viewid             NUMBER(8,0)          not null,
-   extcmd             VARCHAR2(256),
-   extparam           VARCHAR2(4000),
-   constraint PK_XLSYS_OAMODULEEXTRA primary key (oamid, viewid)
+   oacid                varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   righttype            numeric(2,0),
+   rightvalue           varchar(256),
+   primary key (oacid, idx)
 );
 
-comment on table xlsys_oamoduleextra is
-'OA模块附加窗口配置';
+alter table xlsys_oacategoryright comment 'OA分类权限定义表';
 
 /*==============================================================*/
-/* Table: xlsys_oamoduleright                                 */
+/* Table: xlsys_oacmbelong                                      */
 /*==============================================================*/
-create table xlsys_oamoduleright 
+create table xlsys_oacmbelong
 (
-   oamid              VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   righttype          NUMBER(2,0),
-   rightvalue         VARCHAR2(256),
-   constraint PK_XLSYS_OAMODULERIGHT primary key (oamid, idx)
+   oacid                varchar(256) not null,
+   oamid                varchar(256) not null,
+   name                 varchar(256),
+   primary key (oacid, oamid)
 );
 
-comment on table xlsys_oamoduleright is
-'OA模块权限定义表';
+alter table xlsys_oacmbelong comment 'OA分类和OA模块的所属关系表';
 
 /*==============================================================*/
-/* Table: xlsys_part                                          */
+/* Table: xlsys_oacmrelation                                    */
 /*==============================================================*/
-create table xlsys_part 
+create table xlsys_oacmrelation
 (
-   partid             VARCHAR2(256)        not null,
-   name               VARCHAR2(64)         not null,
-   parttype           NUMBER(2,0)          not null,
-   constraint PK_XLSYS_PART primary key (partid)
+   id                   varchar(256) not null,
+   idx                  numeric(2,0) not null,
+   oacid                varchar(256),
+   oamid                varchar(256),
+   name                 varchar(256),
+   sheetname            varchar(256) comment '分页名称',
+   hpercent             numeric(4,2) comment '横向占百分比',
+   vpixel               numeric(8,0) comment '纵向占像素',
+   primary key (idx, id)
 );
 
-comment on table xlsys_part is
-'The Main Table Of Defining Part';
-
-comment on column xlsys_part.parttype is
-'0:Node;1:Part';
+alter table xlsys_oacmrelation comment 'OA分类和OA模块的关系定义表';
 
 /*==============================================================*/
-/* Table: xlsys_partdetail                                    */
+/* Table: xlsys_oamodule                                        */
 /*==============================================================*/
-create table xlsys_partdetail 
+create table xlsys_oamodule
 (
-   partid             VARCHAR2(256)        not null,
-   detailid           VARCHAR2(256)        not null,
-   name               VARCHAR2(64),
-   type               NUMBER(2,0),
-   param              VARCHAR2(4000),
-   viewid             NUMBER(8,0),
-   relationtype       NUMBER(2,0),
-   mainviewid         NUMBER(8,0),
-   soporder           NUMBER(8,0),
-   constraint PK_XLSYS_PARTDETAIL primary key (partid, detailid)
+   oamid                varchar(256) not null,
+   name                 varchar(256),
+   cmd                  varchar(256),
+   param                varchar(4000),
+   primary key (oamid)
 );
 
-comment on table xlsys_partdetail is
-'The detail of part';
-
-comment on column xlsys_partdetail.type is
-'0:SashForm;1:TabFolder;2:ExpandBar';
+alter table xlsys_oamodule comment 'OA模块定义表';
 
 /*==============================================================*/
-/* Table: xlsys_position                                      */
+/* Table: xlsys_oamoduleextra                                   */
 /*==============================================================*/
-create table xlsys_position 
+create table xlsys_oamoduleextra
 (
-   pstid              VARCHAR2(256)        not null,
-   name               VARCHAR2(64)         not null,
-   constraint PK_XLSYS_POSITION primary key (pstid)
+   oamid                varchar(256) not null,
+   viewid               numeric(8,0) not null,
+   extcmd               varchar(256),
+   extparam             varchar(4000),
+   primary key (oamid, viewid)
 );
 
-comment on table xlsys_position is
-'Position';
+alter table xlsys_oamoduleextra comment 'OA模块附加窗口配置';
 
 /*==============================================================*/
-/* Table: xlsys_print                                         */
+/* Table: xlsys_oamoduleright                                   */
 /*==============================================================*/
-create table xlsys_print 
+create table xlsys_oamoduleright
 (
-   printid            VARCHAR2(256)        not null,
-   name               VARCHAR2(256),
-   printtype          NUMBER(2,0),
-   template           BLOB,
-   constraint PK_XLSYS_PRINT primary key (printid)
+   oamid                varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   righttype            numeric(2,0),
+   rightvalue           varchar(256),
+   primary key (oamid, idx)
 );
 
-comment on table xlsys_print is
-'打印模板定义表';
+alter table xlsys_oamoduleright comment 'OA模块权限定义表';
 
 /*==============================================================*/
-/* Table: xlsys_queryparamsave                                */
+/* Table: xlsys_part                                            */
 /*==============================================================*/
-create table xlsys_queryparamsave 
+create table xlsys_part
 (
-   viewid             NUMBER(8,0)          not null,
-   id                 VARCHAR2(256)        not null,
-   name               VARCHAR2(64)         not null,
-   paramtype          NUMBER(2,0)          not null,
-   paramsave          BLOB,
-   constraint PK_XLSYS_QUERYPARAMSAVE primary key (viewid, id, name, paramtype)
+   partid               varchar(256) not null,
+   name                 varchar(64) not null,
+   parttype             numeric(2,0) not null comment '0:Node;1:Part',
+   primary key (partid)
 );
 
-comment on table xlsys_queryparamsave is
-'查询参数保存表';
-
-comment on column xlsys_queryparamsave.paramtype is
-'参数类型
-0:界面查询参数
-1:分组参数';
+alter table xlsys_part comment 'The Main Table Of Defining Part';
 
 /*==============================================================*/
-/* Table: xlsys_ratify                                        */
+/* Table: xlsys_partdetail                                      */
 /*==============================================================*/
-create table xlsys_ratify 
+create table xlsys_partdetail
 (
-   rtfid              VARCHAR2(256)        not null,
-   name               VARCHAR2(256),
-   fromuserid         VARCHAR2(256),
-   fromflowid         VARCHAR2(256),
-   fromcdtidx         NUMBER(8,0),
-   toflowid           VARCHAR2(256),
-   tocdtidx           NUMBER(8,0),
-   innercode          VARCHAR2(256),
-   version            NUMBER(8,0),
-   rtfret             NUMBER(2,0),
-   rtfdate            DATE,
-   constraint PK_XLSYS_RATIFY primary key (rtfid)
+   partid               varchar(256) not null,
+   detailid             varchar(256) not null,
+   name                 varchar(64),
+   type                 numeric(2,0) comment '0:SashForm;1:TabFolder;2:ExpandBar',
+   param                varchar(4000),
+   viewid               numeric(8,0),
+   relationtype         numeric(2,0),
+   mainviewid           numeric(8,0),
+   soporder             numeric(8,0),
+   primary key (partid, detailid)
 );
 
-comment on table xlsys_ratify is
-'The situation of ratifing business flow';
-
-comment on column xlsys_ratify.rtfret is
-'0:已提交;1:已通过;2:已驳回';
+alter table xlsys_partdetail comment 'The detail of part';
 
 /*==============================================================*/
-/* Table: xlsys_ratifydetail                                  */
+/* Table: xlsys_position                                        */
 /*==============================================================*/
-create table xlsys_ratifydetail 
+create table xlsys_position
 (
-   rtfid              VARCHAR2(256)        not null,
-   touserid           VARCHAR2(256)        not null,
-   replaceuserid      VARCHAR2(256),
-   rtfret             NUMBER(2,0),
-   rtfdesc            VARCHAR2(4000),
-   rtfdate            DATE,
-   groupnm            VARCHAR(256),
-   constraint PK_XLSYS_RATIFYDETAIL primary key (rtfid, touserid)
+   pstid                varchar(256) not null,
+   name                 varchar(64) not null,
+   primary key (pstid)
 );
 
-comment on table xlsys_ratifydetail is
-'The detail of ratify condition';
-
-comment on column xlsys_ratifydetail.rtfret is
-'0:已提交;1:已通过;2:已驳回';
+alter table xlsys_position comment 'Position';
 
 /*==============================================================*/
-/* Table: xlsys_right                                         */
+/* Table: xlsys_print                                           */
 /*==============================================================*/
-create table xlsys_right 
+create table xlsys_print
 (
-   righttype          NUMBER(2,0)          not null,
-   name               VARCHAR2(64),
-   sessionkey         VARCHAR2(256)        not null,
-   relationtable      VARCHAR2(256)        not null,
-   relationcolumn     VARCHAR2(256)        not null,
-   constraint PK_XLSYS_RIGHT primary key (righttype)
+   printid              varchar(256) not null,
+   name                 varchar(256),
+   printtype            numeric(2,0),
+   template             longblob,
+   primary key (printid)
 );
 
-comment on table xlsys_right is
-'系统权限定义表';
+alter table xlsys_print comment '打印模板定义表';
+
+/*==============================================================*/
+/* Table: xlsys_queryparamsave                                  */
+/*==============================================================*/
+create table xlsys_queryparamsave
+(
+   viewid               numeric(8,0) not null,
+   id                   varchar(256) not null,
+   name                 varchar(64) not null,
+   paramtype            numeric(2,0) not null comment '参数类型
+            0:界面查询参数
+            1:分组参数',
+   paramsave            longblob,
+   primary key (viewid, id, name, paramtype)
+);
+
+alter table xlsys_queryparamsave comment '查询参数保存表';
+
+/*==============================================================*/
+/* Table: xlsys_ratify                                          */
+/*==============================================================*/
+create table xlsys_ratify
+(
+   rtfid                varchar(256) not null,
+   name                 varchar(256),
+   fromuserid           varchar(256),
+   fromflowid           varchar(256),
+   fromcdtidx           numeric(8,0),
+   toflowid             varchar(256),
+   tocdtidx             numeric(8,0),
+   innercode            varchar(256),
+   version              numeric(8,0),
+   rtfret               numeric(2,0) comment '0:已提交;1:已通过;2:已驳回',
+   rtfdate              datetime,
+   primary key (rtfid)
+);
+
+alter table xlsys_ratify comment 'The situation of ratifing business flow';
+
+/*==============================================================*/
+/* Table: xlsys_ratifydetail                                    */
+/*==============================================================*/
+create table xlsys_ratifydetail
+(
+   rtfid                varchar(256) not null,
+   touserid             varchar(256) not null,
+   replaceuserid        varchar(256),
+   rtfret               numeric(2,0) comment '0:已提交;1:已通过;2:已驳回',
+   rtfdesc              varchar(4000),
+   rtfdate              datetime,
+   groupnm              varchar(256),
+   primary key (rtfid, touserid)
+);
+
+alter table xlsys_ratifydetail comment 'The detail of ratify condition';
+
+/*==============================================================*/
+/* Table: xlsys_right                                           */
+/*==============================================================*/
+create table xlsys_right
+(
+   righttype            numeric(2,0) not null,
+   name                 varchar(64),
+   sessionkey           varchar(256) not null,
+   relationtable        varchar(256) not null,
+   relationcolumn       varchar(256) not null,
+   primary key (righttype)
+);
+
+alter table xlsys_right comment '系统权限定义表';
 
 /*==============================================================*/
 /* Index: UN_RIGHT_RC                                           */
 /*==============================================================*/
-create unique index UN_RIGHT_RC on xlsys_right (
-   relationcolumn ASC
+create unique index UN_RIGHT_RC on xlsys_right
+(
+   relationcolumn
 );
 
 /*==============================================================*/
 /* Index: UN_RIGHT_SK                                           */
 /*==============================================================*/
-create unique index UN_RIGHT_SK on xlsys_right (
-   sessionkey ASC
-);
-
-/*==============================================================*/
-/* Table: xlsys_translator                                    */
-/*==============================================================*/
-create table xlsys_translator 
+create unique index UN_RIGHT_SK on xlsys_right
 (
-   tablename          VARCHAR2(32)         not null,
-   defaultname        VARCHAR2(256)        not null,
-   language           VARCHAR2(32)         not null,
-   transname          VARCHAR2(256),
-   constraint PK_XLSYS_TRANSLATOR primary key (tablename, defaultname, language)
+   sessionkey
 );
 
-comment on table xlsys_translator is
-'Language support';
-
 /*==============================================================*/
-/* Table: xlsys_transport                                     */
+/* Table: xlsys_translator                                      */
 /*==============================================================*/
-create table xlsys_transport 
+create table xlsys_translator
 (
-   tsid               VARCHAR2(256)        not null,
-   name               VARCHAR2(256),
-   constraint PK_XLSYS_TRANSPORT primary key (tsid)
+   tablename            varchar(32) not null,
+   defaultname          varchar(256) not null,
+   language             varchar(32) not null,
+   transname            varchar(256),
+   primary key (tablename, defaultname, language)
 );
 
-comment on table xlsys_transport is
-'系统传输表, 用来做跨数据库的数据传输';
+alter table xlsys_translator comment 'Language support';
 
 /*==============================================================*/
-/* Table: xlsys_transportdetail                               */
+/* Table: xlsys_transport                                       */
 /*==============================================================*/
-create table xlsys_transportdetail 
+create table xlsys_transport
 (
-   tsid               VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   fromtable          VARCHAR2(64),
-   totable            VARCHAR2(64),
-   fromsql            VARCHAR2(4000),
-   javalistener       VARCHAR2(4000),
-   jslistener         BLOB,
-   batchcount         NUMBER(8,0),
-   cpsmcol            NUMBER(2,0),
-   active             NUMBER(2,0),
-   constraint PK_XLSYS_TRANSPORTDETAIL primary key (tsid, idx)
+   tsid                 varchar(256) not null,
+   name                 varchar(256),
+   primary key (tsid)
 );
 
-comment on table xlsys_transportdetail is
-'数据传输明细定义';
-
-comment on column xlsys_transportdetail.batchcount is
-'批量更新数量';
-
-comment on column xlsys_transportdetail.cpsmcol is
-'是否拷贝同名字段';
+alter table xlsys_transport comment '系统传输表, 用来做跨数据库的数据传输';
 
 /*==============================================================*/
-/* Table: xlsys_transportdtcolmap                             */
+/* Table: xlsys_transportdetail                                 */
 /*==============================================================*/
-create table xlsys_transportdtcolmap 
+create table xlsys_transportdetail
 (
-   tsid               VARCHAR2(256)        not null,
-   tsdtidx            NUMBER(8,0)          not null,
-   idx                NUMBER(8,0)          not null,
-   fromcolumn         VARCHAR2(64),
-   tocolumn           VARCHAR2(64),
-   constraint PK_XLSYS_TRANSPORTDTCOLMAP primary key (tsid, tsdtidx, idx)
+   tsid                 varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   fromtable            varchar(64),
+   totable              varchar(64),
+   fromsql              varchar(4000),
+   javalistener         varchar(4000),
+   jslistener           longblob,
+   batchcount           numeric(8,0) comment '批量更新数量',
+   cpsmcol              numeric(2,0) comment '是否拷贝同名字段',
+   active               numeric(2,0),
+   primary key (tsid, idx)
 );
 
-comment on table xlsys_transportdtcolmap is
-'数据传输明细字段对照';
+alter table xlsys_transportdetail comment '数据传输明细定义';
 
 /*==============================================================*/
-/* Table: xlsys_transportkey                                  */
+/* Table: xlsys_transportdtcolmap                               */
 /*==============================================================*/
-create table xlsys_transportkey 
+create table xlsys_transportdtcolmap
 (
-   tskeyid            VARCHAR2(32)         not null,
-   name               VARCHAR2(256),
-   constraint PK_XLSYS_TRANSPORTKEY primary key (tskeyid)
+   tsid                 varchar(256) not null,
+   tsdtidx              numeric(8,0) not null,
+   idx                  numeric(8,0) not null,
+   fromcolumn           varchar(64),
+   tocolumn             varchar(64),
+   primary key (tsid, tsdtidx, idx)
 );
 
-comment on table xlsys_transportkey is
-'传输数据的关键码定义';
+alter table xlsys_transportdtcolmap comment '数据传输明细字段对照';
 
 /*==============================================================*/
-/* Table: xlsys_transportkeysynonym                           */
+/* Table: xlsys_transportkey                                    */
 /*==============================================================*/
-create table xlsys_transportkeysynonym 
+create table xlsys_transportkey
 (
-   tskeyid            VARCHAR2(32)         not null,
-   tablename          VARCHAR2(64)         not null,
-   columnname         VARCHAR2(64)         not null,
-   constraint PK_XLSYS_TRANSPORTKEYSYNONYM primary key (tskeyid, tablename, columnname)
+   tskeyid              varchar(32) not null,
+   name                 varchar(256),
+   primary key (tskeyid)
 );
 
-comment on table xlsys_transportkeysynonym is
-'传输关键码同义词定义表，主要用来定义哪些表的哪些字段使用该关键码来进行映射';
+alter table xlsys_transportkey comment '传输数据的关键码定义';
 
 /*==============================================================*/
-/* Table: xlsys_transportmap                                  */
+/* Table: xlsys_transportkeysynonym                             */
 /*==============================================================*/
-create table xlsys_transportmap 
+create table xlsys_transportkeysynonym
 (
-   tsmapid            VARCHAR2(256)        not null,
-   tskeyid            VARCHAR2(32),
-   fromdsid           NUMBER(8,0),
-   todsid             NUMBER(8,0),
-   fromtable          VARCHAR2(64),
-   totable            VARCHAR2(64),
-   fromcolumn         VARCHAR2(64),
-   tocolumn           VARCHAR2(64),
-   fromvalue          VARCHAR2(4000),
-   tovalue            VARCHAR2(4000),
-   syndate            DATE,
-   batchno            VARCHAR2(32),
-   remark             VARCHAR2(4000),
-   otheruse1          VARCHAR2(256),
-   otheruse2          VARCHAR2(256),
-   otheruse3          VARCHAR2(256),
-   constraint PK_XLSYS_TRANSPORTMAP primary key (tsmapid)
+   tskeyid              varchar(32) not null,
+   tablename            varchar(64) not null,
+   columnname           varchar(64) not null,
+   primary key (tskeyid, tablename, columnname)
 );
 
-comment on table xlsys_transportmap is
-'数据传输映射表, 可看做数据传输日志, 以及数据在两个系统中的对照表';
+alter table xlsys_transportkeysynonym comment '传输关键码同义词定义表，主要用来定义哪些表的哪些字段使用该关键码来进行映射';
 
 /*==============================================================*/
-/* Table: xlsys_transportrun                                  */
+/* Table: xlsys_transportmap                                    */
 /*==============================================================*/
-create table xlsys_transportrun 
+create table xlsys_transportmap
 (
-   tsrunid            VARCHAR2(256)        not null,
-   tsid               VARCHAR2(256),
-   fromdsid           NUMBER(8,0),
-   todsid             NUMBER(8,0),
-   totalthreadcount   NUMBER(8,0),
-   threadcount        NUMBER(8,0),
-   dataperthread      NUMBER(8,0),
-   constraint PK_XLSYS_TRANSPORTRUN primary key (tsrunid)
+   tsmapid              varchar(256) not null,
+   tskeyid              varchar(32),
+   fromdsid             numeric(8,0),
+   todsid               numeric(8,0),
+   fromtable            varchar(64),
+   totable              varchar(64),
+   fromcolumn           varchar(64),
+   tocolumn             varchar(64),
+   fromvalue            varchar(4000),
+   tovalue              varchar(4000),
+   syndate              datetime,
+   batchno              varchar(32),
+   remark               varchar(4000),
+   otheruse1            varchar(256),
+   otheruse2            varchar(256),
+   otheruse3            varchar(256),
+   primary key (tsmapid)
 );
 
-comment on table xlsys_transportrun is
-'数据传输运行表';
+alter table xlsys_transportmap comment '数据传输映射表, 可看做数据传输日志, 以及数据在两个系统中的对照表';
 
 /*==============================================================*/
-/* Table: xlsys_user                                          */
+/* Table: xlsys_transportrun                                    */
 /*==============================================================*/
-create table xlsys_user 
+create table xlsys_transportrun
 (
-   userid             VARCHAR2(256)        not null,
-   name               VARCHAR2(64)         not null,
-   password           VARCHAR2(255),
-   constraint PK_XLSYS_USER primary key (userid)
+   tsrunid              varchar(256) not null,
+   tsid                 varchar(256),
+   fromdsid             numeric(8,0),
+   todsid               numeric(8,0),
+   totalthreadcount     numeric(8,0),
+   threadcount          numeric(8,0),
+   dataperthread        numeric(8,0),
+   primary key (tsrunid)
 );
 
-comment on table xlsys_user is
-'user table';
+alter table xlsys_transportrun comment '数据传输运行表';
 
 /*==============================================================*/
-/* Table: xlsys_useremail                                     */
+/* Table: xlsys_user                                            */
 /*==============================================================*/
-create table xlsys_useremail 
+create table xlsys_user
 (
-   userid             VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   email              VARCHAR2(64),
-   pop                VARCHAR2(64),
-   smtp               VARCHAR2(64),
-   emailuser          VARCHAR2(64),
-   emailpwd           VARCHAR2(64),
-   remark             VARCHAR2(4000),
-   header             BLOB,
-   footer             BLOB,
-   constraint PK_XLSYS_USEREMAIL primary key (userid, idx)
+   userid               varchar(256) not null,
+   name                 varchar(64) not null,
+   password             varchar(255),
+   primary key (userid)
 );
 
-comment on table xlsys_useremail is
-'用户email配置';
-
-comment on column xlsys_useremail.header is
-'Email的抬头';
-
-comment on column xlsys_useremail.footer is
-'Email的签名';
+alter table xlsys_user comment 'user table';
 
 /*==============================================================*/
-/* Table: xlsys_view                                          */
+/* Table: xlsys_useremail                                       */
 /*==============================================================*/
-create table xlsys_view 
+create table xlsys_useremail
 (
-   viewid             NUMBER(8,0)          not null,
-   name               VARCHAR2(64),
-   viewtype           NUMBER(2,0),
-   param              VARCHAR2(4000),
-   relationtype       NUMBER(2,0),
-   mainviewid         NUMBER(8,0),
-   jslistener         BLOB,
-   javalistener       VARCHAR2(1000),
-   selectbody         VARCHAR2(1000),
-   frombody           VARCHAR2(1000),
-   wherebody          VARCHAR2(1000),
-   groupbybody        VARCHAR2(1000),
-   orderbybody        VARCHAR2(1000),
-   wholesql           VARCHAR2(1000),
-   treecolname        VARCHAR2(64),
-   constraint PK_XLSYS_VIEW primary key (viewid)
+   userid               varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   email                varchar(64),
+   pop                  varchar(64),
+   smtp                 varchar(64),
+   emailuser            varchar(64),
+   emailpwd             varchar(64),
+   remark               varchar(4000),
+   header               longblob comment 'Email的抬头',
+   footer               longblob comment 'Email的签名',
+   primary key (userid, idx)
 );
 
-comment on table xlsys_view is
-'Define the composite
-select ''insert into XLSYS_VIEW (VIEWID,NAME,VIEWTYPE,PARAM,RELATIONTYPE,MAINVIEWID,JAVALISTENER,SELECTBODY,FROMBODY,WHEREBODY,GROUPBYBODY,ORDERBYBODY,WHOLESQL,TREECOLNAME) values (''||VIEWID||'',''''''||NAME||'''''',''||VIEWTYPE||'',''''''||PARAM||'''''',''||RELATIONTYPE||'',''||MAINVIEWID||'',''''''||JAVALISTENER||'''''',''''''||SELECTBODY||'''''',''''''||FROMBODY||'''''',''''''||WHEREBODY||'''''',''''''||GROUPBYBODY||'''''',''''''||ORDERBYBODY||'''''',''''''||WHOLESQL||'''''',''''''||TREECOLNAME||'''''');'' from XLSYS_VIEW';
+alter table xlsys_useremail comment '用户email配置';
 
 /*==============================================================*/
-/* Table: xlsys_viewdetail                                    */
+/* Table: xlsys_view                                            */
 /*==============================================================*/
-create table xlsys_viewdetail 
+create table xlsys_view
 (
-   viewid             NUMBER(8,0)          not null,
-   idx                NUMBER(8,0)          not null,
-   colname            VARCHAR2(64),
-   name               VARCHAR2(64),
-   colgroup           VARCHAR2(64),
-   colgroupname       VARCHAR2(64),
-   datatype           NUMBER(2,0),
-   type               NUMBER(2,0),
-   defaultvalue       VARCHAR2(256),
-   supportvalue       VARCHAR2(4000),
-   aggregation        NUMBER(2,0),
-   relationcolname    VARCHAR2(64),
-   sqlexp             VARCHAR2(4000),
-   showninphoneoverview NUMBER(1,0),
-   showninphonedetail NUMBER(1,0),
-   constraint PK_XLSYS_VIEWDETAIL primary key (viewid, idx)
+   viewid               numeric(8,0) not null,
+   name                 varchar(64),
+   viewtype             numeric(2,0),
+   param                varchar(4000),
+   relationtype         numeric(2,0),
+   mainviewid           numeric(8,0),
+   jslistener           longblob,
+   javalistener         varchar(1000),
+   selectbody           varchar(1000),
+   frombody             varchar(1000),
+   wherebody            varchar(1000),
+   groupbybody          varchar(1000),
+   orderbybody          varchar(1000),
+   wholesql             varchar(1000),
+   treecolname          varchar(64),
+   primary key (viewid)
 );
 
-comment on table xlsys_viewdetail is
-'Detail of view';
+alter table xlsys_view comment 'Define the composite
+select ''insert into XLSYS_VIEW (';
 
 /*==============================================================*/
-/* Index: un_vd                                               */
+/* Table: xlsys_viewdetail                                      */
 /*==============================================================*/
-create unique index un_vd on xlsys_viewdetail (
-   viewid ASC,
-   colname ASC
-);
-
-/*==============================================================*/
-/* Table: xlsys_viewdetailparam                               */
-/*==============================================================*/
-create table xlsys_viewdetailparam 
+create table xlsys_viewdetail
 (
-   viewid             NUMBER(8,0)          not null,
-   idx                NUMBER(8,0)          not null,
-   attrname           VARCHAR2(1000)       not null,
-   attrvalue          VARCHAR2(4000),
-   constraint PK_XLSYS_VIEWDETAILPARAM primary key (viewid, idx, attrname)
+   viewid               numeric(8,0) not null,
+   idx                  numeric(8,0) not null,
+   colname              varchar(64),
+   name                 varchar(64),
+   colgroup             varchar(64),
+   colgroupname         varchar(64),
+   datatype             numeric(2,0),
+   type                 numeric(2,0),
+   defaultvalue         varchar(256),
+   supportvalue         varchar(4000),
+   aggregation          numeric(2,0),
+   relationcolname      varchar(64),
+   sqlexp               varchar(4000),
+   showninphoneoverview numeric(1,0),
+   showninphonedetail   numeric(1,0),
+   primary key (viewid, idx)
 );
 
+alter table xlsys_viewdetail comment 'Detail of view';
+
 /*==============================================================*/
-/* Table: xlsys_viewqueryparam                                */
+/* Index: un_vd                                                 */
 /*==============================================================*/
-create table xlsys_viewqueryparam 
+create unique index un_vd on xlsys_viewdetail
 (
-   viewid             NUMBER(8,0)          not null,
-   idx                NUMBER(8,0)          not null,
-   colname            VARCHAR2(64),
-   name               VARCHAR2(64),
-   datatype           NUMBER(2,0),
-   type               NUMBER(2,0),
-   param              VARCHAR2(4000),
-   defaultvalue       VARCHAR2(256),
-   supportvalue       VARCHAR2(4000),
-   showninphone       NUMBER(1,0),
-   constraint PK_XLSYS_VIEWQUERYPARAM primary key (viewid, idx)
+   viewid,
+   colname
 );
 
-comment on table xlsys_viewqueryparam is
-'Query parameter for view';
-
 /*==============================================================*/
-/* Table: xlsys_wdtcolumn                                     */
+/* Table: xlsys_viewdetailparam                                 */
 /*==============================================================*/
-create table xlsys_wdtcolumn 
+create table xlsys_viewdetailparam
 (
-   wizardid           VARCHAR2(256)        not null,
-   dtidx              NUMBER(8,0)          not null,
-   idx                NUMBER(8,0)          not null,
-   colname            VARCHAR2(64),
-   name               VARCHAR2(64),
-   forceinput         NUMBER(2,0),
-   tooltip            VARCHAR2(256),
-   constraint PK_XLSYS_WDTCOLUMN primary key (wizardid, dtidx, idx)
+   viewid               numeric(8,0) not null,
+   idx                  numeric(8,0) not null,
+   attrname             varchar(1000) not null,
+   attrvalue            varchar(4000),
+   primary key (viewid, idx, attrname)
 );
 
-comment on table xlsys_wdtcolumn is
-'向导页对应字段';
-
 /*==============================================================*/
-/* Table: xlsys_wizard                                        */
+/* Table: xlsys_viewqueryparam                                  */
 /*==============================================================*/
-create table xlsys_wizard 
+create table xlsys_viewqueryparam
 (
-   wizardid           VARCHAR2(256)        not null,
-   name               VARCHAR2(64),
-   javalistener       VARCHAR2(4000),
-   jslistener         BLOB,
-   constraint PK_XLSYS_WIZARD primary key (wizardid)
+   viewid               numeric(8,0) not null,
+   idx                  numeric(8,0) not null,
+   colname              varchar(64),
+   name                 varchar(64),
+   datatype             numeric(2,0),
+   type                 numeric(2,0),
+   param                varchar(4000),
+   defaultvalue         varchar(256),
+   supportvalue         varchar(4000),
+   showninphone         numeric(1,0),
+   primary key (viewid, idx)
 );
 
-comment on table xlsys_wizard is
-'雪狼系统向导主表';
+alter table xlsys_viewqueryparam comment 'Query parameter for view';
 
 /*==============================================================*/
-/* Table: xlsys_wizarddetail                                  */
+/* Table: xlsys_wdtcolumn                                       */
 /*==============================================================*/
-create table xlsys_wizarddetail 
+create table xlsys_wdtcolumn
 (
-   wizardid           VARCHAR2(256)        not null,
-   idx                NUMBER(8,0)          not null,
-   viewid             NUMBER(8,0),
-   title              VARCHAR2(256),
-   message            VARCHAR2(4000),
-   needsave           NUMBER(2,0),
-   nextidx            NUMBER(8,0),
-   constraint PK_XLSYS_WIZARDDETAIL primary key (wizardid, idx)
+   wizardid             varchar(256) not null,
+   dtidx                numeric(8,0) not null,
+   idx                  numeric(8,0) not null,
+   colname              varchar(64),
+   name                 varchar(64),
+   forceinput           numeric(2,0),
+   tooltip              varchar(256),
+   primary key (wizardid, dtidx, idx)
 );
 
-comment on table xlsys_wizarddetail is
-'雪狼系统向导明细表';
+alter table xlsys_wdtcolumn comment '向导页对应字段';
 
-comment on column xlsys_wizarddetail.viewid is
-'对应视图ID';
+/*==============================================================*/
+/* Table: xlsys_wizard                                          */
+/*==============================================================*/
+create table xlsys_wizard
+(
+   wizardid             varchar(256) not null,
+   name                 varchar(64),
+   javalistener         varchar(4000),
+   jslistener           longblob,
+   primary key (wizardid)
+);
 
-comment on column xlsys_wizarddetail.nextidx is
-'下一步序号';
+alter table xlsys_wizard comment '雪狼系统向导主表';
 
-alter table xlem_buyer
-   add constraint FK_BR_REFERENCE_U foreign key (userid)
-      references xlem_user (userid);
+/*==============================================================*/
+/* Table: xlsys_wizarddetail                                    */
+/*==============================================================*/
+create table xlsys_wizarddetail
+(
+   wizardid             varchar(256) not null,
+   idx                  numeric(8,0) not null,
+   viewid               numeric(8,0) comment '对应视图ID',
+   title                varchar(256),
+   message              varchar(4000),
+   needsave             numeric(2,0),
+   nextidx              numeric(8,0) comment '下一步序号',
+   primary key (wizardid, idx)
+);
 
-alter table xlem_buyer
-   add constraint FK_BR_REFERENCE_UL foreign key (levelid)
-      references xlem_userlevel (levelid);
+alter table xlsys_wizarddetail comment '雪狼系统向导明细表';
 
-alter table xlem_item
-   add constraint FK_I_REFERENCE_SL foreign key (sellerid)
-      references xlem_seller (sellerid);
+alter table xlem_buyer add constraint FK_BR_REFERENCE_U foreign key (userid)
+      references xlem_user (userid) on delete restrict on update restrict;
 
-alter table xlem_itemsku
-   add constraint FK_ISKU_REFERENCE_I foreign key (itemid)
-      references xlem_item (itemid);
+alter table xlem_buyer add constraint FK_BR_REFERENCE_UL foreign key (levelid)
+      references xlem_userlevel (levelid) on delete restrict on update restrict;
 
-alter table xlem_itemsku
-   add constraint FK_ISKU_REFERENCE_SKU foreign key (sku)
-      references xlem_sku (sku);
+alter table xlem_item add constraint FK_I_REFERENCE_SL foreign key (sellerid)
+      references xlem_seller (sellerid) on delete restrict on update restrict;
 
-alter table xlem_seller
-   add constraint FK_SL_REFERENCE_U foreign key (userid)
-      references xlem_user (userid);
+alter table xlem_itemsku add constraint FK_ISKU_REFERENCE_I foreign key (itemid)
+      references xlem_item (itemid) on delete restrict on update restrict;
 
-alter table xlem_seller
-   add constraint FK_SL_REFERENCE_UL foreign key (levelid)
-      references xlem_userlevel (levelid);
+alter table xlem_itemsku add constraint FK_ISKU_REFERENCE_SKU foreign key (sku)
+      references xlem_sku (sku) on delete restrict on update restrict;
 
-alter table xlem_sku
-   add constraint FK_SKU_REFERENCE_AUNIT foreign key (aunitid)
-      references xlem_atomicunit (aunitid);
+alter table xlem_seller add constraint FK_SL_REFERENCE_U foreign key (userid)
+      references xlem_user (userid) on delete restrict on update restrict;
 
-alter table xlem_sku
-   add constraint FK_SKU_REFERENCE_SPU foreign key (spu)
-      references xlem_spu (spu);
+alter table xlem_seller add constraint FK_SL_REFERENCE_UL foreign key (levelid)
+      references xlem_userlevel (levelid) on delete restrict on update restrict;
 
-alter table xlem_spu
-   add constraint FK_SPU_REFERENCE_SPUC foreign key (categoryid)
-      references xlem_spucategory (categoryid);
+alter table xlem_sku add constraint FK_SKU_REFERENCE_AUNIT foreign key (aunitid)
+      references xlem_atomicunit (aunitid) on delete restrict on update restrict;
 
-alter table xlem_stock
-   add constraint FK_STK_REFERENCE_SKU foreign key (sku)
-      references xlem_sku (sku);
+alter table xlem_sku add constraint FK_SKU_REFERENCE_SPU foreign key (spu)
+      references xlem_spu (spu) on delete restrict on update restrict;
 
-alter table xlem_stockhistory
-   add constraint FK_STKH_REFERENCE_SKU foreign key (sku)
-      references xlem_sku (sku);
+alter table xlem_spu add constraint FK_SPU_REFERENCE_SPUC foreign key (categoryid)
+      references xlem_spucategory (categoryid) on delete restrict on update restrict;
 
-alter table xlem_unit
-   add constraint FK_UNIT_REFERENCE_AUNIT foreign key (aunitid)
-      references xlem_atomicunit (aunitid);
+alter table xlem_stock add constraint FK_STK_REFERENCE_SKU foreign key (sku)
+      references xlem_sku (sku) on delete restrict on update restrict;
 
-alter table xlem_userlevel
-   add constraint FK_UL_REFERENCE_UL foreign key (nextlevel)
-      references xlem_userlevel (levelid);
+alter table xlem_stockhistory add constraint FK_STKH_REFERENCE_SKU foreign key (sku)
+      references xlem_sku (sku) on delete restrict on update restrict;
 
-alter table xlfin_accountcondition
-   add constraint FK_AC_REFERENCE_KD foreign key (kdeptid)
-      references xlfin_keepdept (kdeptid);
+alter table xlem_unit add constraint FK_UNIT_REFERENCE_AUNIT foreign key (aunitid)
+      references xlem_atomicunit (aunitid) on delete restrict on update restrict;
 
-alter table xlfin_balance
-   add constraint FK_B_REFERENCE_A foreign key (accid)
-      references xlfin_account (accid);
+alter table xlem_userlevel add constraint FK_UL_REFERENCE_UL foreign key (nextlevel)
+      references xlem_userlevel (levelid) on delete restrict on update restrict;
 
-alter table xlfin_balance
-   add constraint FK_B_REFERENCE_C foreign key (fcrcid)
-      references xlfin_currency (crcid);
+alter table xlfin_accountcondition add constraint FK_AC_REFERENCE_KD foreign key (kdeptid)
+      references xlfin_keepdept (kdeptid) on delete restrict on update restrict;
 
-alter table xlfin_balance
-   add constraint FK_B_REFERENCE_KD foreign key (kdeptid)
-      references xlfin_keepdept (kdeptid);
+alter table xlfin_balance add constraint FK_B_REFERENCE_A foreign key (accid)
+      references xlfin_account (accid) on delete restrict on update restrict;
 
-alter table xlfin_bankstmt
-   add constraint FK_BS_REFERENCE_A foreign key (accid)
-      references xlfin_account (accid);
+alter table xlfin_balance add constraint FK_B_REFERENCE_C foreign key (fcrcid)
+      references xlfin_currency (crcid) on delete restrict on update restrict;
 
-alter table xlfin_bankstmt
-   add constraint FK_BS_REFERENCE_C foreign key (fcrcid)
-      references xlfin_currency (crcid);
+alter table xlfin_balance add constraint FK_B_REFERENCE_KD foreign key (kdeptid)
+      references xlfin_keepdept (kdeptid) on delete restrict on update restrict;
 
-alter table xlfin_bankstmt
-   add constraint FK_BS_REFERENCE_KD foreign key (kdeptid)
-      references xlfin_keepdept (kdeptid);
+alter table xlfin_bankstmt add constraint FK_BS_REFERENCE_A foreign key (accid)
+      references xlfin_account (accid) on delete restrict on update restrict;
 
-alter table xlfin_bankstmt
-   add constraint FK_BS_REFERENCE_U foreign key (userid)
-      references xlsys_user (userid);
+alter table xlfin_bankstmt add constraint FK_BS_REFERENCE_C foreign key (fcrcid)
+      references xlfin_currency (crcid) on delete restrict on update restrict;
 
-alter table xlfin_bankstmt
-   add constraint FK_BS_REFERENCE_VD foreign key (vid, vidx)
-      references xlfin_voucherdetail (voucherid, idx);
+alter table xlfin_bankstmt add constraint FK_BS_REFERENCE_KD foreign key (kdeptid)
+      references xlfin_keepdept (kdeptid) on delete restrict on update restrict;
 
-alter table xlfin_bankstmtbalance
-   add constraint FK_BSB_REFERENCE_A foreign key (accid)
-      references xlfin_account (accid);
+alter table xlfin_bankstmt add constraint FK_BS_REFERENCE_U foreign key (userid)
+      references xlsys_user (userid) on delete restrict on update restrict;
 
-alter table xlfin_bankstmtbalance
-   add constraint FK_BSB_REFERENCE_C foreign key (fcrcid)
-      references xlfin_currency (crcid);
+alter table xlfin_bankstmt add constraint FK_BS_REFERENCE_VD foreign key (vid, vidx)
+      references xlfin_voucherdetail (voucherid, idx) on delete restrict on update restrict;
 
-alter table xlfin_bankstmtbalance
-   add constraint FK_BSB_REFERENCE_KD foreign key (kdeptid)
-      references xlfin_keepdept (kdeptid);
+alter table xlfin_bankstmtbalance add constraint FK_BSB_REFERENCE_A foreign key (accid)
+      references xlfin_account (accid) on delete restrict on update restrict;
 
-alter table xlfin_bstldt
-   add constraint FK_BSTLDT_REFERENCE_BSTL foreign key (bstlid)
-      references xlfin_bankstmttemplet (bstlid);
+alter table xlfin_bankstmtbalance add constraint FK_BSB_REFERENCE_C foreign key (fcrcid)
+      references xlfin_currency (crcid) on delete restrict on update restrict;
 
-alter table xlfin_exchangerate
-   add constraint FK_ER_REFERENCE_C foreign key (crcid)
-      references xlfin_currency (crcid);
+alter table xlfin_bankstmtbalance add constraint FK_BSB_REFERENCE_KD foreign key (kdeptid)
+      references xlfin_keepdept (kdeptid) on delete restrict on update restrict;
 
-alter table xlfin_karaccdt
-   add constraint FK_KARADT_REFERENCE_KAR foreign key (karid)
-      references xlfin_kdeptaccrealtion (karid);
+alter table xlfin_bstldt add constraint FK_BSTLDT_REFERENCE_BSTL foreign key (bstlid)
+      references xlfin_bankstmttemplet (bstlid) on delete restrict on update restrict;
 
-alter table xlfin_kardt
-   add constraint FK_KARDT_REFERENCE_KAR foreign key (karid)
-      references xlfin_kdeptaccrealtion (karid);
+alter table xlfin_exchangerate add constraint FK_ER_REFERENCE_C foreign key (crcid)
+      references xlfin_currency (crcid) on delete restrict on update restrict;
 
-alter table xlfin_kardt
-   add constraint FK_KARDT_REFERENCE_VDTECA foreign key (vdtecaid)
-      references xlfin_vdtextracolattr (vdtecaid);
+alter table xlfin_karaccdt add constraint FK_KARADT_REFERENCE_KAR foreign key (karid)
+      references xlfin_kdeptaccrealtion (karid) on delete restrict on update restrict;
 
-alter table xlfin_keepdept
-   add constraint FK_KD_REFERENCE_C1 foreign key (standardcrcid)
-      references xlfin_currency (crcid);
+alter table xlfin_kardt add constraint FK_KARDT_REFERENCE_KAR foreign key (karid)
+      references xlfin_kdeptaccrealtion (karid) on delete restrict on update restrict;
 
-alter table xlfin_keepdept
-   add constraint FK_KD_REFERENCE_C2 foreign key (reportcrcid)
-      references xlfin_currency (crcid);
+alter table xlfin_kardt add constraint FK_KARDT_REFERENCE_VDTECA foreign key (vdtecaid)
+      references xlfin_vdtextracolattr (vdtecaid) on delete restrict on update restrict;
 
-alter table xlfin_keepdept
-   add constraint FK_KD_REFERENCE_KDAR1 foreign key (usedkarid)
-      references xlfin_kdeptaccrealtion (karid);
+alter table xlfin_keepdept add constraint FK_KD_REFERENCE_C1 foreign key (standardcrcid)
+      references xlfin_currency (crcid) on delete restrict on update restrict;
 
-alter table xlfin_keepdept
-   add constraint FK_KD_REFERENCE_KDAR2 foreign key (nocarryoverkarid)
-      references xlfin_kdeptaccrealtion (karid);
+alter table xlfin_keepdept add constraint FK_KD_REFERENCE_C2 foreign key (reportcrcid)
+      references xlfin_currency (crcid) on delete restrict on update restrict;
 
-alter table xlfin_keepdept
-   add constraint FK_KD_REFERENCE_KDAR3 foreign key (cockarid)
-      references xlfin_kdeptaccrealtion (karid);
+alter table xlfin_keepdept add constraint FK_KD_REFERENCE_KDAR1 foreign key (usedkarid)
+      references xlfin_kdeptaccrealtion (karid) on delete restrict on update restrict;
 
-alter table xlfin_reportdata
-   add constraint FK_RD_REFERENCE_RDEPT foreign key (rdeptid)
-      references xlfin_reportdept (rdeptid);
+alter table xlfin_keepdept add constraint FK_KD_REFERENCE_KDAR2 foreign key (nocarryoverkarid)
+      references xlfin_kdeptaccrealtion (karid) on delete restrict on update restrict;
 
-alter table xlfin_reportdata
-   add constraint FK_RD_REFERENCE_RF foreign key (rfid)
-      references xlfin_reportform (rfid);
+alter table xlfin_keepdept add constraint FK_KD_REFERENCE_KDAR3 foreign key (cockarid)
+      references xlfin_kdeptaccrealtion (karid) on delete restrict on update restrict;
 
-alter table xlfin_reportdatadetail
-   add constraint FK_RDD_REFERENCE_RD foreign key (rdid)
-      references xlfin_reportdata (rdid);
+alter table xlfin_reportdata add constraint FK_RD_REFERENCE_RDEPT foreign key (rdeptid)
+      references xlfin_reportdept (rdeptid) on delete restrict on update restrict;
 
-alter table xlfin_reportformcol
-   add constraint FK_RFC_REFERENCE_RF foreign key (rfid)
-      references xlfin_reportform (rfid);
+alter table xlfin_reportdata add constraint FK_RD_REFERENCE_RF foreign key (rfid)
+      references xlfin_reportform (rfid) on delete restrict on update restrict;
 
-alter table xlfin_reportformformula
-   add constraint FK_RFF_REFERENCE_RF foreign key (rfid)
-      references xlfin_reportform (rfid);
+alter table xlfin_reportdatadetail add constraint FK_RDD_REFERENCE_RD foreign key (rdid)
+      references xlfin_reportdata (rdid) on delete restrict on update restrict;
 
-alter table xlfin_reportformrow
-   add constraint FK_RFR_REFERENCE_RF foreign key (rfid)
-      references xlfin_reportform (rfid);
+alter table xlfin_reportformcol add constraint FK_RFC_REFERENCE_RF foreign key (rfid)
+      references xlfin_reportform (rfid) on delete restrict on update restrict;
 
-alter table xlfin_vdtextra
-   add constraint FK_VDTE_REFERENCE_VDT foreign key (voucherid, idx)
-      references xlfin_voucherdetail (voucherid, idx);
+alter table xlfin_reportformformula add constraint FK_RFF_REFERENCE_RF foreign key (rfid)
+      references xlfin_reportform (rfid) on delete restrict on update restrict;
 
-alter table xlfin_vdtextra
-   add constraint FK_VDTE_REFERENCE_VEC foreign key (extracol)
-      references xlfin_vdtextracol (extracol);
+alter table xlfin_reportformrow add constraint FK_RFR_REFERENCE_RF foreign key (rfid)
+      references xlfin_reportform (rfid) on delete restrict on update restrict;
 
-alter table xlfin_vdtextracolattr
-   add constraint FK_VDTECA_REFERENCE_VDTEC foreign key (extracol)
-      references xlfin_vdtextracol (extracol);
+alter table xlfin_vdtextra add constraint FK_VDTE_REFERENCE_VDT foreign key (voucherid, idx)
+      references xlfin_voucherdetail (voucherid, idx) on delete restrict on update restrict;
 
-alter table xlfin_voucher
-   add constraint FK_V_REFERENCE_F foreign key (flowid)
-      references xlsys_flow (flowid);
+alter table xlfin_vdtextra add constraint FK_VDTE_REFERENCE_VEC foreign key (extracol)
+      references xlfin_vdtextracol (extracol) on delete restrict on update restrict;
 
-alter table xlfin_voucher
-   add constraint FK_V_REFERENCE_ID foreign key (id)
-      references xlsys_identity (id);
+alter table xlfin_vdtextracolattr add constraint FK_VDTECA_REFERENCE_VDTEC foreign key (extracol)
+      references xlfin_vdtextracol (extracol) on delete restrict on update restrict;
 
-alter table xlfin_voucher
-   add constraint FK_V_REFERENCE_KD foreign key (kdeptid)
-      references xlfin_keepdept (kdeptid);
+alter table xlfin_voucher add constraint FK_V_REFERENCE_F foreign key (flowid)
+      references xlsys_flow (flowid) on delete restrict on update restrict;
 
-alter table xlfin_voucher
-   add constraint FK_V_REFERENCE_U1 foreign key (creater)
-      references xlsys_user (userid);
+alter table xlfin_voucher add constraint FK_V_REFERENCE_ID foreign key (id)
+      references xlsys_identity (id) on delete restrict on update restrict;
 
-alter table xlfin_voucher
-   add constraint FK_V_REFERENCE_U2 foreign key (accounter)
-      references xlsys_user (userid);
+alter table xlfin_voucher add constraint FK_V_REFERENCE_KD foreign key (kdeptid)
+      references xlfin_keepdept (kdeptid) on delete restrict on update restrict;
 
-alter table xlfin_voucherdetail
-   add constraint FK_VD_REFERENCE_A foreign key (accid)
-      references xlfin_account (accid);
+alter table xlfin_voucher add constraint FK_V_REFERENCE_U1 foreign key (creater)
+      references xlsys_user (userid) on delete restrict on update restrict;
 
-alter table xlfin_voucherdetail
-   add constraint FK_VD_REFERENCE_BS foreign key (bsid)
-      references xlfin_bankstmt (bsid);
+alter table xlfin_voucher add constraint FK_V_REFERENCE_U2 foreign key (accounter)
+      references xlsys_user (userid) on delete restrict on update restrict;
 
-alter table xlfin_voucherdetail
-   add constraint FK_VD_REFERENCE_C foreign key (fcrcid)
-      references xlfin_currency (crcid);
+alter table xlfin_voucherdetail add constraint FK_VD_REFERENCE_A foreign key (accid)
+      references xlfin_account (accid) on delete restrict on update restrict;
 
-alter table xlfin_voucherdetail
-   add constraint FK_VDT_REFERENCE_KD foreign key (kdeptid)
-      references xlfin_keepdept (kdeptid);
+alter table xlfin_voucherdetail add constraint FK_VD_REFERENCE_BS foreign key (bsid)
+      references xlfin_bankstmt (bsid) on delete restrict on update restrict;
 
-alter table xlfin_voucherdetail
-   add constraint FK_VDT_REFERENCE_U foreign key (userid)
-      references xlsys_user (userid);
+alter table xlfin_voucherdetail add constraint FK_VD_REFERENCE_C foreign key (fcrcid)
+      references xlfin_currency (crcid) on delete restrict on update restrict;
 
-alter table xlfin_voucherdetail
-   add constraint FK_VOD_REFERENCE_VO foreign key (voucherid)
-      references xlfin_voucher (voucherid);
+alter table xlfin_voucherdetail add constraint FK_VDT_REFERENCE_KD foreign key (kdeptid)
+      references xlfin_keepdept (kdeptid) on delete restrict on update restrict;
 
-alter table xlfin_vtempletdt
-   add constraint FK_VTLDT_REFERENCE_VTL foreign key (vtlid)
-      references xlfin_vouchertemplet (vtlid);
+alter table xlfin_voucherdetail add constraint FK_VDT_REFERENCE_U foreign key (userid)
+      references xlsys_user (userid) on delete restrict on update restrict;
 
-alter table xlfin_vtldtcol
-   add constraint FK_VTLDTC_REFERENCE_VTLDT foreign key (vtldtidx, vtlid)
-      references xlfin_vtempletdt (idx, vtlid);
+alter table xlfin_voucherdetail add constraint FK_VOD_REFERENCE_VO foreign key (voucherid)
+      references xlfin_voucher (voucherid) on delete restrict on update restrict;
 
-alter table xlsys_authorisedright
-   add constraint FK_AR_REFERENCE_AD foreign key (arid, ardtidx)
-      references xlsys_authorizedetail (arid, idx);
+alter table xlfin_vtempletdt add constraint FK_VTLDT_REFERENCE_VTL foreign key (vtlid)
+      references xlfin_vouchertemplet (vtlid) on delete restrict on update restrict;
 
-alter table xlsys_authorisedright
-   add constraint FK_AR_REFERENCE_R foreign key (righttype)
-      references xlsys_right (righttype);
+alter table xlfin_vtldtcol add constraint FK_VTLDTC_REFERENCE_VTLDT foreign key (vtldtidx, vtlid)
+      references xlfin_vtempletdt (idx, vtlid) on delete restrict on update restrict;
 
-alter table xlsys_authorize
-   add constraint FK_A_REFERENCE_F foreign key (flowid)
-      references xlsys_flow (flowid);
+alter table xlsys_authorisedright add constraint FK_AR_REFERENCE_AD foreign key (arid, ardtidx)
+      references xlsys_authorizedetail (arid, idx) on delete restrict on update restrict;
 
-alter table xlsys_authorize
-   add constraint FK_A_REFERENCE_I1 foreign key (id)
-      references xlsys_identity (id);
+alter table xlsys_authorisedright add constraint FK_AR_REFERENCE_R foreign key (righttype)
+      references xlsys_right (righttype) on delete restrict on update restrict;
 
-alter table xlsys_authorize
-   add constraint FK_A_REFERENCE_I2 foreign key (authorisedid)
-      references xlsys_identity (id);
+alter table xlsys_authorize add constraint FK_A_REFERENCE_F foreign key (flowid)
+      references xlsys_flow (flowid) on delete restrict on update restrict;
 
-alter table xlsys_authorize
-   add constraint FK_A_REFERENCE_U foreign key (creater)
-      references xlsys_user (userid);
+alter table xlsys_authorize add constraint FK_A_REFERENCE_I1 foreign key (id)
+      references xlsys_identity (id) on delete restrict on update restrict;
 
-alter table xlsys_authorizedetail
-   add constraint FK_AD_REFERENCE_A foreign key (arid)
-      references xlsys_authorize (arid);
+alter table xlsys_authorize add constraint FK_A_REFERENCE_I2 foreign key (authorisedid)
+      references xlsys_identity (id) on delete restrict on update restrict;
 
-alter table xlsys_basebusi
-   add constraint FK_BB_REFERENCE_F foreign key (flowid)
-      references xlsys_flow (flowid);
+alter table xlsys_authorize add constraint FK_A_REFERENCE_U foreign key (creater)
+      references xlsys_user (userid) on delete restrict on update restrict;
 
-alter table xlsys_basebusi
-   add constraint FK_BB_REFERENCE_I foreign key (id)
-      references xlsys_identity (id);
+alter table xlsys_authorizedetail add constraint FK_AD_REFERENCE_A foreign key (arid)
+      references xlsys_authorize (arid) on delete restrict on update restrict;
 
-alter table xlsys_basebusi
-   add constraint FK_BB_REFERENCE_U foreign key (creater)
-      references xlsys_user (userid);
+alter table xlsys_basebusi add constraint FK_BB_REFERENCE_F foreign key (flowid)
+      references xlsys_flow (flowid) on delete restrict on update restrict;
 
-alter table xlsys_dictdetail
-   add constraint FK_DD_REFERENCE_D foreign key (dictid)
-      references xlsys_dict (dictid);
+alter table xlsys_basebusi add constraint FK_BB_REFERENCE_I foreign key (id)
+      references xlsys_identity (id) on delete restrict on update restrict;
 
-alter table xlsys_exttableinfodetail
-   add constraint FK_ETI_REFERENCE_ETID foreign key (tableid)
-      references xlsys_exttableinfo (tableid);
+alter table xlsys_basebusi add constraint FK_BB_REFERENCE_U foreign key (creater)
+      references xlsys_user (userid) on delete restrict on update restrict;
 
-alter table xlsys_flow
-   add constraint FK_F_REFERENCE_V1 foreign key (mvidoflpart)
-      references xlsys_view (viewid);
+alter table xlsys_dictdetail add constraint FK_DD_REFERENCE_D foreign key (dictid)
+      references xlsys_dict (dictid) on delete restrict on update restrict;
 
-alter table xlsys_flow
-   add constraint FK_F_REFERENCE_V2 foreign key (mvidofmpart)
-      references xlsys_view (viewid);
+alter table xlsys_exttableinfodetail add constraint FK_ETI_REFERENCE_ETID foreign key (tableid)
+      references xlsys_exttableinfo (tableid) on delete restrict on update restrict;
 
-alter table xlsys_flow
-   add constraint FK_FL_REFERENCE_P1 foreign key (mainpartid)
-      references xlsys_part (partid);
+alter table xlsys_flow add constraint FK_F_REFERENCE_V1 foreign key (mvidoflpart)
+      references xlsys_view (viewid) on delete restrict on update restrict;
 
-alter table xlsys_flow
-   add constraint FK_FL_REFERENCE_P2 foreign key (listpartid)
-      references xlsys_part (partid);
+alter table xlsys_flow add constraint FK_F_REFERENCE_V2 foreign key (mvidofmpart)
+      references xlsys_view (viewid) on delete restrict on update restrict;
 
-alter table xlsys_flowcodealloc
-   add constraint FK_FCA_REFERENCE_CA foreign key (caid)
-      references xlsys_codealloc (caid);
+alter table xlsys_flow add constraint FK_FL_REFERENCE_P1 foreign key (mainpartid)
+      references xlsys_part (partid) on delete restrict on update restrict;
 
-alter table xlsys_flowcodealloc
-   add constraint FK_FCA_REFERENCE_F foreign key (flowid)
-      references xlsys_flow (flowid);
+alter table xlsys_flow add constraint FK_FL_REFERENCE_P2 foreign key (listpartid)
+      references xlsys_part (partid) on delete restrict on update restrict;
 
-alter table xlsys_flowcondition
-   add constraint FK_FC_REFERENCE_F foreign key (flowid)
-      references xlsys_flow (flowid);
+alter table xlsys_flowcodealloc add constraint FK_FCA_REFERENCE_CA foreign key (caid)
+      references xlsys_codealloc (caid) on delete restrict on update restrict;
 
-alter table xlsys_flowjava
-   add constraint FK_FJAVA_REFERENCE_F foreign key (flowid)
-      references xlsys_flow (flowid);
+alter table xlsys_flowcodealloc add constraint FK_FCA_REFERENCE_F foreign key (flowid)
+      references xlsys_flow (flowid) on delete restrict on update restrict;
 
-alter table xlsys_flowjava
-   add constraint FK_FJAVA_REFERENCE_V foreign key (viewid)
-      references xlsys_view (viewid);
+alter table xlsys_flowcondition add constraint FK_FC_REFERENCE_F foreign key (flowid)
+      references xlsys_flow (flowid) on delete restrict on update restrict;
 
-alter table xlsys_flowjs
-   add constraint FK_FJS_REFERENCE_F foreign key (flowid)
-      references xlsys_flow (flowid);
+alter table xlsys_flowjava add constraint FK_FJAVA_REFERENCE_F foreign key (flowid)
+      references xlsys_flow (flowid) on delete restrict on update restrict;
 
-alter table xlsys_flowjs
-   add constraint FK_FJS_REFERENCE_V foreign key (viewid)
-      references xlsys_view (viewid);
+alter table xlsys_flowjava add constraint FK_FJAVA_REFERENCE_V foreign key (viewid)
+      references xlsys_view (viewid) on delete restrict on update restrict;
 
-alter table xlsys_flowlogic
-   add constraint FK_FL_REFERENCE_F foreign key (flowid)
-      references xlsys_flow (flowid);
+alter table xlsys_flowjs add constraint FK_FJS_REFERENCE_F foreign key (flowid)
+      references xlsys_flow (flowid) on delete restrict on update restrict;
 
-alter table xlsys_flowpart
-   add constraint FK_FP_REFERENCE_F foreign key (flowid)
-      references xlsys_flow (flowid);
+alter table xlsys_flowjs add constraint FK_FJS_REFERENCE_V foreign key (viewid)
+      references xlsys_view (viewid) on delete restrict on update restrict;
 
-alter table xlsys_flowpart
-   add constraint FK_FP_REFERENCE_P1 foreign key (listpartid)
-      references xlsys_part (partid);
+alter table xlsys_flowlogic add constraint FK_FL_REFERENCE_F foreign key (flowid)
+      references xlsys_flow (flowid) on delete restrict on update restrict;
 
-alter table xlsys_flowpart
-   add constraint FK_FP_REFERENCE_P2 foreign key (mainpartid)
-      references xlsys_part (partid);
+alter table xlsys_flowpart add constraint FK_FP_REFERENCE_F foreign key (flowid)
+      references xlsys_flow (flowid) on delete restrict on update restrict;
 
-alter table xlsys_flowpart
-   add constraint FK_FP_REFERENCE_R foreign key (righttype)
-      references xlsys_right (righttype);
+alter table xlsys_flowpart add constraint FK_FP_REFERENCE_P1 foreign key (listpartid)
+      references xlsys_part (partid) on delete restrict on update restrict;
 
-alter table xlsys_flowpart
-   add constraint FK_FP_REFERENCE_V1 foreign key (mvidoflpart)
-      references xlsys_view (viewid);
+alter table xlsys_flowpart add constraint FK_FP_REFERENCE_P2 foreign key (mainpartid)
+      references xlsys_part (partid) on delete restrict on update restrict;
 
-alter table xlsys_flowpart
-   add constraint FK_FP_REFERENCE_V2 foreign key (mvidofmpart)
-      references xlsys_view (viewid);
+alter table xlsys_flowpart add constraint FK_FP_REFERENCE_R foreign key (righttype)
+      references xlsys_right (righttype) on delete restrict on update restrict;
 
-alter table xlsys_flowright
-   add constraint FK_FR_REFERENCE_R foreign key (righttype)
-      references xlsys_right (righttype);
+alter table xlsys_flowpart add constraint FK_FP_REFERENCE_V1 foreign key (mvidoflpart)
+      references xlsys_view (viewid) on delete restrict on update restrict;
 
-alter table xlsys_flowright
-   add constraint FK_FR_REFERENCE_FC foreign key (flowid, cdtidx)
-      references xlsys_flowcondition (flowid, idx);
+alter table xlsys_flowpart add constraint FK_FP_REFERENCE_V2 foreign key (mvidofmpart)
+      references xlsys_view (viewid) on delete restrict on update restrict;
 
-alter table xlsys_flowsubtable
-   add constraint FK_FST_REFERENCE_F foreign key (flowid)
-      references xlsys_flow (flowid);
+alter table xlsys_flowright add constraint FK_FR_REFERENCE_R foreign key (righttype)
+      references xlsys_right (righttype) on delete restrict on update restrict;
 
-alter table xlsys_identity
-   add constraint FK_I_REFERENCE_M foreign key (welcomemenuid)
-      references xlsys_menu (menuid);
+alter table xlsys_flowright add constraint FK_FR_REFERENCE_FC foreign key (flowid, cdtidx)
+      references xlsys_flowcondition (flowid, idx) on delete restrict on update restrict;
 
-alter table xlsys_idrelation
-   add constraint FK_IR_REFERENCE_R foreign key (righttype)
-      references xlsys_right (righttype);
+alter table xlsys_flowsubtable add constraint FK_FST_REFERENCE_F foreign key (flowid)
+      references xlsys_flow (flowid) on delete restrict on update restrict;
 
-alter table xlsys_idrelation
-   add constraint FK_IR_REFERENCE_I foreign key (id)
-      references xlsys_identity (id);
+alter table xlsys_identity add constraint FK_I_REFERENCE_M foreign key (welcomemenuid)
+      references xlsys_menu (menuid) on delete restrict on update restrict;
 
-alter table xlsys_menuright
-   add constraint FK_MR_REFERENCE_M foreign key (menuid)
-      references xlsys_menu (menuid);
+alter table xlsys_idrelation add constraint FK_IR_REFERENCE_R foreign key (righttype)
+      references xlsys_right (righttype) on delete restrict on update restrict;
 
-alter table xlsys_oacategoryright
-   add constraint FK_OACR_REFERENCE_OAC foreign key (oacid)
-      references xlsys_oacategory (oacid);
+alter table xlsys_idrelation add constraint FK_IR_REFERENCE_I foreign key (id)
+      references xlsys_identity (id) on delete restrict on update restrict;
 
-alter table xlsys_oacmbelong
-   add constraint FK_OACMB_REFERENCE_OAM foreign key (oamid)
-      references xlsys_oamodule (oamid);
+alter table xlsys_menuright add constraint FK_MR_REFERENCE_M foreign key (menuid)
+      references xlsys_menu (menuid) on delete restrict on update restrict;
 
-alter table xlsys_oacmbelong
-   add constraint FK_OACMBL_REFERENCE_OAC foreign key (oacid)
-      references xlsys_oacategory (oacid);
+alter table xlsys_oacategoryright add constraint FK_OACR_REFERENCE_OAC foreign key (oacid)
+      references xlsys_oacategory (oacid) on delete restrict on update restrict;
 
-alter table xlsys_oacmrelation
-   add constraint FK_OACMR_REFERENCE_ID foreign key (id)
-      references xlsys_identity (id);
+alter table xlsys_oacmbelong add constraint FK_OACMB_REFERENCE_OAM foreign key (oamid)
+      references xlsys_oamodule (oamid) on delete restrict on update restrict;
 
-alter table xlsys_oacmrelation
-   add constraint FK_OACMR_REFERENCE_OACMBL foreign key (oacid, oamid)
-      references xlsys_oacmbelong (oacid, oamid);
+alter table xlsys_oacmbelong add constraint FK_OACMBL_REFERENCE_OAC foreign key (oacid)
+      references xlsys_oacategory (oacid) on delete restrict on update restrict;
 
-alter table xlsys_oamoduleextra
-   add constraint FK_OAME_REFERENCE_OAM foreign key (oamid)
-      references xlsys_oamodule (oamid);
+alter table xlsys_oacmrelation add constraint FK_OACMR_REFERENCE_ID foreign key (id)
+      references xlsys_identity (id) on delete restrict on update restrict;
 
-alter table xlsys_oamoduleextra
-   add constraint FK_OAME_REFERENCE_V foreign key (viewid)
-      references xlsys_view (viewid);
+alter table xlsys_oacmrelation add constraint FK_OACMR_REFERENCE_OACMBL foreign key (oacid, oamid)
+      references xlsys_oacmbelong (oacid, oamid) on delete restrict on update restrict;
 
-alter table xlsys_oamoduleright
-   add constraint FK_OAMR_REFERENCE_OAM foreign key (oamid)
-      references xlsys_oamodule (oamid);
+alter table xlsys_oamoduleextra add constraint FK_OAME_REFERENCE_OAM foreign key (oamid)
+      references xlsys_oamodule (oamid) on delete restrict on update restrict;
 
-alter table xlsys_partdetail
-   add constraint FK_PD_REFERENCE_P foreign key (partid)
-      references xlsys_part (partid);
+alter table xlsys_oamoduleextra add constraint FK_OAME_REFERENCE_V foreign key (viewid)
+      references xlsys_view (viewid) on delete restrict on update restrict;
 
-alter table xlsys_partdetail
-   add constraint FK_PD_REFERENCE_V1 foreign key (viewid)
-      references xlsys_view (viewid);
+alter table xlsys_oamoduleright add constraint FK_OAMR_REFERENCE_OAM foreign key (oamid)
+      references xlsys_oamodule (oamid) on delete restrict on update restrict;
 
-alter table xlsys_partdetail
-   add constraint FK_PD_REFERENCE_V2 foreign key (mainviewid)
-      references xlsys_view (viewid);
+alter table xlsys_partdetail add constraint FK_PD_REFERENCE_P foreign key (partid)
+      references xlsys_part (partid) on delete restrict on update restrict;
 
-alter table xlsys_queryparamsave
-   add constraint FK_QPS_REFERENCE_ID foreign key (id)
-      references xlsys_identity (id);
+alter table xlsys_partdetail add constraint FK_PD_REFERENCE_V1 foreign key (viewid)
+      references xlsys_view (viewid) on delete restrict on update restrict;
 
-alter table xlsys_queryparamsave
-   add constraint FK_QPS_REFERENCE_V foreign key (viewid)
-      references xlsys_view (viewid);
+alter table xlsys_partdetail add constraint FK_PD_REFERENCE_V2 foreign key (mainviewid)
+      references xlsys_view (viewid) on delete restrict on update restrict;
 
-alter table xlsys_ratify
-   add constraint FK_R_REFERENCE_FC_F foreign key (fromflowid, fromcdtidx)
-      references xlsys_flowcondition (flowid, idx);
+alter table xlsys_queryparamsave add constraint FK_QPS_REFERENCE_ID foreign key (id)
+      references xlsys_identity (id) on delete restrict on update restrict;
 
-alter table xlsys_ratify
-   add constraint FK_R_REFERENCE_FC_T foreign key (toflowid, tocdtidx)
-      references xlsys_flowcondition (flowid, idx);
+alter table xlsys_queryparamsave add constraint FK_QPS_REFERENCE_V foreign key (viewid)
+      references xlsys_view (viewid) on delete restrict on update restrict;
 
-alter table xlsys_ratify
-   add constraint FK_R_REFERENCE_U foreign key (fromuserid)
-      references xlsys_user (userid);
+alter table xlsys_ratify add constraint FK_R_REFERENCE_FC_F foreign key (fromflowid, fromcdtidx)
+      references xlsys_flowcondition (flowid, idx) on delete restrict on update restrict;
 
-alter table xlsys_ratifydetail
-   add constraint FK_RD_REFERENCE_R foreign key (rtfid)
-      references xlsys_ratify (rtfid);
+alter table xlsys_ratify add constraint FK_R_REFERENCE_FC_T foreign key (toflowid, tocdtidx)
+      references xlsys_flowcondition (flowid, idx) on delete restrict on update restrict;
 
-alter table xlsys_ratifydetail
-   add constraint FK_RD_REFERENCE_U1 foreign key (touserid)
-      references xlsys_user (userid);
+alter table xlsys_ratify add constraint FK_R_REFERENCE_U foreign key (fromuserid)
+      references xlsys_user (userid) on delete restrict on update restrict;
 
-alter table xlsys_ratifydetail
-   add constraint FK_RD_REFERENCE_U2 foreign key (replaceuserid)
-      references xlsys_user (userid);
+alter table xlsys_ratifydetail add constraint FK_RD_REFERENCE_R foreign key (rtfid)
+      references xlsys_ratify (rtfid) on delete restrict on update restrict;
 
-alter table xlsys_transportdetail
-   add constraint FK_TSDT_REFERENCE_TS foreign key (tsid)
-      references xlsys_transport (tsid);
+alter table xlsys_ratifydetail add constraint FK_RD_REFERENCE_U1 foreign key (touserid)
+      references xlsys_user (userid) on delete restrict on update restrict;
 
-alter table xlsys_transportdtcolmap
-   add constraint FK_TSDTCM_REFERENCE_TSDT foreign key (tsid, tsdtidx)
-      references xlsys_transportdetail (tsid, idx);
+alter table xlsys_ratifydetail add constraint FK_RD_REFERENCE_U2 foreign key (replaceuserid)
+      references xlsys_user (userid) on delete restrict on update restrict;
 
-alter table xlsys_transportkeysynonym
-   add constraint FK_TSKS_REFERENCE_TSK foreign key (tskeyid)
-      references xlsys_transportkey (tskeyid);
+alter table xlsys_transportdetail add constraint FK_TSDT_REFERENCE_TS foreign key (tsid)
+      references xlsys_transport (tsid) on delete restrict on update restrict;
 
-alter table xlsys_transportmap
-   add constraint FK_TSK_REFERENCE_TSM foreign key (tskeyid)
-      references xlsys_transportkey (tskeyid);
+alter table xlsys_transportdtcolmap add constraint FK_TSDTCM_REFERENCE_TSDT foreign key (tsid, tsdtidx)
+      references xlsys_transportdetail (tsid, idx) on delete restrict on update restrict;
 
-alter table xlsys_transportrun
-   add constraint FK_TSR_REFERENCE_TS foreign key (tsid)
-      references xlsys_transport (tsid);
+alter table xlsys_transportkeysynonym add constraint FK_TSKS_REFERENCE_TSK foreign key (tskeyid)
+      references xlsys_transportkey (tskeyid) on delete restrict on update restrict;
 
-alter table xlsys_useremail
-   add constraint FK_UE_REFERENCE_U foreign key (userid)
-      references xlsys_user (userid);
+alter table xlsys_transportmap add constraint FK_TSK_REFERENCE_TSM foreign key (tskeyid)
+      references xlsys_transportkey (tskeyid) on delete restrict on update restrict;
 
-alter table xlsys_viewdetail
-   add constraint FK_VD_REFERENCE_V foreign key (viewid)
-      references xlsys_view (viewid);
+alter table xlsys_transportrun add constraint FK_TSR_REFERENCE_TS foreign key (tsid)
+      references xlsys_transport (tsid) on delete restrict on update restrict;
 
-alter table xlsys_viewdetailparam
-   add constraint FK_VDP_REFERENCE_VD foreign key (viewid, idx)
-      references xlsys_viewdetail (viewid, idx);
+alter table xlsys_useremail add constraint FK_UE_REFERENCE_U foreign key (userid)
+      references xlsys_user (userid) on delete restrict on update restrict;
 
-alter table xlsys_viewqueryparam
-   add constraint FK_VQP_REFERENCE_V foreign key (viewid)
-      references xlsys_view (viewid);
+alter table xlsys_viewdetail add constraint FK_VD_REFERENCE_V foreign key (viewid)
+      references xlsys_view (viewid) on delete restrict on update restrict;
 
-alter table xlsys_wdtcolumn
-   add constraint FK_WDC_REFERENCE_WD foreign key (wizardid, dtidx)
-      references xlsys_wizarddetail (wizardid, idx);
+alter table xlsys_viewdetailparam add constraint FK_VDP_REFERENCE_VD foreign key (viewid, idx)
+      references xlsys_viewdetail (viewid, idx) on delete restrict on update restrict;
 
-alter table xlsys_wizarddetail
-   add constraint FK_WD_REFERENCE_V foreign key (viewid)
-      references xlsys_view (viewid);
+alter table xlsys_viewqueryparam add constraint FK_VQP_REFERENCE_V foreign key (viewid)
+      references xlsys_view (viewid) on delete restrict on update restrict;
 
-alter table xlsys_wizarddetail
-   add constraint FK_WD_REFERENCE_W1 foreign key (wizardid)
-      references xlsys_wizard (wizardid);
+alter table xlsys_wdtcolumn add constraint FK_WDC_REFERENCE_WD foreign key (wizardid, dtidx)
+      references xlsys_wizarddetail (wizardid, idx) on delete restrict on update restrict;
+
+alter table xlsys_wizarddetail add constraint FK_WD_REFERENCE_V foreign key (viewid)
+      references xlsys_view (viewid) on delete restrict on update restrict;
+
+alter table xlsys_wizarddetail add constraint FK_WD_REFERENCE_W1 foreign key (wizardid)
+      references xlsys_wizard (wizardid) on delete restrict on update restrict;
 

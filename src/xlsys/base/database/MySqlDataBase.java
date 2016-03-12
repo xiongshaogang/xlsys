@@ -51,6 +51,7 @@ public class MySqlDataBase extends DataBase
 	{
 		keyWordSet = new HashSet<String>();
 		keyWordSet.add("condition");
+		keyWordSet.add("range");
 	}
 	
 	protected MySqlDataBase(ConnectionPool conPool, Connection con) throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, DocumentException
@@ -349,7 +350,7 @@ public class MySqlDataBase extends DataBase
 							else
 							{
 								//ps.setNull(i+1, DBUtil.getOracleSqlTypeFromJavaClass(param.javaClass));
-								ps.setNull(i+1, ps.getParameterMetaData().getParameterType(i+1));
+								ps.setNull(i+1, getSqlTypeFromClassName(param.javaClass));
 							}
 						}
 						rs = ps.executeQuery();
