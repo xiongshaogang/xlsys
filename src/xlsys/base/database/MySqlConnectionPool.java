@@ -3,12 +3,12 @@ package xlsys.base.database;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 
 import org.dom4j.DocumentException;
 
 import xlsys.base.exception.ParameterNotEnoughException;
 import xlsys.base.log.LogUtil;
+import xlsys.base.script.XlsysClassLoader;
 
 public class MySqlConnectionPool extends ConnectionPool
 {
@@ -25,7 +25,7 @@ public class MySqlConnectionPool extends ConnectionPool
 		Connection con = null;
 		try
 		{
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName("com.mysql.jdbc.Driver", true, XlsysClassLoader.getInstance());
 			con = DriverManager.getConnection(getDataSource(), getUser(), getPassword());
 		}
 		catch(Exception e)

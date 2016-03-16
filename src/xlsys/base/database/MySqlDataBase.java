@@ -754,7 +754,7 @@ public class MySqlDataBase extends DataBase
 	{
 		StringBuffer selectSql = new StringBuffer();
 		String srcSql = paramBean.getSelectSql();
-		selectSql.append(srcSql).append(" limit ").append(beginRowNum+1).append(',').append(endRowNum-beginRowNum+1);
+		selectSql.append(srcSql).append(" limit ").append(beginRowNum).append(',').append(endRowNum-beginRowNum+1);
 		ParamBean splitedParamBean = new ParamBean(selectSql.toString());
 		splitedParamBean.setParamsList(paramBean.getParamsList());
 		return splitedParamBean;
