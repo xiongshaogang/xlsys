@@ -295,10 +295,8 @@ public abstract class ConnectionPool extends Thread implements XlsysBuffer
 		{
 			if (con != null)
 			{
-				if (rollback)
-					con.rollback();
-				else
-					con.commit();
+				if (rollback) con.rollback();
+				else if(!con.getAutoCommit()) con.commit();
 				con.close();
 				LogUtil.printlnInfo("Connection has been closed : "+con);
 			}
