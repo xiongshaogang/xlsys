@@ -39,13 +39,20 @@ public class SystemUtil
 	{
 		if(!systemInited)
 		{
-			// 如果存在配置路径, 使用配置路径来读取配置文件
-			String configRootPath = System.getProperty(XLSYS.SYSTEM_PROPERTY_CONFIG_PATH);
-			if(configRootPath!=null)
+			// 尝试从虚拟机属性中查找固定配置路径，如果存在的话，使用固定配置路径，修正osgi中多个实例启动后的路径重复拼接问题
+			String absolutelyConfigPath = System.getProperty(XLSYS.SYSTEM_PROPERTY_ABSOLUTELY_CONFIG_PATH);
+			if(absolutelyConfigPath==null)
 			{
-				String programDir = new File(configRootPath).getCanonicalPath();
-				System.setProperty("user.dir", programDir);
+				String configRootPath = System.getProperty(XLSYS.SYSTEM_PROPERTY_CONFIG_PATH);
+				// 如果存在配置路径, 使用配置路径来读取配置文件
+				if(configRootPath!=null)
+				{
+					String programDir = new File(configRootPath).getCanonicalPath();
+					System.setProperty("user.dir", programDir);
+					System.setProperty(XLSYS.SYSTEM_PROPERTY_ABSOLUTELY_CONFIG_PATH, programDir);
+				}
 			}
+			
 			LibraryLoader.loadLibrary();
 		}
 	}

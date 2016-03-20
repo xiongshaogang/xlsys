@@ -537,4 +537,9 @@ public interface XLSYS
 	 * 雪狼系统路径配置虚拟机参数
 	 */
 	public final static String SYSTEM_PROPERTY_CONFIG_PATH = "xlsys.configPath";
+	
+	/**
+	 * 雪狼系统绝对路径配置虚拟机参数
+	 */
+	public final static String SYSTEM_PROPERTY_ABSOLUTELY_CONFIG_PATH = "xlsys.absolutelyConfigPath";
 }

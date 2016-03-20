@@ -1,6 +1,5 @@
 package xlsys.base.cfg;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +19,6 @@ public class BaseConfig
 {
 	// 配置文件配置
 	private static BaseConfig baseConfig;
-	public static String ROOT_PATH = "";
 	
 	private Map<String, XmlModel> configMap;
 	
@@ -51,14 +49,7 @@ public class BaseConfig
 		if(!configMap.containsKey(cfgName)||reload)
 		{
 			String filePath = "";
-			if(ROOT_PATH.length()>0)
-			{
-				filePath = ROOT_PATH + File.separator;
-			}
-			if(XLSYS.CONFIG_DEFAULT_NAME.equals(cfgName))
-			{
-				filePath += "config.xml";
-			}
+			if(XLSYS.CONFIG_DEFAULT_NAME.equals(cfgName)) filePath += "config.xml";
 			else
 			{
 				XmlModel baseCfg = configMap.get(XLSYS.CONFIG_DEFAULT_NAME);
