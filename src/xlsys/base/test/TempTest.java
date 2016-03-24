@@ -1,62 +1,57 @@
 package xlsys.base.test;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.MatchResult;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+import xlsys.base.XLSYS;
+import xlsys.base.XlsysFactory;
+import xlsys.base.database.ConnectionPool;
+import xlsys.base.database.IDataBase;
+import xlsys.base.database.bean.ExecuteBean;
+import xlsys.base.database.bean.ParamBean;
+import xlsys.base.database.util.DBUtil;
+import xlsys.base.dataset.IDataSet;
+import xlsys.base.util.ObjectUtil;
 
 public class TempTest
 {
-	public static String replaceKeyWord(String sql)
-	{
-		Set<String> keyWordSet = new HashSet<String>();
-		keyWordSet.add("condition");
-		// 查询语句中是否包含关键字
-		List<int[]> keyWordList = null;
-		StringBuilder keyWordRegex = new StringBuilder();
-		keyWordRegex.append("(^|[^\\w]){1}(");
-		for(String keyWord : keyWordSet) keyWordRegex.append(keyWord).append('|');
-		if(keyWordRegex.charAt(keyWordRegex.length()-1)=='|') keyWordRegex.deleteCharAt(keyWordRegex.length()-1);
-		keyWordRegex.append(")($|[^\\w]){1}");
-		Pattern p = Pattern.compile(keyWordRegex.toString());
-		Pattern tp = Pattern.compile("[^\\w]{1}");
-		Matcher m = p.matcher(sql);
-		while(m.find())
-		{
-			if(keyWordList==null) keyWordList = new ArrayList<int[]>();
-			String matchedStr = m.group();
-			// 查找第一个非单词字符和最后一个非单词字符
-			Matcher mtp = tp.matcher(matchedStr);
-			int[] indices = new int[]{m.start(), m.end()};
-			while(mtp.find())
-			{
-				if(0==mtp.start()) ++indices[0];
-				if(matchedStr.length()-1==mtp.start()) --indices[1];
-			}
-			keyWordList.add(indices);
-		}
-		if(keyWordList!=null&&!keyWordList.isEmpty())
-		{
-			// 把所有关键字的前后加上`
-			StringBuilder tempSb = new StringBuilder(sql);
-			for(int i=keyWordList.size()-1;i>=0;--i)
-			{
-				int[] indices = keyWordList.get(i);
-				tempSb.insert(indices[1], '`');
-				tempSb.insert(indices[0], '`');
-			}
-			sql = tempSb.toString();
-		}
-		return sql;
-	}
 	
 	public static void main(String[] args) throws Exception
 	{
-		String sql = "condition select condition from xlsys_condition .condition";
-		System.out.println(replaceKeyWord(sql));
-		
+		int dbid = 1009;
+		IDataBase dataBase = null;
+		try
+		{
+			dataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(dbid)).getNewDataBase();
+			dataBase.setAutoCommit(false);
+			String selectSql = "select menuid from xlsys_menu where menuid like ?";
+			ParamBean pb = new ParamBean(selectSql);
+			pb.addParamGroup();
+			pb.setParam(1, "xlsys.golf.menu%");
+			IDataSet dataSet = dataBase.sqlSelect(pb);
+			int rowCount = dataSet.getRowCount();
+			ExecuteBean eb = new ExecuteBean(ExecuteBean.EXECUTE_TYPE_INSERT, "xlsys_menuright");
+			for(int i=0;i<rowCount;++i)
+			{
+				String menuId = ObjectUtil.objectToString(dataSet.getValue(i, 0));
+				Map<String, Serializable> dataMap = new HashMap<String, Serializable>();
+				dataMap.put("menuid", menuId);
+				dataMap.put("idx", 10);
+				dataMap.put("righttype", 2);
+				dataMap.put("rightvalue", "200000%");
+				eb.addData(dataMap);
+			}
+			dataBase.sqlExecute(eb);
+			dataBase.commit();
+		}
+		catch(Exception e)
+		{
+			DBUtil.rollback(dataBase);
+		}
+		finally
+		{
+			DBUtil.close(dataBase);
+		}
 	}
 }

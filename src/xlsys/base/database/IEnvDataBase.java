@@ -93,6 +93,7 @@ public abstract class IEnvDataBase implements IDataBase
 	
 	private synchronized IDataBase getDataBase(int dbId, boolean changeLast)
 	{
+		if(dbId==-1) dbId = env.getDbIdSet().iterator().next();
 		IDataBase dataBase = dataBaseMap.get(dbId);
 		if(dataBase==null)
 		{
