@@ -21,7 +21,7 @@ import org.dom4j.DocumentException;
 import xlsys.base.XLSYS;
 import xlsys.base.buffer.BufferManager;
 import xlsys.base.buffer.BufferPool;
-import xlsys.base.buffer.MutiLRUBufferPool;
+import xlsys.base.buffer.MapBufferPool;
 import xlsys.base.buffer.XlsysBuffer;
 import xlsys.base.database.util.DBUtil;
 import xlsys.base.exception.AlreadyClosedException;
@@ -76,7 +76,7 @@ public abstract class ConnectionPool extends Thread implements XlsysBuffer
 		this.maximumPoolSize = maximumPoolSize;
 		this.keepAliveTime = keepAliveTime;
 		this.queueCapacity = queueCapacity;
-		tableInfoBuffer = new MutiLRUBufferPool<String, TableInfo>();
+		tableInfoBuffer = new MapBufferPool<String, TableInfo>();
 		if (maximumPoolSize < corePoolSize)
 			maximumPoolSize = corePoolSize;
 		busyConSet = new HashSet<Connection>();

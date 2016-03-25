@@ -14,7 +14,7 @@ import xlsys.base.XLSYS;
 import xlsys.base.XlsysFactory;
 import xlsys.base.buffer.BufferManager;
 import xlsys.base.buffer.BufferPool;
-import xlsys.base.buffer.MutiLRUBufferPool;
+import xlsys.base.buffer.MapBufferPool;
 import xlsys.base.buffer.XlsysBuffer;
 import xlsys.base.database.bean.ExecuteBean;
 import xlsys.base.database.bean.ISqlBean;
@@ -323,11 +323,7 @@ class ClientTableInfoBuffer implements XlsysBuffer
 	
 	private ClientTableInfoBuffer(int envId)
 	{
-		try
-		{
-			tableInfoBuffer = new MutiLRUBufferPool<String, TableInfo>();
-		}
-		catch (ParameterNotEnoughException e) {}
+		tableInfoBuffer = new MapBufferPool<String, TableInfo>();
 		BufferManager.getInstance().registerBuffer("_ENV"+XLSYS.BUFFER_TABLE_INFO_PREFIX+envId, this);
 	}
 	
