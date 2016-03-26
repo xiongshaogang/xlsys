@@ -143,13 +143,15 @@ public class XlsysClassLoader extends URLClassLoader
 			// 调用每个bundle的classLoader来查找查找该类
 			for(Bundle bundle : bundles)
 			{
-				try
+				if(bundle.getState()==Bundle.ACTIVE&&bundle.getSymbolicName().startsWith("xlsys."))
 				{
-					toFind = bundle.loadClass(name);
+					try
+					{
+						toFind = bundle.loadClass(name);
+					}
+					catch(Exception e){}
+					if(toFind!=null) break;
 				}
-				catch(ClassNotFoundException e){}
-				catch(IllegalStateException e){}
-				if(toFind!=null) break;
 			}
 		}
 		if(toFind==null) throw new ClassNotFoundException("Cannot find class : "+name);
