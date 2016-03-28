@@ -32,6 +32,7 @@ public class CppLibTest
 	public static void testVideoUtil() throws IOException, NativeException
 	{
 		Runtime.getRuntime().load("D:/work/code/MyProject/xlsys.base/cpplib/libXlsysJni.dll");
+		Runtime.getRuntime().load("D:/work/code/MyProject/xlsys.base/cpplib/libXlsysVideo.dll");
 		VideoUtil.remuxingVideoFile("d:/1.flv", "d:/1.mp4");
 	}
 
