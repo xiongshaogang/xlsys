@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import xlsys.base.io.attachment.XlsysAttachment;
-import xlsys.base.script.XlsysClassLoader;
 import xlsys.base.util.StringUtil;
 
 /**
@@ -71,6 +70,13 @@ public class FileUtil
 		return bytes;
 	}
 
+	public static String getFileMd5(byte[] fileData) throws NoSuchAlgorithmException
+	{
+		MessageDigest md = MessageDigest.getInstance(ALGORITHM_MD5);
+		md.update(fileData);
+		return StringUtil.byteToHexString(md.digest());
+	}
+	
 	public static boolean exists(String filePath)
 	{
 		File file = new File(filePath);
