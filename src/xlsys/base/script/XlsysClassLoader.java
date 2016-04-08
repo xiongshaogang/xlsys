@@ -143,7 +143,7 @@ public class XlsysClassLoader extends URLClassLoader
 			// 调用每个bundle的classLoader来查找查找该类
 			for(Bundle bundle : bundles)
 			{
-				if(bundle.getState()==Bundle.ACTIVE&&bundle.getSymbolicName().startsWith("xlsys."))
+				if(bundle.getSymbolicName().startsWith("xlsys."))
 				{
 					try
 					{
