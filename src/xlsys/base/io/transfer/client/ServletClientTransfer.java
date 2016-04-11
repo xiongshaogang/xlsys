@@ -5,6 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -103,5 +105,38 @@ public class ServletClientTransfer extends ClientTransfer
 			}
 		}
 		return recvPkg;
+	}
+
+	@Override
+	public String getServerIp()
+	{
+		String host = null;
+		try
+		{
+			URL url = new URL(servletUrl);
+			host = url.getHost();
+		}
+		catch (MalformedURLException e)
+		{
+			throw new RuntimeException(e);
+		}
+		return host;
+	}
+
+	@Override
+	public int getServerPort()
+	{
+		int port = 80;
+		try
+		{
+			URL url = new URL(servletUrl);
+			port = url.getPort();
+			if(port==-1) port = 80;
+		}
+		catch (MalformedURLException e)
+		{
+			throw new RuntimeException(e);
+		}
+		return port;
 	}
 }

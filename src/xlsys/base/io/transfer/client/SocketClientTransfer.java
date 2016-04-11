@@ -96,4 +96,16 @@ public class SocketClientTransfer extends ClientTransfer
 		return recvPkg;
 	}
 
+	@Override
+	public String getServerIp()
+	{
+		return serverIp;
+	}
+
+	@Override
+	public int getServerPort()
+	{
+		return serverPort;
+	}
+
 }

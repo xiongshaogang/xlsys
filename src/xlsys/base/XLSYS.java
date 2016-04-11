@@ -126,6 +126,10 @@ public interface XLSYS
 	 */
 	public final static String COMMAND_DOWNLOAD_FILE = "_COMMAND_DOWNLOAD_FILE";
 	/**
+	 * 获取文件URL的命令字
+	 */
+	public final static String COMMAND_GET_FILE_URL = "_COMMAND_GET_FILE_URL";
+	/**
 	 * 数据传输的命令字
 	 */
 	public final static String COMMAND_TRANSPORT_DATA = "_COMMAND_TRANSPORT_DATA";
@@ -542,4 +546,6 @@ public interface XLSYS
 	 * 雪狼系统绝对路径配置虚拟机参数
 	 */
 	public final static String SYSTEM_PROPERTY_ABSOLUTELY_CONFIG_PATH = "xlsys.absolutelyConfigPath";
+	
+	public final static String RESOURCE_BASE_URL = "/xlsys-resource";
 }

@@ -302,12 +302,14 @@ public class ReflectUtil
 		}
 		Class<?> objectClass = XlsysClassLoader.getInstance().loadClass(className);
 		Object object = null;
-		/*if(paramClassMap.isEmpty())
+		if(paramList.isEmpty())
 		{
-			object = objectClass.newInstance();
+			Constructor<?> constructor = objectClass.getDeclaredConstructor();
+			constructor.setAccessible(true);
+			object = constructor.newInstance();
 		}
 		else
-		{*/
+		{
 			Class<?>[] classParams = new Class<?>[paramList.size()];
 			Object[] paramsValue = new Object[paramList.size()];
 			for(int i=0;i<paramList.size();i++)
@@ -318,7 +320,7 @@ public class ReflectUtil
 			Constructor<?> constructor = objectClass.getDeclaredConstructor(classParams);
 			constructor.setAccessible(true);
 			object = constructor.newInstance(paramsValue);
-		//}
+		}
 		// 注入成员属性
 		List<XmlModel> fieldXmList = xm.getChilds(fieldTag);
 		for(XmlModel fieldXm : fieldXmList)

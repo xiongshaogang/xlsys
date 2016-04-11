@@ -37,6 +37,7 @@ public class XlsysAttachment implements IModel
 	private int style;
 	private boolean isCompress;
 	private byte[] attachmentData;
+	private String md5;
 	/**
 	 * 当style为STYLE_FILE_SYSTEM和STYLE_FTP时有效
 	 */
@@ -53,8 +54,9 @@ public class XlsysAttachment implements IModel
 	 * @param style 附件存储类型
 	 * @param attachmentData 附件数据(如果为STYLE_DATA_BASE时需要传入)
 	 * @param isCompress 是否已压缩
+	 * @param md5 文件的md5值, 必须传入
 	 */
-	public XlsysAttachment(String attachmentName, long lastModified, int style, byte[] attachmentData, boolean isCompress)
+	public XlsysAttachment(String attachmentName, long lastModified, int style, byte[] attachmentData, boolean isCompress, String md5)
 	{
 		this.attachmentName = attachmentName;
 		if(attachmentName!=null) innerName = StringUtil.getMD5String(attachmentName);
@@ -63,6 +65,7 @@ public class XlsysAttachment implements IModel
 		this.attachmentData = attachmentData;
 		if(attachmentData!=null) size = attachmentData.length;
 		this.isCompress = isCompress;
+		this.md5 = md5;
 	}
 
 	/**
@@ -182,6 +185,16 @@ public class XlsysAttachment implements IModel
 	public void setId(Integer id)
 	{
 		this.id = id;
+	}
+
+	public String getMd5()
+	{
+		return md5;
+	}
+
+	public void setMd5(String md5)
+	{
+		this.md5 = md5;
 	}
 
 	/**

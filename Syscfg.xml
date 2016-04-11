@@ -65,6 +65,11 @@
 			<className desc="会话管理器类，注意该类必须为SessionManager或其子类">xlsys.base.session.SessionManager</className>
 		</Manager>
 	</Session>
+	<Resource desc="资源相关配置">
+		<Manager>
+			<className desc="资源管理器类，注意该类必须为XlsysResourceManager或其子类">xlsys.server.base.io.ServerResourceManager</className>
+		</Manager>
+	</Resource>
 	<TransferConfig desc="传输相关配置">
 		<timeout desc="传输等待超时时间，单位毫秒，小于等于0时无超时限制">60000</timeout>
 		<encrypt desc="传输的内容是否加密">false</encrypt>

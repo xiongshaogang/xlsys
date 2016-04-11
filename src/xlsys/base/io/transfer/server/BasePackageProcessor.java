@@ -37,6 +37,7 @@ import xlsys.base.dataset.util.DataSetUtil;
 import xlsys.base.env.Env;
 import xlsys.base.env.EnvFactory;
 import xlsys.base.exception.UnsupportedException;
+import xlsys.base.io.XlsysResourceManager;
 import xlsys.base.io.attachment.XlsysAttachment;
 import xlsys.base.io.ftp.FtpModel;
 import xlsys.base.io.pack.InnerPackage;
@@ -214,6 +215,11 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 			outObj = downFile(innerPackage);
 			outPkg.setCommand(XLSYS.COMMAND_OK);
 		}
+		else if(XLSYS.COMMAND_GET_FILE_URL.equals(innerPackage.getCommand()))
+		{
+			outObj = getFileURL(innerPackage);
+			outPkg.setCommand(XLSYS.COMMAND_OK);
+		}
 		else if(XLSYS.COMMAND_TRANSPORT_DATA.equals(innerPackage.getCommand()))
 		{
 			outObj = transportData(innerPackage);
@@ -288,6 +294,71 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 		Transport transport = new Transport(session, tsRunId);
 		return transport.transport();
 	}
+	
+	private Serializable getFileURL(InnerPackage innerPackage) throws Exception
+	{
+		String url = null;
+		Serializable inObj = innerPackage.getObj();
+		if(inObj instanceof XlsysAttachment)
+		{
+			XlsysAttachment inAttachment = (XlsysAttachment) inObj;
+			String fileMd5 = inAttachment.getMd5();
+			String fileSuffix = FileUtil.getFileSuffix(inAttachment.getAttachmentName());
+			String resourceName = fileMd5 + '.' + fileSuffix;
+			XlsysResourceManager resourceManager = XlsysResourceManager.getInstance();
+			synchronized(resourceManager)
+			{
+				if(!resourceManager.containsResourceWithName(resourceName))
+				{
+					byte[] bytes = null;
+					if(inAttachment.getStyle()==XlsysAttachment.STYLE_FILE_SYSTEM)
+					{
+						// 从文件系统下载
+						String workDir = null;
+						if(inAttachment.getId()!=null) workDir = (String) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_WORKDIR).getInstance(inAttachment.getId());
+						else workDir = (String) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_WORKDIR).getInstance();
+						// 使用内部名称获取文件
+						String filePath = workDir + '/' + (inAttachment.getPath()==null?"":inAttachment.getPath()) + '/' + inAttachment.getInnerName();
+						filePath = FileUtil.fixFilePath(filePath);
+						bytes = FileUtil.getByteFromFile(filePath);
+					}
+					else if(inAttachment.getStyle()==XlsysAttachment.STYLE_FTP)
+					{
+						// 从Ftp下载
+						FTPUtil ftpUtil = null;
+						InputStream is = null;
+						try
+						{
+							if(inAttachment.getId()!=null) ftpUtil = ((FtpModel)XlsysFactory.getFactoryInstance(XLSYS.FACTORY_FTP).getInstance(inAttachment.getId())).getFtpInstance();
+							else ftpUtil = ((FtpModel)XlsysFactory.getFactoryInstance(XLSYS.FACTORY_FTP).getInstance()).getFtpInstance();
+							if(inAttachment.getPath()!=null) ftpUtil.cd(inAttachment.getPath());
+							// 使用内部名称获取文件
+							is = ftpUtil.get(inAttachment.getInnerName());
+							BufferedInputStream bis = new BufferedInputStream(is);
+							bytes = IOUtil.readBytesFromInputStream(bis, -1);
+						}
+						catch(Exception e)
+						{
+							throw e;
+						}
+						finally
+						{
+							if(ftpUtil!=null) ftpUtil.close();
+							IOUtil.close(is);
+						}
+					}
+					else if(inAttachment.getStyle()==XlsysAttachment.STYLE_DATA_BASE)
+					{
+						bytes = inAttachment.getAttachmentData();
+					}
+					if(inAttachment.isCompress()) bytes = IOUtil.decompress(bytes);
+					resourceManager.registResource(resourceName, bytes, fileSuffix);
+				}
+			}
+			url = resourceManager.getResourceUrlWithName(resourceName);
+		}
+		return url;
+	}
 
 	private Serializable downFile(InnerPackage innerPackage) throws Exception
 	{
@@ -333,7 +404,7 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 					IOUtil.close(is);
 				}
 			}
-			outAttachment = new XlsysAttachment(inAttachment.getAttachmentName(), inAttachment.getLastModified(), inAttachment.getStyle(), bytes, inAttachment.isCompress());
+			outAttachment = new XlsysAttachment(inAttachment.getAttachmentName(), inAttachment.getLastModified(), inAttachment.getStyle(), bytes, inAttachment.isCompress(), inAttachment.getMd5());
 			outAttachment.setId(inAttachment.getId());
 			outAttachment.setPath(inAttachment.getPath());
 		}

@@ -137,4 +137,8 @@ public abstract class ClientTransfer extends XlsysTransfer
 	 * @return 服务端返回的传输包
 	 */
 	protected abstract XlsysPackage postPackage(XlsysPackage sendPkg);
+	
+	public abstract String getServerIp();
+	
+	public abstract int getServerPort();
 }

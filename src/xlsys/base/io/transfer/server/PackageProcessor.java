@@ -181,6 +181,7 @@ public abstract class PackageProcessor
 			}
 			catch(Exception e)
 			{
+				e.printStackTrace();
 				innerOutPkg = new InnerPackage(innerInPkg.getSession());
 				innerOutPkg.setCommand(XLSYS.COMMAND_ERROR);
 				innerOutPkg.setObj(e);
