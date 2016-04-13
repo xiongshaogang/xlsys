@@ -749,6 +749,11 @@ public class StringUtil
 		return decimalFormat.format(number);
 	}
 	
+	public static boolean isUrl(String str)
+	{
+		return str.toLowerCase().matches("(https|http){1}://.*");
+	}
+	
 	public static void main(String[] args)
 	{
 		//System.out.println(transJavaPackToPath("com.lxd.Test"));
@@ -775,6 +780,6 @@ public class StringUtil
 		{
 			System.out.println(strs[i]);
 		}*/
-		System.out.println(trimAll("  刘      旭    东   "));
+		System.out.println(isUrl("https://"));
 	}
 }

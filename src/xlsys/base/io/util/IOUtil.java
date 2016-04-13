@@ -463,6 +463,7 @@ public class IOUtil
 	
 	public static Object readInternalObject(byte[] objBytes, ClassLoader classLoader) throws Exception
 	{
+		if(objBytes==null||objBytes.length==0) return null;
 		Object obj = null;
 		DataInputStream dis = null;
 		try
