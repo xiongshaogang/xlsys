@@ -78,7 +78,7 @@ public class ReflectUtil
 	{
 		Object ret = null;
 		if(classLoader==null) classLoader = XlsysClassLoader.getInstance();
-		String[] params = invokeStr.split("\\"+XLSYS.COMMAND_QUESTION);
+		String[] params = invokeStr.split("\\"+XLSYS.PARAM_QUESTION);
 		int lastPointIdx = params[0].lastIndexOf('.');
 		String className = params[0].substring(0, lastPointIdx);
 		String fieldName = params[0].substring(lastPointIdx+1);
@@ -100,7 +100,7 @@ public class ReflectUtil
 	{
 		Object ret = null;
 		if(classLoader==null) classLoader = XlsysClassLoader.getInstance();
-		String[] params = invokeStr.split("\\"+XLSYS.COMMAND_QUESTION);
+		String[] params = invokeStr.split("\\"+XLSYS.PARAM_QUESTION);
 		int lastPointIdx = params[0].lastIndexOf('.');
 		String className = params[0].substring(0, lastPointIdx);
 		String fieldName = params[0].substring(lastPointIdx+1);
@@ -131,7 +131,7 @@ public class ReflectUtil
 	{
 		Object ret = null;
 		if(classLoader==null) classLoader = XlsysClassLoader.getInstance();
-		String[] params = invokeStr.split("\\"+XLSYS.COMMAND_QUESTION);
+		String[] params = invokeStr.split("\\"+XLSYS.PARAM_QUESTION);
 		int lastPointIdx = params[0].lastIndexOf('.');
 		String className = params[0].substring(0, lastPointIdx);
 		String methodName = params[0].substring(lastPointIdx+1);
@@ -141,7 +141,7 @@ public class ReflectUtil
 		if(params.length>1)
 		{
 			int matchCount = 0;
-			paramArr = params[1].split(XLSYS.COMMAND_AND);
+			paramArr = params[1].split(XLSYS.PARAM_AND);
 			for(Method m : classClass.getMethods())
 			{
 				if(m.getName().equals(methodName)&&Modifier.isStatic(m.getModifiers()))
@@ -184,7 +184,7 @@ public class ReflectUtil
 			}
 			else
 			{
-				String[] values = paramArr[j++].split(XLSYS.COMMAND_RELATION);
+				String[] values = paramArr[j++].split(XLSYS.PARAM_RELATION);
 				parameters[i] = ObjectUtil.objectCast(values[1], paramClass[i]);
 			}
 		}
@@ -205,7 +205,7 @@ public class ReflectUtil
 	{
 		Object ret = null;
 		if(classLoader==null) classLoader = XlsysClassLoader.getInstance();
-		String[] params = invokeStr.split("\\"+XLSYS.COMMAND_QUESTION);
+		String[] params = invokeStr.split("\\"+XLSYS.PARAM_QUESTION);
 		int lastPointIdx = params[0].lastIndexOf('.');
 		String className = params[0].substring(0, lastPointIdx);
 		String methodName = params[0].substring(lastPointIdx+1);
@@ -220,10 +220,10 @@ public class ReflectUtil
 		if(instance==null) instance = classClass.newInstance();
 		if(params.length>1)
 		{
-			String[] paramArr = params[1].split("\\"+XLSYS.COMMAND_QUESTION);
+			String[] paramArr = params[1].split("\\"+XLSYS.PARAM_QUESTION);
 			for(String param : paramArr)
 			{
-				String[] values = param.split(XLSYS.COMMAND_RELATION);
+				String[] values = param.split(XLSYS.PARAM_RELATION);
 				Field field = classClass.getField(values[0]);
 				field.set(instance, ObjectUtil.objectCast(values[1], field.getType()));
 			}

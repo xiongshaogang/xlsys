@@ -619,7 +619,7 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 			String srcBufferKey = bufferKey;
 			if(sortColMap!=null)
 			{
-				bufferKey += XLSYS.CODE_NAME_SEPARATOR+sortColMap.hashCode();
+				bufferKey += XLSYS.KEY_CODE_SEPARATOR+sortColMap.hashCode();
 			}
 			if(!noneedBufferQuery.contains(bufferKey))
 			{

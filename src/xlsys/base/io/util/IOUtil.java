@@ -748,6 +748,50 @@ public class IOUtil
 						map.put(key, value);
 					}
 				}
+				else if(type==XLSYS.DATA_TYPE_EXCEPTION)
+				{
+					// Exception
+					// 读取名称
+					int nameHashcode = dis.readInt();
+					String objClassName = (String) rebuildInternalObject(nameHashcode, hasWriteObjMap, rebuiltObjMap, classLoader);
+					Class<?> objClass = classLoader.loadClass(objClassName);
+					// 读取长度
+					int length = dis.readInt();
+					// 读取内容
+					byte[] bytes = new byte[length];
+					dis.readFully(bytes, 0, length);
+					// 填充对象Field
+					tempIn = new DataInputStream(new ByteArrayInputStream(bytes));
+					// 读取虚拟field : msg
+					// 读取名称(这里不使用)
+					int fieldNameHashcode = tempIn.readInt();
+					rebuildInternalObject(fieldNameHashcode, hasWriteObjMap, rebuiltObjMap, classLoader);
+					// 读取内容
+					int msgHashcode = tempIn.readInt();
+					Object message = rebuildInternalObject(msgHashcode, hasWriteObjMap, rebuiltObjMap, classLoader);
+					// 读取虚拟field : stackTrace
+					// 读取名称(这里不使用)
+					fieldNameHashcode = tempIn.readInt();
+					rebuildInternalObject(fieldNameHashcode, hasWriteObjMap, rebuiltObjMap, classLoader);
+					// 读取内容
+					int stackTraceHashcode = tempIn.readInt();
+					Object stackTrace = rebuildInternalObject(stackTraceHashcode, hasWriteObjMap, rebuiltObjMap, classLoader);
+					// 读取虚拟field : cause
+					// 读取名称(这里不使用)
+					fieldNameHashcode = tempIn.readInt();
+					rebuildInternalObject(fieldNameHashcode, hasWriteObjMap, rebuiltObjMap, classLoader);
+					// 读取内容
+					int causeHashcode = tempIn.readInt();
+					Object cause = rebuildInternalObject(causeHashcode, hasWriteObjMap, rebuiltObjMap, classLoader);
+					// 创建对象
+					Constructor<?> constructor = objClass.getDeclaredConstructor(String.class, Throwable.class);
+					constructor.setAccessible(true);
+					obj = constructor.newInstance(message, cause);
+					Throwable throwable = (Throwable) obj;
+					throwable.setStackTrace(ObjectUtil.createStackTraceElement(stackTrace));
+					// 先将对象放入重建Map, 以免出现死循环
+					rebuiltObjMap.put(hashcode, obj);
+				}
 				else
 				{
 					// 为复杂对象类型
@@ -1097,6 +1141,53 @@ public class IOUtil
 				// 写入内容
 				out.write(arrBytes);
 			}
+			else if(obj instanceof Throwable)
+			{
+				// 写入类型
+				out.writeByte(XLSYS.DATA_TYPE_EXCEPTION);
+				// 写入名称
+				String name = obj.getClass().getName();
+				out.writeInt(getHashCode(name));
+				prepareInternalBytes(name, hasWriteObjMap);
+				// 放入所有的非final以及非transient的Field对象
+				ByteArrayOutputStream baosTemp = new ByteArrayOutputStream();
+				tempOut = new DataOutputStream(baosTemp);
+				// Exception
+				Throwable exception = (Throwable) obj;
+				// 插入虚拟field : msg
+				String fieldName = "msg";
+				String message = exception.getMessage();
+				if(message==null) message = "";
+				// 写入Field名称
+				tempOut.writeInt(getHashCode(fieldName));
+				prepareInternalBytes(fieldName, hasWriteObjMap);
+				// 写入Field的hashcode
+				tempOut.writeInt(getHashCode(message));
+				prepareInternalBytes(message, hasWriteObjMap);
+				// 插入虚拟field : stackTrace
+				fieldName = "stackTrace";
+				String[] stackTrace = ObjectUtil.getStackTrace(exception);
+				// 写入Field名称
+				tempOut.writeInt(getHashCode(fieldName));
+				prepareInternalBytes(fieldName, hasWriteObjMap);
+				// 写入Field的hashcode
+				tempOut.writeInt(getHashCode(stackTrace));
+				prepareInternalBytes(stackTrace, hasWriteObjMap);
+				// 插入虚拟field : cause
+				fieldName = "cause";
+				Throwable cause = exception.getCause();
+				// 写入Field名称
+				tempOut.writeInt(getHashCode(fieldName));
+				prepareInternalBytes(fieldName, hasWriteObjMap);
+				// 写入Field的hashcode
+				tempOut.writeInt(getHashCode(cause));
+				prepareInternalBytes(cause, hasWriteObjMap);
+				// 写入长度
+				byte[] fieldsData = baosTemp.toByteArray();
+				out.writeInt(fieldsData.length);
+				// 写入内容
+				out.write(fieldsData);
+			}
 			else
 			{
 				// 为复杂对象类型
@@ -1437,6 +1528,37 @@ public class IOUtil
 			}
 			jsonObj.put(XLSYS.JSON_OBJ_CONTENT, jsonArray);
 		}
+		else if(obj instanceof Throwable)
+		{
+			// Exception
+			// 写入类型
+			jsonObj.put(XLSYS.JSON_OBJ_DATA_TYPE, XLSYS.DATA_TYPE_EXCEPTION);
+			// 写入名称
+			jsonObj.put(XLSYS.JSON_OBJ_CLASS, obj.getClass().getName());
+			// 放入所有的非final以及非transient的Field对象
+			JSONObject allField = new JSONObject();
+			Throwable exception = (Throwable) obj;
+			// 插入虚拟field : msg
+			String fieldName = "msg";
+			String message = exception.getMessage();
+			if(message==null) message = "";
+			// 写入内容
+			allField.put(fieldName, getHashCode(message));
+			prepareJSONStr(message, hasWriteObjMap);	
+			// 插入虚拟field : stackTrace
+			fieldName = "stackTrace";
+			String[] stackTrace = ObjectUtil.getStackTrace(exception);
+			// 写入内容
+			allField.put(fieldName, getHashCode(stackTrace));
+			prepareJSONStr(stackTrace, hasWriteObjMap);
+			// 插入虚拟field : cause
+			fieldName = "cause";
+			Throwable cause = exception.getCause();
+			// 写入内容
+			allField.put(fieldName, getHashCode(cause));
+			prepareJSONStr(cause, hasWriteObjMap);	
+			jsonObj.put(XLSYS.JSON_OBJ_CONTENT, allField);
+		}
 		else
 		{
 			// 为复杂对象类型
@@ -1446,30 +1568,16 @@ public class IOUtil
 			jsonObj.put(XLSYS.JSON_OBJ_CLASS, obj.getClass().getName());
 			// 放入所有的非final以及非transient的Field对象
 			JSONObject allField = new JSONObject();
-			if(obj instanceof Exception)
+			Field[] fields = obj.getClass().getDeclaredFields();
+			for(Field field : fields)
 			{
-				// Exception特殊处理, 放入虚拟的field
-				Exception exception = (Exception) obj;
-				String fieldName = "msg";
-				String msg = exception.getMessage();
-				if(msg==null) msg = "";
-				// 写入内容
-				allField.put(fieldName, getHashCode(msg));
-				prepareJSONStr(msg, hasWriteObjMap);
-			}
-			else
-			{
-				Field[] fields = obj.getClass().getDeclaredFields();
-				for(Field field : fields)
+				if(!Modifier.isFinal(field.getModifiers())&&!Modifier.isTransient(field.getModifiers()))
 				{
-					if(!Modifier.isFinal(field.getModifiers())&&!Modifier.isTransient(field.getModifiers()))
-					{
-						field.setAccessible(true);
-						// 写入Field名称:hashcode
-						Object fieldObj = field.get(obj);
-						allField.put(field.getName(), getHashCode(fieldObj));
-						prepareJSONStr(fieldObj, hasWriteObjMap);
-					}
+					field.setAccessible(true);
+					// 写入Field名称:hashcode
+					Object fieldObj = field.get(obj);
+					allField.put(field.getName(), getHashCode(fieldObj));
+					prepareJSONStr(fieldObj, hasWriteObjMap);
 				}
 			}
 			jsonObj.put(XLSYS.JSON_OBJ_CONTENT, allField);
@@ -1726,61 +1834,71 @@ public class IOUtil
 					map.put(key, value);
 				}
 			}
+			else if(type==XLSYS.DATA_TYPE_EXCEPTION)
+			{
+				// Exception
+				// 读取名称
+				String objClassName = jsonObj.getString(XLSYS.JSON_OBJ_CLASS);
+				Class<?> objClass = classLoader.loadClass(objClassName);
+				// 读取内容
+				JSONObject allField = jsonObj.getJSONObject(XLSYS.JSON_OBJ_CONTENT);
+				// 读取虚拟field : msg
+				String fieldName = "msg";
+				int tempHashCode = allField.getInt(fieldName);
+				Object message = rebuildJSONObject(tempHashCode, hasWriteObjMap, rebuiltObjMap, classLoader);
+				// 读取虚拟field : stackTrace
+				fieldName = "stackTrace";
+				tempHashCode = allField.getInt(fieldName);
+				Object stackTrace = rebuildJSONObject(tempHashCode, hasWriteObjMap, rebuiltObjMap, classLoader);
+				// 读取虚拟field : cause
+				fieldName = "cause";
+				tempHashCode = allField.getInt(fieldName);
+				Object cause = rebuildJSONObject(tempHashCode, hasWriteObjMap, rebuiltObjMap, classLoader);
+				// 创建对象
+				Constructor<?> constructor = objClass.getDeclaredConstructor(String.class, Throwable.class);
+				constructor.setAccessible(true);
+				obj = constructor.newInstance(message, cause);
+				Throwable throwable = (Throwable) obj;
+				throwable.setStackTrace(ObjectUtil.createStackTraceElement(stackTrace));
+				// 先将对象放入重建Map, 以免出现死循环
+				rebuiltObjMap.put(hashcode, obj);
+			}
 			else
 			{
 				// 为复杂对象类型
 				// 读取名称
 				String objClassName = jsonObj.getString(XLSYS.JSON_OBJ_CLASS);
 				Class<?> objClass = classLoader.loadClass(objClassName);
-				if(Exception.class.isAssignableFrom(objClass))
+				obj = tryInitObj(objClass);
+				if(obj==null) throw new UnsupportedException();
+				// 先将对象放入重建Map, 以免出现死循环
+				rebuiltObjMap.put(hashcode, obj);
+				// 读取内容
+				JSONObject allField = jsonObj.getJSONObject(XLSYS.JSON_OBJ_CONTENT);
+				String[] allFieldNames = JSONObject.getNames(allField);
+				if(allFieldNames!=null)
 				{
-					// Exception特殊处理
-					// 读取内容
-					JSONObject allField = jsonObj.getJSONObject(XLSYS.JSON_OBJ_CONTENT);
-					// 读取虚拟Field内容
-					// 获取Field对象
-					String fieldName = "msg";
-					int tempHashCode = allField.getInt(fieldName);
-					Object fieldObj = rebuildJSONObject(tempHashCode, hasWriteObjMap, rebuiltObjMap, classLoader);
-					Constructor<?> constructor = objClass.getDeclaredConstructor(String.class);
-					constructor.setAccessible(true);
-					obj = constructor.newInstance(fieldObj);
-					// 先将对象放入重建Map, 以免出现死循环
-					rebuiltObjMap.put(hashcode, obj);
-				}
-				else
-				{
-					obj = tryInitObj(objClass);
-					if(obj==null) throw new UnsupportedException();
-					// 先将对象放入重建Map, 以免出现死循环
-					rebuiltObjMap.put(hashcode, obj);
-					// 读取内容
-					JSONObject allField = jsonObj.getJSONObject(XLSYS.JSON_OBJ_CONTENT);
-					String[] allFieldNames = JSONObject.getNames(allField);
-					if(allFieldNames!=null)
+					for(String fieldName : allFieldNames)
 					{
-						for(String fieldName : allFieldNames)
+						// 获取Field对象
+						int tempHashCode = allField.getInt(fieldName);
+						Object fieldObj = rebuildJSONObject(tempHashCode, hasWriteObjMap, rebuiltObjMap, classLoader);
+						// 设置field到obj对象
+						try
 						{
-							// 获取Field对象
-							int tempHashCode = allField.getInt(fieldName);
-							Object fieldObj = rebuildJSONObject(tempHashCode, hasWriteObjMap, rebuiltObjMap, classLoader);
-							// 设置field到obj对象
-							try
+							Field field = obj.getClass().getDeclaredField(fieldName);
+							if(fieldObj!=null&&!field.getType().isAssignableFrom(fieldObj.getClass()))
 							{
-								Field field = obj.getClass().getDeclaredField(fieldName);
-								if(fieldObj!=null&&!field.getType().isAssignableFrom(fieldObj.getClass()))
+								if(field.getType().getName().indexOf('.')>=0)
 								{
-									if(field.getType().getName().indexOf('.')>=0)
-									{
-										LogUtil.printlnError("Type mismatch: hashcode:"+tempHashCode+"\tneed type:"+field.getType().getName()+"\tcurrent type:"+fieldObj.getClass().getName());
-									}
-									else fieldObj = ObjectUtil.objectCast(fieldObj, field.getType());
+									LogUtil.printlnError("Type mismatch: hashcode:"+tempHashCode+"\tneed type:"+field.getType().getName()+"\tcurrent type:"+fieldObj.getClass().getName());
 								}
-								field.setAccessible(true);
-								if(fieldObj!=null||field.getType().getName().indexOf('.')>=0) field.set(obj, fieldObj);
+								else fieldObj = ObjectUtil.objectCast(fieldObj, field.getType());
 							}
-							catch(NoSuchFieldException e1) {}
+							field.setAccessible(true);
+							if(fieldObj!=null||field.getType().getName().indexOf('.')>=0) field.set(obj, fieldObj);
 						}
+						catch(NoSuchFieldException e1) {}
 					}
 				}
 			}

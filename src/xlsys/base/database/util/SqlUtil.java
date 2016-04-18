@@ -194,9 +194,9 @@ public class SqlUtil
 				String[] params = token.substring(1, token.length()-1).split(",");
 				if(macroMap.containsKey(params[0]))
 				{
-					if(macroMap.get(params[0]).contains(XLSYS.CODE_NAME_SEPARATOR))
+					if(macroMap.get(params[0]).contains(XLSYS.KEY_CODE_SEPARATOR))
 					{
-						multiValue = macroMap.get(params[0]).split(XLSYS.CODE_NAME_SEPARATOR);
+						multiValue = macroMap.get(params[0]).split(XLSYS.KEY_CODE_SEPARATOR);
 						multiKey = params[0];
 						break;
 					}

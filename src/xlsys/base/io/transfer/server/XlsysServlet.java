@@ -154,7 +154,7 @@ public class XlsysServlet extends HttpServlet
 		if(javaListener!=null)
 		{
 			// 添加Java监听
-			String[] listeners = javaListener.split(XLSYS.COMMAND_SEPARATOR);
+			String[] listeners = javaListener.split(XLSYS.KEY_CODE_SEPARATOR);
 			for(String lsnStr : listeners)
 			{
 				// 尝试对监听进行加载
@@ -162,7 +162,7 @@ public class XlsysServlet extends HttpServlet
 				{
 					// 获取listener的额外参数
 					String paramStr = null;
-					int qstIdx = lsnStr.indexOf(XLSYS.COMMAND_QUESTION);
+					int qstIdx = lsnStr.indexOf(XLSYS.PARAM_QUESTION);
 					if(qstIdx>-1)
 					{
 						paramStr = lsnStr.substring(qstIdx+1);
@@ -189,10 +189,10 @@ public class XlsysServlet extends HttpServlet
 					// 设置额外参数
 					if(paramStr!=null)
 					{
-						String[] params = paramStr.split(XLSYS.COMMAND_AND);
+						String[] params = paramStr.split(XLSYS.PARAM_AND);
 						for(String param : params)
 						{
-							String[] prop = param.split(XLSYS.COMMAND_RELATION, 2);
+							String[] prop = param.split(XLSYS.PARAM_RELATION, 2);
 							Field field = lsnClass.getField(prop[0]);
 							Class<?> fieldClass = field.getType();
 							Object fieldValue = ObjectUtil.objectCast(prop[1], fieldClass);
@@ -227,7 +227,16 @@ public class XlsysServlet extends HttpServlet
 			Session session = (Session) IOUtil.readJSONObject(sessionStr);
 			String data = paramMap.get(XLSYS.WEB_DATA);
 			Serializable inObj = (Serializable) IOUtil.readJSONObject(data);
-			Serializable outObj = virtualPost(session, cmd, inObj);
+			boolean retPkg = ObjectUtil.objectToBoolean(paramMap.get(XLSYS.WEB_RETPKG));
+			Serializable outObj = null;
+			if(retPkg)
+			{
+				InnerPackage inPkg = new InnerPackage(session);
+				inPkg.setCommand(cmd);
+				inPkg.setObj(inObj);
+				outObj = virtualPost(inPkg);
+			}
+			else outObj = virtualPost(session, cmd, inObj);
 			PrintWriter pw = resp.getWriter();
 			pw.write(IOUtil.getJSONObjectStr(outObj));
 		}

@@ -35,7 +35,7 @@ public class ViewParamTransform
 				BigDecimal idx = (BigDecimal) dataSet.getValue("idx");
 				String param = ObjectUtil.objectToString(dataSet.getValue("param"));
 				if(param==null) continue;
-				Map<String, String> paramMap = StringUtil.getParamMap(param, XLSYS.COMMAND_RELATION, XLSYS.COMMAND_SEPARATOR);
+				Map<String, String> paramMap = StringUtil.getParamMap(param, XLSYS.PARAM_RELATION, XLSYS.KEY_CODE_SEPARATOR);
 				if(paramMap==null||paramMap.isEmpty()) continue;
 				for(String attrName : paramMap.keySet())
 				{

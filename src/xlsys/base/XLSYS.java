@@ -256,24 +256,47 @@ public interface XLSYS
 	/**
 	 * 用于不同码之间的分隔符
 	 */
+	public final static String KEY_CODE_SEPARATOR = ";";
+	/**
+	 * use KEY_CODE_SEPARATOR instand
+	 */
+	@Deprecated
 	public final static String CODE_NAME_SEPARATOR = ";";
 	
 	// 命令字符串的分隔符以及赋值符
 	/**
-	 * 用于不同命令字之间的分隔符
+	 * use KEY_CODE_SEPARATOR instand
 	 */
+	@Deprecated
 	public final static String COMMAND_SEPARATOR = ";";
 	/**
 	 * 用于命令字与其所对应值之间的分隔符
 	 */
+	public final static String PARAM_RELATION = "=";
+	/**
+	 * use PARAM_RELATION instand
+	 */
+	@Deprecated
 	public final static String COMMAND_RELATION = "=";
+	
 	/**
 	 * 用于表示命令字后所跟参数字符串的开始的分隔符
 	 */
+	public final static String PARAM_QUESTION = "?";
+	/**
+	 * use PARAM_QUESTION instand
+	 */
+	@Deprecated
 	public final static String COMMAND_QUESTION = "?";
+	
 	/**
 	 * 用于命令字后所跟不同参数之间的分隔符
 	 */
+	public final static String PARAM_AND = "&";
+	/**
+	 * use PARAM_AND instand
+	 */
+	@Deprecated
 	public final static String COMMAND_AND = "&";
 	
 	// 用于反射方法调用的前缀
@@ -395,6 +418,10 @@ public interface XLSYS
 	 * String数组类型的数据
 	 */
 	public final static byte DATA_TYPE_STR_ARRAY = 20;
+	/**
+	 * Exception类型的数据
+	 */
+	public final static byte DATA_TYPE_EXCEPTION = 21;
 	
 	// 序列化模式
 	/**
@@ -490,6 +517,7 @@ public interface XLSYS
 	public final static String WEB_COMMAND = "WEB_COMMAND";
 	public final static String WEB_SESSION = "WEB_SESSION";
 	public final static String WEB_DATA = "WEB_DATA";
+	public final static String WEB_RETPKG = "WEB_RETPKG";
 	/**
 	 * 客户端类型 : RAP
 	 */

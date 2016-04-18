@@ -57,7 +57,7 @@ public class TranslateUtil extends ModelBuffer
 		synchronized(dictionaryMap)
 		{
 			Set<String> needInitTbnm = new HashSet<String>();
-			String[] tbnmArr = tbnms.split(XLSYS.CODE_NAME_SEPARATOR);
+			String[] tbnmArr = tbnms.split(XLSYS.KEY_CODE_SEPARATOR);
 			Map<String, Map<String, String>> languageMap = dictionaryMap.get(lan);
 			if(languageMap!=null&&!languageMap.isEmpty())
 			{
@@ -239,7 +239,7 @@ public class TranslateUtil extends ModelBuffer
 		if(dataSet instanceof IStorableDataSet)
 		{
 			String tableName = ((IStorableDataSet) dataSet).getTableName();
-			if(tableName!=null) tableNames += XLSYS.CODE_NAME_SEPARATOR + tableName;
+			if(tableName!=null) tableNames += XLSYS.KEY_CODE_SEPARATOR + tableName;
 		}
 		translateDataSet(envId, dataBase, dataSet, language, tableNames);
 	}
@@ -267,7 +267,7 @@ public class TranslateUtil extends ModelBuffer
 	}
 	
 	/**
-	 * 翻译一个DataSet. 该方法等价于translateDataSet(dataBase, dataSet, language, tableName, transCols, XLSYS.CODE_NAME_SEPARATOR)
+	 * 翻译一个DataSet. 该方法等价于translateDataSet(dataBase, dataSet, language, tableName, transCols, XLSYS.KEY_CODE_SEPARATOR)
 	 * @param dataBase
 	 * @param dataSet
 	 * @param language
@@ -276,7 +276,7 @@ public class TranslateUtil extends ModelBuffer
 	 */
 	public void translateDataSet(int envId, IDataBase dataBase, IDataSet dataSet, String language, String tableNames, String transCols)
 	{
-		translateDataSet(envId, dataBase, dataSet, language, tableNames, transCols, XLSYS.CODE_NAME_SEPARATOR);
+		translateDataSet(envId, dataBase, dataSet, language, tableNames, transCols, XLSYS.KEY_CODE_SEPARATOR);
 	}
 	
 	/**
@@ -297,7 +297,7 @@ public class TranslateUtil extends ModelBuffer
 		Map<String, Map<String, String>> tablenameMap = dictionaryMap.get(language);
 		if(tablenameMap!=null)
 		{
-			String[] tableArr = tableNames.split(XLSYS.CODE_NAME_SEPARATOR);
+			String[] tableArr = tableNames.split(XLSYS.KEY_CODE_SEPARATOR);
 			Map<String, String> tableMap = new HashMap<String, String>();
 			for(String tableName : tableArr)
 			{
@@ -419,7 +419,7 @@ public class TranslateUtil extends ModelBuffer
 		if(firstModel instanceof ITableModel)
 		{
 			String tableName = ((ITableModel) firstModel).getRefTableName();
-			if(tableName!=null) tableNames += XLSYS.CODE_NAME_SEPARATOR + tableName;
+			if(tableName!=null) tableNames += XLSYS.KEY_CODE_SEPARATOR + tableName;
 		}
 		return translateModelList(envId, dataBase, modelList, language, tableNames);
 	}
@@ -471,7 +471,7 @@ public class TranslateUtil extends ModelBuffer
 	}
 	
 	/**
-	 * 翻译一个Model. 该方法等价于translateModel(dataBase, model, language, tableName, transFields, XLSYS.CODE_NAME_SEPARATOR)
+	 * 翻译一个Model. 该方法等价于translateModel(dataBase, model, language, tableName, transFields, XLSYS.KEY_CODE_SEPARATOR)
 	 * @param dataBase
 	 * @param model
 	 * @param language
@@ -481,11 +481,11 @@ public class TranslateUtil extends ModelBuffer
 	 */
 	public <T extends IModel> T translateModel(int envId, IDataBase dataBase, T model, String language, String tableNames, String transFields)
 	{
-		return translateModel(envId, dataBase, model, language, tableNames, transFields, XLSYS.CODE_NAME_SEPARATOR);
+		return translateModel(envId, dataBase, model, language, tableNames, transFields, XLSYS.KEY_CODE_SEPARATOR);
 	}
 	
 	/**
-	 * 翻译一个Model列表. 该方法等价于translateModelList(dataBase, modelList, language, tableName, transFields, XLSYS.CODE_NAME_SEPARATOR)
+	 * 翻译一个Model列表. 该方法等价于translateModelList(dataBase, modelList, language, tableName, transFields, XLSYS.KEY_CODE_SEPARATOR)
 	 * @param dataBase
 	 * @param modelList
 	 * @param language
@@ -495,7 +495,7 @@ public class TranslateUtil extends ModelBuffer
 	 */
 	public <T extends IModel> List<T> translateModelList(int envId, IDataBase dataBase, List<T> modelList, String language, String tableNames, String transFields)
 	{
-		return translateModelList(envId, dataBase, modelList, language, tableNames, transFields, XLSYS.CODE_NAME_SEPARATOR);
+		return translateModelList(envId, dataBase, modelList, language, tableNames, transFields, XLSYS.KEY_CODE_SEPARATOR);
 	}
 	
 	/**
@@ -544,7 +544,7 @@ public class TranslateUtil extends ModelBuffer
 		Map<String, Map<String, String>> tablenameMap = dictionaryMap.get(language);
 		if(tablenameMap!=null)
 		{
-			String[] tableArr = tableNames.split(XLSYS.CODE_NAME_SEPARATOR);
+			String[] tableArr = tableNames.split(XLSYS.KEY_CODE_SEPARATOR);
 			Map<String, String> tableMap = new HashMap<String, String>();
 			for(String tableName : tableArr)
 			{

@@ -356,12 +356,12 @@ public class Transport
 		if(javaListener!=null)
 		{
 			// 添加Java监听
-			String[] listeners = javaListener.split(XLSYS.CODE_NAME_SEPARATOR);
+			String[] listeners = javaListener.split(XLSYS.KEY_CODE_SEPARATOR);
 			for(String lsnStr : listeners)
 			{
 				// 获取listener的额外参数
 				String paramStr = null;
-				int qstIdx = lsnStr.indexOf(XLSYS.COMMAND_QUESTION);
+				int qstIdx = lsnStr.indexOf(XLSYS.PARAM_QUESTION);
 				if(qstIdx>-1)
 				{
 					paramStr = lsnStr.substring(qstIdx+1);
@@ -391,10 +391,10 @@ public class Transport
 				// 设置额外参数
 				if(paramStr!=null)
 				{
-					String[] params = paramStr.split(XLSYS.COMMAND_AND);
+					String[] params = paramStr.split(XLSYS.PARAM_AND);
 					for(String param : params)
 					{
-						String[] prop = param.split(XLSYS.COMMAND_RELATION, 2);
+						String[] prop = param.split(XLSYS.PARAM_RELATION, 2);
 						Field field = lsnClass.getField(prop[0]);
 						Class<?> fieldClass = field.getType();
 						Object fieldValue = fieldClass.getConstructor(String.class).newInstance(prop[1]);

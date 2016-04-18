@@ -422,6 +422,26 @@ public class ObjectUtil
 		return str;
 	}
 	
+	public static String[] getStackTrace(Throwable throwable)
+	{
+		StackTraceElement[] ste = throwable.getStackTrace();
+		String[] stackTrace = new String[ste.length];
+		for (int i=0;i<ste.length;++i) stackTrace[i] = ste[i].toString();
+		return stackTrace;
+	}
+	
+	public static StackTraceElement[] createStackTraceElement(Object stackTrace)
+	{
+		StackTraceElement[] ste = null;
+		if(stackTrace instanceof String[])
+		{
+			String[] st = (String[]) stackTrace;
+			ste = new StackTraceElement[st.length];
+			for(int i=0;i<st.length;++i) ste[i] = new StackTraceElement(st[i], "", null, -1);
+		}
+		return ste;
+	}
+	
 	/**
 	 * 查看prop中是否包含二进制位bitProp
 	 * @param prop
