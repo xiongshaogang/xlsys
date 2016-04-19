@@ -109,7 +109,7 @@ public class ParamBean implements Serializable, ISqlBean
 	 * @param value 参数值
 	 * @throws UnsupportedException
 	 */
-	public void setParam(int idx, Serializable value) throws UnsupportedException
+	public void setParam(int idx, Serializable value)
 	{
 		String javaClass = null;
 		if(value!=null)
@@ -118,7 +118,7 @@ public class ParamBean implements Serializable, ISqlBean
 		}
 		else
 		{
-			throw new UnsupportedException("Can not set param using this method when value is null, use setParam(int, Serializable, String) instead.");
+			throw new RuntimeException("Can not set param using this method when value is null, use setParam(int, Serializable, String) instead.");
 		}
 		setParam(cursor, idx, value, javaClass);
 	}

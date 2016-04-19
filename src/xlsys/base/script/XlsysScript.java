@@ -1,7 +1,6 @@
 package xlsys.base.script;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -11,7 +10,6 @@ import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
@@ -39,7 +37,7 @@ public class XlsysScript
 	 * 构造一个脚本对象
 	 * @throws UnsupportedException
 	 */
-	public XlsysScript() throws UnsupportedException
+	public XlsysScript()
 	{
 		this("JavaScript", false);
 	}
@@ -49,7 +47,7 @@ public class XlsysScript
 	 * @param forInterface 指示该对象是否为了实现Java接口而写
 	 * @throws UnsupportedException
 	 */
-	public XlsysScript(boolean forInterface) throws UnsupportedException
+	public XlsysScript(boolean forInterface)
 	{
 		this("JavaScript", forInterface);
 	}
@@ -60,10 +58,10 @@ public class XlsysScript
 	 * @param forInterface 指示该对象是否为了实现Java接口而写
 	 * @throws UnsupportedException
 	 */
-	public XlsysScript(String engineName, boolean forInterface) throws UnsupportedException
+	public XlsysScript(String engineName, boolean forInterface)
 	{
 		engine = manager.getEngineByName(engineName);
-		if(engine==null) throw new UnsupportedException("This engine name is not be supported : " + engineName);
+		if(engine==null) throw new RuntimeException("This engine name is not be supported : " + engineName);
 		this.forInterface = forInterface;
 		if(!forInterface) bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
 		changed = false;
