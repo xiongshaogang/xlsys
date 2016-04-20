@@ -159,6 +159,14 @@ public interface XLSYS
 	 * 登录时所使用的身份认证命令字
 	 */
 	public final static String COMMAND_IDENTITY_VERIFICATION = "_COMMAND_IDENTITY_VERIFICATION";
+	/**
+	 * 获取界面框架模型
+	 */
+	public final static String COMMAND_GET_FRAME_MODEL = "_COMMAND_GET_FRAME_MODEL";
+	/**
+	 * 获取所有界面框架模型
+	 */
+	public final static String COMMAND_GET_ALL_FRAME_MODEL = "_COMMAND_GET_ALL_FRAME_MODEL";
 	
 	// 以下是Base包中的Session相关常量
 	/**
@@ -465,6 +473,10 @@ public interface XLSYS
 	 * 表信息缓冲
 	 */
 	public final static String BUFFER_TABLE_INFO_PREFIX = "_BUFFER_TABLE_INFO_";
+	/**
+	 * 界面框架模型缓冲
+	 */
+	public final static String BUFFER_FRAME_MODEL = "_BUFFER_FRAME_MODEL";
 	
 	// 系统内置工厂
 	/**

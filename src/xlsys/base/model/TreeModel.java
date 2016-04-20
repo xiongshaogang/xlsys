@@ -102,16 +102,16 @@ public class TreeModel<T> implements IModel
 	 * 设置父节点
 	 * @param parentData 父节点数据
 	 */
-	public void setParentData(T parentData)
+	public TreeModel<T> setParentData(T parentData)
 	{
-		setParent(new TreeModel<T>(parentData));
+		return setParent(new TreeModel<T>(parentData));
 	}
 	
 	/**
 	 * 设置父节点
 	 * @param parent 父节点模型
 	 */
-	public void setParent(TreeModel<T> parent)
+	public TreeModel<T> setParent(TreeModel<T> parent)
 	{
 		this.parent = parent;
 		if(parent!=null)
@@ -121,26 +121,28 @@ public class TreeModel<T> implements IModel
 				parent.addChild(this);
 			}
 		}
+		return parent;
 	}
 	
 	/**
 	 * 添加子节点
 	 * @param childData 子节点数据
 	 */
-	public void addChildData(T childData)
+	public TreeModel<T> addChildData(T childData)
 	{
-		addChild(new TreeModel<T>(childData));
+		return addChild(new TreeModel<T>(childData));
 	}
 	
 	/**
 	 * 添加子节点
 	 * @param child 子节点模型
 	 */
-	public void addChild(TreeModel<T> child)
+	public TreeModel<T> addChild(TreeModel<T> child)
 	{
 		if(children==null) children = new ArrayList<TreeModel<T>>();
 		children.add(child);
 		child.parent = this;
+		return child;
 	}
 	
 	/**

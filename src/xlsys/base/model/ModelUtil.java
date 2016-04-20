@@ -26,6 +26,7 @@ import xlsys.base.database.util.DBUtil;
 import xlsys.base.database.util.TranslateUtil;
 import xlsys.base.dataset.DataSet;
 import xlsys.base.dataset.DataSetColumn;
+import xlsys.base.dataset.DataSetRow;
 import xlsys.base.dataset.IDataSet;
 import xlsys.base.dataset.StorableDataSet;
 import xlsys.base.io.util.FileUtil;
@@ -391,12 +392,15 @@ public class ModelUtil
 		classSb.append('\t').append('{').append('\n');
 		StringBuilder fieldSb = new StringBuilder();
 		StringBuilder methodSb = new StringBuilder();
+		StringBuilder seriSb = new StringBuilder();
 		// 生成本表信息
 		for(DataSetColumn dsc : tableInfo.getDataColumnList())
 		{
 			// 生成属性
 			String fieldColumnName = dsc.getColumnName();
 			fieldSb.append('\t').append('\t').append(fieldColumnName).append(" : null,").append('\n');
+			// 生成序列化需要添加的属性
+			seriSb.append('\t').append('\t').append('\t').append("arr.push(\"").append(fieldColumnName).append("\");").append('\n');
 			// 生成get方法
 			methodSb.append('\t').append('\t').append("get").append(StringUtil.toInitialsUpperCase(fieldColumnName)).append(" : function()").append('\n');
 			methodSb.append('\t').append('\t').append('{').append('\n');
@@ -424,6 +428,7 @@ public class ModelUtil
 				if(!childFieldName.endsWith("List")) childFieldName += "List";
 				else singleFieldName = childFieldName.substring(0, childFieldName.length()-4);
 				fieldSb.append('\t').append('\t').append(childFieldName).append(" : null,").append('\n');
+				seriSb.append('\t').append('\t').append('\t').append("arr.push(\"").append(childFieldName).append("\");").append('\n');
 				// get
 				methodSb.append('\t').append('\t').append("get").append(StringUtil.toInitialsUpperCase(childFieldName)).append(" : function()").append('\n');
 				methodSb.append('\t').append('\t').append('{').append('\n');
@@ -449,7 +454,16 @@ public class ModelUtil
 		methodSb.append('\t').append('\t').append("getRefTableName : function()").append('\n');
 		methodSb.append('\t').append('\t').append('{').append('\n');
 		methodSb.append('\t').append('\t').append('\t').append("return \"").append(tableName).append("\";").append('\n');
+		methodSb.append('\t').append('\t').append("},").append('\n');
+		methodSb.append('\n');
+		// 生成序列化必要方法
+		methodSb.append('\t').append('\t').append("getSerializableMembers : function()").append('\n');
+		methodSb.append('\t').append('\t').append('{').append('\n');
+		methodSb.append('\t').append('\t').append('\t').append("var arr = new Array();").append('\n');
+		methodSb.append(seriSb);
+		methodSb.append('\t').append('\t').append('\t').append("return arr;").append('\n');
 		methodSb.append('\t').append('\t').append('}').append('\n');
+		// 合并类体
 		classSb.append(fieldSb).append('\n').append(methodSb);
 		// 生成类尾
 		classSb.append('\t').append('}').append('\n');
@@ -592,39 +606,127 @@ public class ModelUtil
 		return dataSet;
 	}
 	
+	public static <T> TreeModel<T> listToTreeModel(List<T> sortedList, String treeFieldName, TreeModel<T> root) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException
+	{
+		// 获取第一层元素
+		Set<Integer> addedSet = new HashSet<Integer>();
+		// 获取field映射对象
+		T first = sortedList.get(0);
+		Field treeField = first.getClass().getDeclaredField(treeFieldName);
+		treeField.setAccessible(true);
+		for(int i=0;i<sortedList.size();++i)
+		{
+			if(!addedSet.contains(i))
+			{
+				TreeModel<T> childModel = root.addChildData(sortedList.get(i));
+				addChildrenToTreeModel(sortedList, treeField, childModel, i, addedSet);
+			}
+		}
+		return root;
+	}
+	
+	private static <T> void addChildrenToTreeModel(List<T> sortedList, Field treeField, TreeModel<T> treeModel, int index, Set<Integer> addedSet) throws IllegalArgumentException, IllegalAccessException
+	{
+		String keyStr = ObjectUtil.objectToString(treeField.get(treeModel.getData()));
+		for(int i=index+1;i<sortedList.size();++i)
+		{
+			if(!addedSet.contains(i))
+			{
+				T temp = sortedList.get(i);
+				String tempStr = ObjectUtil.objectToString(treeField.get(temp));
+				if(tempStr.startsWith(keyStr))
+				{
+					TreeModel<T> childModel = treeModel.addChildData(temp);
+					addedSet.add(i);
+					addChildrenToTreeModel(sortedList, treeField, childModel, i, addedSet);
+				}
+			}
+		}
+	}
+	
+	public static TreeModel<DataSetRow> dataSetToTreeModel(IDataSet sortedDataSet, String treeColumnName, TreeModel<DataSetRow> root) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException
+	{
+		// 获取第一层元素
+		Set<Integer> addedSet = new HashSet<Integer>();
+		List<DataSetRow> rowList = sortedDataSet.getRows();
+		for(int i=0;i<rowList.size();++i)
+		{
+			if(!addedSet.contains(i))
+			{
+				TreeModel<DataSetRow> childModel = root.addChildData(rowList.get(i));
+				addChildrenRowToTreeModel(sortedDataSet, treeColumnName, childModel, i, addedSet);
+			}
+		}
+		return root;
+	}
+	
+	private static void addChildrenRowToTreeModel(IDataSet sortedDataSet, String treeColumnName, TreeModel<DataSetRow> treeModel, int index, Set<Integer> addedSet) throws IllegalArgumentException, IllegalAccessException
+	{
+		String keyStr = ObjectUtil.objectToString(sortedDataSet.getValue(index, treeColumnName));
+		List<DataSetRow> rowList = sortedDataSet.getRows();
+		for(int i=index+1;i<rowList.size();++i)
+		{
+			if(!addedSet.contains(i))
+			{
+				String tempStr = ObjectUtil.objectToString(sortedDataSet.getValue(i, treeColumnName));
+				if(tempStr.startsWith(keyStr))
+				{
+					TreeModel<DataSetRow> childModel = treeModel.addChildData(sortedDataSet.getRow(i));
+					addedSet.add(i);
+					addChildrenRowToTreeModel(sortedDataSet, treeColumnName, childModel, i, addedSet);
+				}
+			}
+		}
+	}
+
 	public static void main(String[] args)
 	{
 		IDataBase dataBase = null;
 		try
 		{
 			dataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(1001)).getNewDataBase();
-			/*String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
-			ModelUtil.generateModelClass(dataBase, "xlsys_viewqueryparam", "xlsys.business.model.QueryParamModel", null, srcRoot);
-			ModelUtil.generateModelClass(dataBase, "xlsys_viewdetailparam", "xlsys.business.model.ViewDetailParamModel", null, srcRoot);
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.base/src";
+			ModelUtil.generateModelClass(dataBase, "xlv2_framedetailparam", "xlsys.base.model.FrameDetailParamModel", null, srcRoot);
 			List<String> childrenList = new ArrayList<String>();
-			childrenList.add("xlsys.business.model.ViewDetailParamModel");
-			ModelUtil.generateModelClass(dataBase, "xlsys_viewdetail", "xlsys.business.model.ViewDetailModel", childrenList, srcRoot);
-			childrenList.clear();
-			childrenList.add("xlsys.business.model.QueryParamModel");
-			childrenList.add("xlsys.business.model.ViewDetailModel");
-			ModelUtil.generateModelClass(dataBase, "xlsys_view", "xlsys.business.model.ViewModel", childrenList, srcRoot);
+			childrenList.add("xlsys.base.model.FrameDetailParamModel");
+			ModelUtil.generateModelClass(dataBase, "xlv2_framedetail", "xlsys.base.model.FrameDetailModel", childrenList, srcRoot);
+			childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.base.model.FrameDetailModel");
+			ModelUtil.generateModelClass(dataBase, "xlv2_frame", "xlsys.base.model.FrameModel", childrenList, srcRoot);*/
 			
-			ModelUtil.generateModelClass(dataBase, "xlsys_partdetail", "xlsys.business.model.PartDetailModel", null, srcRoot);
-			childrenList.clear();
-			childrenList.add("xlsys.business.model.PartDetailModel");
-			ModelUtil.generateModelClass(dataBase, "xlsys_part", "xlsys.business.model.PartModel", childrenList, srcRoot);*/
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_framedetailparam", "xlsys.base.model.FrameDetailParamModel", null, srcRoot);
+			List<String> childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.base.model.FrameDetailParamModel");
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_framedetail", "xlsys.base.model.FrameDetailModel", childrenList, srcRoot);
+			childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.base.model.FrameDetailModel");
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_frame", "xlsys.base.model.FrameModel", childrenList, srcRoot);*/
 			
-			String srcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
-			/*ModelUtil.generateModelClass(dataBase, "xlsys_flowjava", "xlsys.business.model.FlowJavaModel", null, srcRoot);
-			ModelUtil.generateModelClass(dataBase, "xlsys_flowjs", "xlsys.business.model.FlowJsModel", null, srcRoot);*/
-			// ModelUtil.generateModelClass(dataBase, "xlsys_idrelation", "xlsys.business.model.IdRelationModel", null, srcRoot);
-			/*List<String> childrenList = new ArrayList<String>();
-			childrenList.add("xlsys.business.model.IdRelationModel");
-			ModelUtil.generateModelClass(dataBase, "xlsys_identity", "xlsys.business.model.IdentityModel", childrenList, srcRoot);*/
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
 			ModelUtil.generateJsModelClass(dataBase, "xlsys_idrelation", "xlsys.business.model.IdRelationModel", null, srcRoot);
 			List<String> childrenList = new ArrayList<String>();
 			childrenList.add("xlsys.business.model.IdRelationModel");
-			ModelUtil.generateJsModelClass(dataBase, "xlsys_identity", "xlsys.business.model.IdentityModel", childrenList, srcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlsys_identity", "xlsys.business.model.IdentityModel", childrenList, srcRoot);*/
+			
+			List<PairModel<String, Integer>> testList = new ArrayList<PairModel<String, Integer>>();
+			testList.add(new PairModel<String, Integer>("1", 1));
+			testList.add(new PairModel<String, Integer>("1.1", 1));
+			testList.add(new PairModel<String, Integer>("1.1.1", 1));
+			testList.add(new PairModel<String, Integer>("1.1.2", 1));
+			testList.add(new PairModel<String, Integer>("1.2", 1));
+			testList.add(new PairModel<String, Integer>("1.2.1", 1));
+			testList.add(new PairModel<String, Integer>("2", 1));
+			testList.add(new PairModel<String, Integer>("2.1", 1));
+			testList.add(new PairModel<String, Integer>("2.1.1", 1));
+			testList.add(new PairModel<String, Integer>("2.1.2", 1));
+			testList.add(new PairModel<String, Integer>("2.2", 1));
+			testList.add(new PairModel<String, Integer>("2.3", 1));
+			testList.add(new PairModel<String, Integer>("3", 1));
+			testList.add(new PairModel<String, Integer>("3.1", 1));
+			TreeModel<PairModel<String, Integer>> root = new TreeModel<PairModel<String, Integer>>(new PairModel<String, Integer>("root", 0));
+			listToTreeModel(testList, "first", root);
+			String str = "";
 		}
 		catch(Exception e)
 		{
