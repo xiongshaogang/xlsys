@@ -1343,7 +1343,7 @@ public class IOUtil
 			JSONArray jsonArray = new JSONArray();
 			for(int i=0;i<bytes.length;++i)
 			{
-				jsonArray.put(bytes[i]);
+				jsonArray.put(bytes[i]&0x000000ff);
 			}
 			jsonObj.put(XLSYS.JSON_OBJ_CONTENT, jsonArray);
 		}
@@ -1369,7 +1369,7 @@ public class IOUtil
 			// 写入类型
 			jsonObj.put(XLSYS.JSON_OBJ_DATA_TYPE, XLSYS.DATA_TYPE_SHORT);
 			// 写入内容
-			jsonObj.put(XLSYS.JSON_OBJ_CONTENT, (short)obj);
+			jsonObj.put(XLSYS.JSON_OBJ_CONTENT, ((short)obj)&0x0000ffff);
 		}
 		else if(obj instanceof Integer || obj.getClass().equals(int.class))
 		{
@@ -1390,7 +1390,7 @@ public class IOUtil
 			// 写入类型
 			jsonObj.put(XLSYS.JSON_OBJ_DATA_TYPE, XLSYS.DATA_TYPE_CHAR);
 			// 写入内容
-			jsonObj.put(XLSYS.JSON_OBJ_CONTENT, (char)obj);
+			jsonObj.put(XLSYS.JSON_OBJ_CONTENT, ((char)obj)&0x000000ff);
 		}
 		else if(obj instanceof Boolean || obj.getClass().equals(boolean.class))
 		{
@@ -1418,7 +1418,7 @@ public class IOUtil
 			// 写入类型
 			jsonObj.put(XLSYS.JSON_OBJ_DATA_TYPE, XLSYS.DATA_TYPE_BYTE);
 			// 写入内容
-			jsonObj.put(XLSYS.JSON_OBJ_CONTENT, (byte)obj);
+			jsonObj.put(XLSYS.JSON_OBJ_CONTENT, ((byte)obj)&0x000000ff);
 		}
 		else if(obj instanceof BigDecimal)
 		{

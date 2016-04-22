@@ -16,7 +16,7 @@ public class FrameDetailModel implements ITableModel
 	private BigDecimal frameid;
 	private String fdtid;
 	private String name;
-	private BigDecimal uimodule;
+	private BigDecimal uimid;
 	private String diyimpl;
 	private List<FrameDetailParamModel> frameDetailParamList;
 
@@ -58,14 +58,14 @@ public class FrameDetailModel implements ITableModel
 		this.name = name;
 	}
 
-	public BigDecimal getUimodule()
+	public BigDecimal getUimid()
 	{
-		return uimodule;
+		return uimid;
 	}
 
-	public void setUimodule(BigDecimal uimodule)
+	public void setUimid(BigDecimal uimid)
 	{
-		this.uimodule = uimodule;
+		this.uimid = uimid;
 	}
 
 	public String getDiyimpl()

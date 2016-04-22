@@ -112,7 +112,7 @@ public class TranslateUtil extends ModelBuffer
 			try
 			{
 				IDataSet dataSet = dataBase.sqlSelect(pb);
-				for(int i=0;i<dataSet.getRowCount();i++)
+				for(int i=0;i<dataSet.getRowCount();++i)
 				{
 					String language = (String) dataSet.getValue(i, "language");
 					String tablename = (String) dataSet.getValue(i, "tablename");

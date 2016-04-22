@@ -709,24 +709,14 @@ public class ModelUtil
 			childrenList.add("xlsys.business.model.IdRelationModel");
 			ModelUtil.generateJsModelClass(dataBase, "xlsys_identity", "xlsys.business.model.IdentityModel", childrenList, srcRoot);*/
 			
-			List<PairModel<String, Integer>> testList = new ArrayList<PairModel<String, Integer>>();
-			testList.add(new PairModel<String, Integer>("1", 1));
-			testList.add(new PairModel<String, Integer>("1.1", 1));
-			testList.add(new PairModel<String, Integer>("1.1.1", 1));
-			testList.add(new PairModel<String, Integer>("1.1.2", 1));
-			testList.add(new PairModel<String, Integer>("1.2", 1));
-			testList.add(new PairModel<String, Integer>("1.2.1", 1));
-			testList.add(new PairModel<String, Integer>("2", 1));
-			testList.add(new PairModel<String, Integer>("2.1", 1));
-			testList.add(new PairModel<String, Integer>("2.1.1", 1));
-			testList.add(new PairModel<String, Integer>("2.1.2", 1));
-			testList.add(new PairModel<String, Integer>("2.2", 1));
-			testList.add(new PairModel<String, Integer>("2.3", 1));
-			testList.add(new PairModel<String, Integer>("3", 1));
-			testList.add(new PairModel<String, Integer>("3.1", 1));
-			TreeModel<PairModel<String, Integer>> root = new TreeModel<PairModel<String, Integer>>(new PairModel<String, Integer>("root", 0));
-			listToTreeModel(testList, "first", root);
-			String str = "";
+			String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
+			ModelUtil.generateModelClass(dataBase, "xlsys_menuright", "xlsys.business.model.MenuRightModel", null, srcRoot);
+			List<String> childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.business.model.MenuRightModel");
+			ModelUtil.generateModelClass(dataBase, "xlsys_menu", "xlsys.business.model.MenuModel", childrenList, srcRoot);
+			
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_uimodule", "xlsys.base.model.UIModuleModel", null, srcRoot);*/
 		}
 		catch(Exception e)
 		{

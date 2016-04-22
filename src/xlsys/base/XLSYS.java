@@ -167,6 +167,14 @@ public interface XLSYS
 	 * 获取所有界面框架模型
 	 */
 	public final static String COMMAND_GET_ALL_FRAME_MODEL = "_COMMAND_GET_ALL_FRAME_MODEL";
+	/**
+	 * 获取UI模块模型
+	 */
+	public final static String COMMAND_GET_UIMODULE_MODEL = "_COMMAND_GET_UIMODULE_MODEL";
+	/**
+	 * 获取所有UI模块模型
+	 */
+	public final static String COMMAND_GET_ALL_UIMODULE_MODEL = "_COMMAND_GET_ALL_UIMODULE_MODEL";
 	
 	// 以下是Base包中的Session相关常量
 	/**
@@ -477,6 +485,10 @@ public interface XLSYS
 	 * 界面框架模型缓冲
 	 */
 	public final static String BUFFER_FRAME_MODEL = "_BUFFER_FRAME_MODEL";
+	/**
+	 * UI模块模型缓冲
+	 */
+	public final static String BUFFER_UIMODULE_MODEL = "_BUFFER_UIMODULE_MODEL";
 	
 	// 系统内置工厂
 	/**
