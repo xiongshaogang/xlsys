@@ -63,7 +63,7 @@ public abstract class XlsysResourceManager
 	 * @param resourceSuffix 资源后缀
 	 * @throws Exception
 	 */
-	public void registResource(String resourceName, InputStream in, String resourceSuffix) throws Exception
+	public synchronized void registResource(String resourceName, InputStream in, String resourceSuffix) throws Exception
 	{
 		registResource(resourceName, IOUtil.readBytesFromInputStream(in, -1), resourceSuffix);
 	}
@@ -75,7 +75,7 @@ public abstract class XlsysResourceManager
 	 * @param resourceSuffix 资源后缀
 	 * @throws Exception
 	 */
-	public void registResource(String resourceName, byte[] resourceBytes, String resourceSuffix) throws Exception
+	public synchronized void registResource(String resourceName, byte[] resourceBytes, String resourceSuffix) throws Exception
 	{
 		registResource(resourceName, resourceBytes, resourceSuffix, FileUtil.getFileMd5(resourceBytes));
 	}
@@ -88,7 +88,7 @@ public abstract class XlsysResourceManager
 	 * @param resourceMd5 资源MD5值
 	 * @throws Exception
 	 */
-	public void registResource(String resourceName, byte[] resourceBytes, String resourceSuffix, String resourceMd5) throws Exception
+	public synchronized void registResource(String resourceName, byte[] resourceBytes, String resourceSuffix, String resourceMd5) throws Exception
 	{
 		String resourcePath = createResourcePath(resourceBytes, resourceSuffix, resourceMd5);
 		String resourceUrl = createResourceUrl(resourcePath, resourceMd5);
@@ -101,7 +101,7 @@ public abstract class XlsysResourceManager
 	 * @param resourceFile 资源文件
 	 * @throws Exception
 	 */
-	public void registResource(String resourceName, File resourceFile) throws Exception
+	public synchronized void registResource(String resourceName, File resourceFile) throws Exception
 	{
 		registResource(resourceName, resourceFile, FileUtil.getFileMd5(FileUtil.getByteFromFile(resourceFile.getCanonicalPath())));
 	}
@@ -113,7 +113,7 @@ public abstract class XlsysResourceManager
 	 * @param resourceMd5 资源MD5值
 	 * @throws Exception
 	 */
-	public void registResource(String resourceName, File resourceFile, String resourceMd5) throws Exception
+	public synchronized void registResource(String resourceName, File resourceFile, String resourceMd5) throws Exception
 	{
 		String filePath = resourceFile.getCanonicalPath();
 		String url = createResourceUrl(filePath, resourceMd5);
@@ -137,17 +137,17 @@ public abstract class XlsysResourceManager
 	 * @param resourceSuffix
 	 * @throws Exception
 	 */
-	public void registResource(String resourceName, String resourceUrl, InputStream in, String resourceSuffix) throws Exception
+	public synchronized void registResource(String resourceName, String resourceUrl, InputStream in, String resourceSuffix) throws Exception
 	{
 		registResource(resourceName, resourceUrl, IOUtil.readBytesFromInputStream(in, -1), resourceSuffix);
 	}
 	
-	public void registResource(String resourceName, String resourceUrl, byte[] resourceBytes, String resourceSuffix) throws Exception
+	public synchronized void registResource(String resourceName, String resourceUrl, byte[] resourceBytes, String resourceSuffix) throws Exception
 	{
 		registResource(resourceName, resourceUrl, resourceBytes, resourceSuffix, FileUtil.getFileMd5(resourceBytes));
 	}
 	
-	public void registResource(String resourceName, String resourceUrl, byte[] resourceBytes, String resourceSuffix, String resourceMd5) throws Exception
+	public synchronized void registResource(String resourceName, String resourceUrl, byte[] resourceBytes, String resourceSuffix, String resourceMd5) throws Exception
 	{
 		registResource(resourceName, resourceUrl, createResourcePath(resourceBytes, resourceSuffix, resourceMd5));
 	}
@@ -164,47 +164,47 @@ public abstract class XlsysResourceManager
 		puMap.put(filePath, url);
 	}
 	
-	public boolean containsResourceWithName(String resourceName)
+	public synchronized boolean containsResourceWithName(String resourceName)
 	{
 		return nuMap.containsKey(resourceName)||npMap.containsKey(resourceName);
 	}
 	
-	public boolean containsResourceWithUrl(String resourceUrl)
+	public synchronized boolean containsResourceWithUrl(String resourceUrl)
 	{
 		return unMap.containsKey(resourceUrl)||upMap.containsKey(resourceUrl);
 	}
 	
-	public boolean containsResourceWithPath(String resourcePath)
+	public synchronized boolean containsResourceWithPath(String resourcePath)
 	{
 		return pnMap.containsKey(resourcePath)||puMap.containsKey(resourcePath);
 	}
 	
-	public String getResourceNameWithUrl(String resourceUrl)
+	public synchronized String getResourceNameWithUrl(String resourceUrl)
 	{
 		return unMap.get(resourceUrl);
 	}
 	
-	public String getResourceNameWithPath(String resourcePath)
+	public synchronized String getResourceNameWithPath(String resourcePath)
 	{
 		return pnMap.get(resourcePath);
 	}
 	
-	public String getResourceUrlWithName(String resourceName)
+	public synchronized String getResourceUrlWithName(String resourceName)
 	{
 		return nuMap.get(resourceName);
 	}
 	
-	public String getResourceUrlWithPath(String resourcePath)
+	public synchronized String getResourceUrlWithPath(String resourcePath)
 	{
 		return puMap.get(resourcePath);
 	}
 	
-	public String getResourcePathWithName(String resourceName)
+	public synchronized String getResourcePathWithName(String resourceName)
 	{
 		return npMap.get(resourceName);
 	}
 	
-	public String getResourcePathWithUrl(String resourceUrl)
+	public synchronized String getResourcePathWithUrl(String resourceUrl)
 	{
 		return upMap.get(resourceUrl);
 	}

@@ -2,4 +2,5 @@
 	-allow-file-access-from-files
 2. 如果编译时出现编码错误，则在config.json里面的"let"项下面重新指定TMPDIR:
 	"TMPDIR"       : "c:/temp"
-3. 如果要看sdk中的示例，需要安装npm : https://nodejs.org/en/download/
+3. (无效)如果要看sdk中的示例，需要安装npm : https://nodejs.org/en/download/
+4. JS高级算法 : http://www.webtoolkit.info

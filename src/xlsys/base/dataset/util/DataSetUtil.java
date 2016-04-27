@@ -403,16 +403,13 @@ public class DataSetUtil
 			int dbid = 1010; // 目标库的数据库编号
 			String dataFilePath = "dbmodel/init_data.data"; // 要导入的数据文件的路径
 			dataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(dbid)).getNewDataBase();
-			String selectSql = "select * from xlsys_view";
-			IDataSet dataSet = dataBase.sqlSelect(selectSql);
-			
-			/*dataBase.setAutoCommit(false);
+			dataBase.setAutoCommit(false);
 			List<StorableDataSet> sdsList = (List<StorableDataSet>) IOUtil.readObject(FileUtil.getByteFromFile(dataFilePath));
 			for(StorableDataSet sds : sdsList)
 			{
 				DataSetUtil.importDataFromDataSet(dataBase, sds);
 			}
-			dataBase.commit();*/
+			dataBase.commit();
 		}
 		catch(Exception e)
 		{

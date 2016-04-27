@@ -29,6 +29,7 @@ import xlsys.base.dataset.DataSetColumn;
 import xlsys.base.dataset.DataSetRow;
 import xlsys.base.dataset.IDataSet;
 import xlsys.base.dataset.StorableDataSet;
+import xlsys.base.io.attachment.XlsysAttachment;
 import xlsys.base.io.util.FileUtil;
 import xlsys.base.io.util.IOUtil;
 import xlsys.base.util.ObjectUtil;
@@ -70,6 +71,10 @@ public class ModelUtil
 					Serializable value = dataSet.getValue(i, j);
 					String colName = dataSet.getColumnName(j);
 					Method method = methodMap.get("set"+colName.toLowerCase());
+					if(value!=null&&(value instanceof byte[])&&(method.getParameterTypes()[0]!=byte[].class))
+					{
+						value = (Serializable) IOUtil.readInternalObject((byte[])value);
+					}
 					if(method!=null&&method.getParameterTypes().length==1) method.invoke(model, ObjectUtil.objectCast(value, method.getParameterTypes()[0]));
 				}
 				modelList.add(model);
@@ -102,13 +107,14 @@ public class ModelUtil
 	 * @param tableName 对应的表名
 	 * @param classFullName 类全名
 	 * @param childrenModelList 子表model列表(全名)
+	 * @param blobClass blob字段对应的class类型
 	 * @param srcRoot 创建类的根目录
 	 * @return
 	 * @throws Exception 
 	 */
-	public static void generateModelClass(IDataBase dataBase, String tableName, String classFullName, List<String> childrenModelList, String srcRoot) throws Exception
+	public static void generateModelClass(IDataBase dataBase, String tableName, String classFullName, List<String> childrenModelList, Class<?> blobClass, String srcRoot) throws Exception
 	{
-		String classStr = createModelClass(dataBase, tableName, classFullName, childrenModelList);
+		String classStr = createModelClass(dataBase, tableName, classFullName, childrenModelList, blobClass);
 		String[] classNameArr = classFullName.split("\\.");
 		// 创建目录
 		File srcRootDir = new File(srcRoot);
@@ -135,10 +141,11 @@ public class ModelUtil
 	 * @param tableName 表名称
 	 * @param classFullName 生成类的全名称
 	 * @param childrenModelList 对应的子表model类列表
+	 * @param blobClass blob字段对应的class类型
 	 * @throws Exception
 	 * @return 类文本
 	 */
-	public static String createModelClass(IDataBase dataBase, String tableName, String classFullName, List<String> childrenModelList) throws Exception
+	public static String createModelClass(IDataBase dataBase, String tableName, String classFullName, List<String> childrenModelList, Class<?> blobClass) throws Exception
 	{
 		TableInfo tableInfo = dataBase.getTableInfo(tableName);
 		if(tableInfo==null) throw new RuntimeException("Can not find table : " + tableName);
@@ -185,6 +192,7 @@ public class ModelUtil
 				String pkColName = pkColList.get(i);
 				DataSetColumn dsc = tableInfo.getDataSetColumn(pkColName);
 				String fieldJavaClass = dsc.getJavaClass();
+				if(byte[].class.getName().equals(fieldJavaClass)) fieldJavaClass = blobClass.getName();
 				String fieldColumnName = dsc.getColumnName();
 				if(!fieldJavaClass.startsWith("java.lang.")&&!byte[].class.getName().equals(fieldJavaClass)) addImportClass(packageName, fieldJavaClass, importSb, importedClass);
 				if(byte[].class.getName().equals(fieldJavaClass)) fieldJavaClass = "byte[]";
@@ -208,6 +216,7 @@ public class ModelUtil
 		{
 			// 生成属性
 			String fieldJavaClass = dsc.getJavaClass();
+			if(byte[].class.getName().equals(fieldJavaClass)) fieldJavaClass = blobClass.getName();
 			String fieldColumnName = dsc.getColumnName();
 			if(!fieldJavaClass.startsWith("java.lang.")&&!byte[].class.getName().equals(fieldJavaClass)) addImportClass(packageName, fieldJavaClass, importSb, importedClass);
 			fieldSb.append('\t').append("private ");
@@ -709,14 +718,37 @@ public class ModelUtil
 			childrenList.add("xlsys.business.model.IdRelationModel");
 			ModelUtil.generateJsModelClass(dataBase, "xlsys_identity", "xlsys.business.model.IdentityModel", childrenList, srcRoot);*/
 			
-			String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
-			ModelUtil.generateModelClass(dataBase, "xlsys_menuright", "xlsys.business.model.MenuRightModel", null, srcRoot);
-			List<String> childrenList = new ArrayList<String>();
-			childrenList.add("xlsys.business.model.MenuRightModel");
-			ModelUtil.generateModelClass(dataBase, "xlsys_menu", "xlsys.business.model.MenuModel", childrenList, srcRoot);
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
+			ModelUtil.generateModelClass(dataBase, "xlsys_right", "xlsys.business.model.RightModel", null, srcRoot);*/
 			
 			/*String srcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
-			ModelUtil.generateJsModelClass(dataBase, "xlv2_uimodule", "xlsys.base.model.UIModuleModel", null, srcRoot);*/
+			ModelUtil.generateJsModelClass(dataBase, "xlsys_right", "xlsys.business.model.RightModel", null, srcRoot);*/
+			
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
+			ModelUtil.generateModelClass(dataBase, "xlsys_menuright", "xlsys.business.model.MenuRightModel", null, byte[].class, srcRoot);
+			List<String> childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.business.model.MenuRightModel");
+			ModelUtil.generateModelClass(dataBase, "xlsys_menu", "xlsys.business.model.MenuModel", childrenList, XlsysAttachment.class, srcRoot);*/
+			
+			/*String jsSrcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
+			ModelUtil.generateJsModelClass(dataBase, "xlsys_menuright", "xlsys.business.model.MenuRightModel", null, jsSrcRoot);
+			List<String> jsChildrenList = new ArrayList<String>();
+			jsChildrenList.add("xlsys.business.model.MenuRightModel");
+			ModelUtil.generateJsModelClass(dataBase, "xlsys_menu", "xlsys.business.model.MenuModel", jsChildrenList, jsSrcRoot);*/
+			
+			String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
+			ModelUtil.generateModelClass(dataBase, "xlv2_handler", "xlsys.business.model.HandlerModel", null, byte[].class, srcRoot);
+			ModelUtil.generateModelClass(dataBase, "xlv2_toolright", "xlsys.business.model.ToolRightModel", null, byte[].class, srcRoot);
+			List<String> childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.business.model.ToolRightModel");
+			ModelUtil.generateModelClass(dataBase, "xlv2_tool", "xlsys.business.model.ToolModel", childrenList, XlsysAttachment.class, srcRoot);
+			
+			String jsSrcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_handler", "xlsys.business.model.HandlerModel", null, jsSrcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_toolright", "xlsys.business.model.ToolRightModel", null, jsSrcRoot);
+			List<String> jsChildrenList = new ArrayList<String>();
+			jsChildrenList.add("xlsys.business.model.ToolRightModel");
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_tool", "xlsys.business.model.ToolModel", jsChildrenList, jsSrcRoot);
 		}
 		catch(Exception e)
 		{

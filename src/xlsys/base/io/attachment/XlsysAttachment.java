@@ -35,7 +35,7 @@ public class XlsysAttachment implements IModel
 	private long size;
 	private long lastModified;
 	private int style;
-	private boolean isCompress;
+	private boolean compress;
 	private byte[] attachmentData;
 	private String md5;
 	/**
@@ -53,10 +53,10 @@ public class XlsysAttachment implements IModel
 	 * @param lastModified 最后修改时间
 	 * @param style 附件存储类型
 	 * @param attachmentData 附件数据(如果为STYLE_DATA_BASE时需要传入)
-	 * @param isCompress 是否已压缩
+	 * @param compress 是否已压缩
 	 * @param md5 文件的md5值, 必须传入
 	 */
-	public XlsysAttachment(String attachmentName, long lastModified, int style, byte[] attachmentData, boolean isCompress, String md5)
+	public XlsysAttachment(String attachmentName, long lastModified, int style, byte[] attachmentData, boolean compress, String md5)
 	{
 		this.attachmentName = attachmentName;
 		if(attachmentName!=null) innerName = StringUtil.getMD5String(attachmentName);
@@ -64,7 +64,7 @@ public class XlsysAttachment implements IModel
 		this.style = style;
 		this.attachmentData = attachmentData;
 		if(attachmentData!=null) size = attachmentData.length;
-		this.isCompress = isCompress;
+		this.compress = compress;
 		this.md5 = md5;
 	}
 
@@ -130,7 +130,7 @@ public class XlsysAttachment implements IModel
 	 */
 	public boolean isCompress()
 	{
-		return isCompress;
+		return compress;
 	}
 
 	/**
@@ -204,11 +204,11 @@ public class XlsysAttachment implements IModel
 	 */
 	public synchronized void compress() throws IOException, NativeException
 	{
-		if(!isCompress&&attachmentData!=null&&attachmentData.length>0)
+		if(!compress&&attachmentData!=null&&attachmentData.length>0)
 		{
 			attachmentData = IOUtil.compress(attachmentData);
 			size = attachmentData.length;
-			isCompress = true;
+			compress = true;
 		}
 	}
 	
@@ -219,11 +219,11 @@ public class XlsysAttachment implements IModel
 	 */
 	public synchronized void decompress() throws IOException, NativeException
 	{
-		if(isCompress&&attachmentData!=null&&attachmentData.length>0)
+		if(compress&&attachmentData!=null&&attachmentData.length>0)
 		{
 			attachmentData = IOUtil.decompress(attachmentData);
 			size = attachmentData.length;
-			isCompress = false;
+			compress = false;
 		}
 	}
 }
