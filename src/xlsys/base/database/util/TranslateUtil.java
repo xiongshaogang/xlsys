@@ -86,6 +86,11 @@ public class TranslateUtil extends ModelBuffer
 					initByParamBean(envId, dataBase, pb);
 					// 检查所有的表, 如果没有对应的tablenameMap, 则放置一个空的Map到对应的表中去, 避免对于没有翻译配置的表的多次加载
 					languageMap = dictionaryMap.get(lan);
+					if(languageMap==null)
+					{
+						languageMap = new HashMap<String, Map<String, String>>();
+						dictionaryMap.put(lan, languageMap);
+					}
 					for(String tbnm : needInitTbnm)
 					{
 						Map<String, String> tablenameMap = languageMap.get(tbnm);

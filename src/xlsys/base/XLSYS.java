@@ -175,6 +175,38 @@ public interface XLSYS
 	 * 获取所有UI模块模型
 	 */
 	public final static String COMMAND_GET_ALL_UIMODULE_MODEL = "_COMMAND_GET_ALL_UIMODULE_MODEL";
+	/**
+	 * 获取菜单模型
+	 */
+	public final static String COMMAND_GET_MENU_MODEL = "_COMMAND_GET_MENU_MODEL";
+	/**
+	 * 获取所有菜单模型
+	 */
+	public final static String COMMAND_GET_ALL_MENU_MODEL = "_COMMAND_GET_ALL_MENU_MODEL";
+	/**
+	 * 获取视图模型
+	 */
+	public final static String COMMAND_GET_VIEW_MODEL = "_COMMAND_GET_VIEW_MODEL";
+	/**
+	 * 获取所有视图模型
+	 */
+	public final static String COMMAND_GET_ALL_VIEW_MODEL = "_COMMAND_GET_ALL_VIEW_MODEL";
+	/**
+	 * 获取所有handler模型
+	 */
+	public final static String COMMAND_GET_ALL_HANDLER_MODEL = "_COMMAND_GET_ALL_HANDLER_MODEL";
+	/**
+	 * 获取handler模型
+	 */
+	public final static String COMMAND_GET_HANDLER_MODEL = "_COMMAND_GET_HANDLER_MODEL";
+	/**
+	 * 获取所有工具模型
+	 */
+	public final static String COMMAND_GET_ALL_TOOL_MODEL = "_COMMAND_GET_ALL_TOOL_MODEL";
+	/**
+	 * 获取工具模型
+	 */
+	public final static String COMMAND_GET_TOOL_MODEL = "_COMMAND_GET_TOOL_MODEL";
 	
 	// 以下是Base包中的Session相关常量
 	/**
@@ -234,6 +266,10 @@ public interface XLSYS
 	 * 使用超级模式登陆时的管理员用户名
 	 */
 	public final static String SESSION_SUPERMODE_ADMIN_NAME = "_SESSION_SUPERMODE_ADMIN_NAME";
+	/**
+	 * 语言环境
+	 */
+	public final static String SESSION_LANGUAGE = "_SESSION_LANGUAGE";
 	/**
 	 * Session中临时传递的dataSet
 	 */
@@ -489,6 +525,22 @@ public interface XLSYS
 	 * UI模块模型缓冲
 	 */
 	public final static String BUFFER_UIMODULE_MODEL = "_BUFFER_UIMODULE_MODEL";
+	/**
+	 * 菜单模型缓冲
+	 */
+	public final static String BUFFER_MENU_MODEL = "_BUFFER_MENU_MODEL";
+	/**
+	 * 视图模型缓冲
+	 */
+	public final static String BUFFER_VIEW_MODEL = "_BUFFER_VIEW_MODEL";
+	/**
+	 * handler模型缓冲
+	 */
+	public final static String BUFFER_HANDLER_MODEL = "_BUFFER_HANDLER_MODEL";
+	/**
+	 * 工具模型缓冲
+	 */
+	public final static String BUFFER_TOOL_MODEL = "_BUFFER_TOOL_MODEL";
 	
 	// 系统内置工厂
 	/**

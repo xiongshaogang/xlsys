@@ -19,17 +19,14 @@ import xlsys.base.XLSYS;
 import xlsys.base.XlsysFactory;
 import xlsys.base.database.ConnectionPool;
 import xlsys.base.database.IDataBase;
-import xlsys.base.database.IEnvDataBase;
 import xlsys.base.database.TableInfo;
 import xlsys.base.database.bean.ParamBean;
 import xlsys.base.database.util.DBUtil;
-import xlsys.base.database.util.TranslateUtil;
 import xlsys.base.dataset.DataSet;
 import xlsys.base.dataset.DataSetColumn;
 import xlsys.base.dataset.DataSetRow;
 import xlsys.base.dataset.IDataSet;
 import xlsys.base.dataset.StorableDataSet;
-import xlsys.base.io.attachment.XlsysAttachment;
 import xlsys.base.io.util.FileUtil;
 import xlsys.base.io.util.IOUtil;
 import xlsys.base.util.ObjectUtil;
@@ -50,7 +47,6 @@ public class ModelUtil
 		try
 		{
 			IDataSet dataSet = dataBase.sqlSelect(pb);
-			if(dataBase instanceof IEnvDataBase) TranslateUtil.getInstance().translateDataSet((IEnvDataBase)dataBase, dataSet);
 			Constructor<T> constructor = modelClass.getDeclaredConstructor();
 			constructor.setAccessible(true);
 			// 获取所有方法,方法名全部转换成小写,同名会被覆盖掉,这里要注意
@@ -694,23 +690,28 @@ public class ModelUtil
 		try
 		{
 			dataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(1001)).getNewDataBase();
-			/*String srcRoot = "D:/work/code/MyProject/xlsys.base/src";
-			ModelUtil.generateModelClass(dataBase, "xlv2_framedetailparam", "xlsys.base.model.FrameDetailParamModel", null, srcRoot);
-			List<String> childrenList = new ArrayList<String>();
-			childrenList.add("xlsys.base.model.FrameDetailParamModel");
-			ModelUtil.generateModelClass(dataBase, "xlv2_framedetail", "xlsys.base.model.FrameDetailModel", childrenList, srcRoot);
-			childrenList = new ArrayList<String>();
-			childrenList.add("xlsys.base.model.FrameDetailModel");
-			ModelUtil.generateModelClass(dataBase, "xlv2_frame", "xlsys.base.model.FrameModel", childrenList, srcRoot);*/
 			
-			/*String srcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
-			ModelUtil.generateJsModelClass(dataBase, "xlv2_framedetailparam", "xlsys.base.model.FrameDetailParamModel", null, srcRoot);
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.base/src";
+			ModelUtil.generateModelClass(dataBase, "xlv2_framedetailparam", "xlsys.base.model.FrameDetailParamModel", null, byte[].class, srcRoot);
 			List<String> childrenList = new ArrayList<String>();
 			childrenList.add("xlsys.base.model.FrameDetailParamModel");
-			ModelUtil.generateJsModelClass(dataBase, "xlv2_framedetail", "xlsys.base.model.FrameDetailModel", childrenList, srcRoot);
+			ModelUtil.generateModelClass(dataBase, "xlv2_framedetail", "xlsys.base.model.FrameDetailModel", childrenList, byte[].class, srcRoot);
+			ModelUtil.generateModelClass(dataBase, "xlv2_frameparam", "xlsys.base.model.FrameParamModel", null, byte[].class, srcRoot);
 			childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.base.model.FrameParamModel");
 			childrenList.add("xlsys.base.model.FrameDetailModel");
-			ModelUtil.generateJsModelClass(dataBase, "xlv2_frame", "xlsys.base.model.FrameModel", childrenList, srcRoot);*/
+			ModelUtil.generateModelClass(dataBase, "xlv2_frame", "xlsys.base.model.FrameModel", childrenList, byte[].class, srcRoot);
+			
+			String jsSrcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_framedetailparam", "xlsys.base.model.FrameDetailParamModel", null, jsSrcRoot);
+			List<String> jsChildrenList = new ArrayList<String>();
+			jsChildrenList.add("xlsys.base.model.FrameDetailParamModel");
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_framedetail", "xlsys.base.model.FrameDetailModel", jsChildrenList, jsSrcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_frameparam", "xlsys.base.model.FrameParamModel", null, jsSrcRoot);
+			jsChildrenList = new ArrayList<String>();
+			jsChildrenList.add("xlsys.base.model.FrameParamModel");
+			jsChildrenList.add("xlsys.base.model.FrameDetailModel");
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_frame", "xlsys.base.model.FrameModel", jsChildrenList, jsSrcRoot);*/
 			
 			/*String srcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
 			ModelUtil.generateJsModelClass(dataBase, "xlsys_idrelation", "xlsys.business.model.IdRelationModel", null, srcRoot);
@@ -736,19 +737,79 @@ public class ModelUtil
 			jsChildrenList.add("xlsys.business.model.MenuRightModel");
 			ModelUtil.generateJsModelClass(dataBase, "xlsys_menu", "xlsys.business.model.MenuModel", jsChildrenList, jsSrcRoot);*/
 			
-			String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
-			ModelUtil.generateModelClass(dataBase, "xlv2_handler", "xlsys.business.model.HandlerModel", null, byte[].class, srcRoot);
-			ModelUtil.generateModelClass(dataBase, "xlv2_toolright", "xlsys.business.model.ToolRightModel", null, byte[].class, srcRoot);
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.base/src";
+			ModelUtil.generateModelClass(dataBase, "xlv2_viewqueryparamparam", "xlsys.base.model.ViewQueryParamParamModel", null, byte[].class, srcRoot);
 			List<String> childrenList = new ArrayList<String>();
-			childrenList.add("xlsys.business.model.ToolRightModel");
-			ModelUtil.generateModelClass(dataBase, "xlv2_tool", "xlsys.business.model.ToolModel", childrenList, XlsysAttachment.class, srcRoot);
+			childrenList.add("xlsys.base.model.ViewQueryParamParamModel");
+			ModelUtil.generateModelClass(dataBase, "xlv2_viewqueryparam", "xlsys.base.model.ViewQueryParamModel", childrenList, byte[].class, srcRoot);
+			ModelUtil.generateModelClass(dataBase, "xlv2_viewcolumnparam", "xlsys.base.model.ViewColumnParamModel", null, byte[].class, srcRoot);
+			childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.base.model.ViewColumnParamModel");
+			ModelUtil.generateModelClass(dataBase, "xlv2_viewcolumn", "xlsys.base.model.ViewColumnModel", childrenList, byte[].class, srcRoot);
+			ModelUtil.generateModelClass(dataBase, "xlv2_viewparam", "xlsys.base.model.ViewParamModel", null, byte[].class, srcRoot);
+			childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.base.model.ViewParamModel");
+			childrenList.add("xlsys.base.model.ViewColumnModel");
+			childrenList.add("xlsys.base.model.ViewQueryParamModel");
+			ModelUtil.generateModelClass(dataBase, "xlv2_view", "xlsys.base.model.ViewModel", childrenList, byte[].class, srcRoot);
+			
+			
 			
 			String jsSrcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
-			ModelUtil.generateJsModelClass(dataBase, "xlv2_handler", "xlsys.business.model.HandlerModel", null, jsSrcRoot);
-			ModelUtil.generateJsModelClass(dataBase, "xlv2_toolright", "xlsys.business.model.ToolRightModel", null, jsSrcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_viewqueryparamparam", "xlsys.base.model.ViewQueryParamParamModel", null, jsSrcRoot);
 			List<String> jsChildrenList = new ArrayList<String>();
-			jsChildrenList.add("xlsys.business.model.ToolRightModel");
-			ModelUtil.generateJsModelClass(dataBase, "xlv2_tool", "xlsys.business.model.ToolModel", jsChildrenList, jsSrcRoot);
+			jsChildrenList.add("xlsys.base.model.ViewQueryParamParamModel");
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_viewqueryparam", "xlsys.base.model.ViewQueryParamModel", jsChildrenList, jsSrcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_viewcolumnparam", "xlsys.base.model.ViewColumnParamModel", null, jsSrcRoot);
+			jsChildrenList = new ArrayList<String>();
+			jsChildrenList.add("xlsys.base.model.ViewColumnParamModel");
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_viewcolumn", "xlsys.base.model.ViewColumnModel", jsChildrenList, jsSrcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_viewparam", "xlsys.base.model.ViewParamModel", null, jsSrcRoot);
+			jsChildrenList = new ArrayList<String>();
+			jsChildrenList.add("xlsys.base.model.ViewParamModel");
+			jsChildrenList.add("xlsys.base.model.ViewColumnModel");
+			jsChildrenList.add("xlsys.base.model.ViewQueryParamModel");
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_view", "xlsys.base.model.ViewModel", jsChildrenList, jsSrcRoot);*/
+			
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.base/src";
+			ModelUtil.generateModelClass(dataBase, "xlv2_menuright", "xlsys.base.model.MenuRightModel", null, byte[].class, srcRoot);
+			ModelUtil.generateModelClass(dataBase, "xlv2_menuhandlerparam", "xlsys.base.model.MenuHandlerParamModel", null, byte[].class, srcRoot);
+			List<String> childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.base.model.MenuRightModel");
+			childrenList.add("xlsys.base.model.MenuHandlerParamModel");
+			ModelUtil.generateModelClass(dataBase, "xlv2_menu", "xlsys.base.model.MenuModel", childrenList, XlsysAttachment.class, srcRoot);
+			
+			
+			String jsSrcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_menuright", "xlsys.base.model.MenuRightModel", null, jsSrcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_menuhandlerparam", "xlsys.base.model.MenuHandlerParamModel", null, jsSrcRoot);
+			List<String> jsChildrenList = new ArrayList<String>();
+			jsChildrenList.add("xlsys.base.model.MenuRightModel");
+			jsChildrenList.add("xlsys.base.model.MenuHandlerParamModel");
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_menu", "xlsys.base.model.MenuModel", jsChildrenList, jsSrcRoot);*/
+			
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.base/src";
+			ModelUtil.generateModelClass(dataBase, "xlv2_toolright", "xlsys.base.model.ToolRightModel", null, byte[].class, srcRoot);
+			ModelUtil.generateModelClass(dataBase, "xlv2_toolhandlerparam", "xlsys.base.model.ToolHandlerParamModel", null, byte[].class, srcRoot);
+			List<String> childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.base.model.ToolRightModel");
+			childrenList.add("xlsys.base.model.ToolHandlerParamModel");
+			ModelUtil.generateModelClass(dataBase, "xlv2_tool", "xlsys.base.model.ToolModel", childrenList, XlsysAttachment.class, srcRoot);
+			
+			
+			String jsSrcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_toolright", "xlsys.base.model.ToolRightModel", null, jsSrcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_toolhandlerparam", "xlsys.base.model.ToolHandlerParamModel", null, jsSrcRoot);
+			List<String> jsChildrenList = new ArrayList<String>();
+			jsChildrenList.add("xlsys.base.model.ToolRightModel");
+			jsChildrenList.add("xlsys.base.model.ToolHandlerParamModel");
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_tool", "xlsys.base.model.ToolModel", jsChildrenList, jsSrcRoot);*/
+			
+			String srcRoot = "D:/work/code/MyProject/xlsys.base/src";
+			ModelUtil.generateModelClass(dataBase, "xlv2_uimodule", "xlsys.base.model.UIModuleModel", null, byte[].class, srcRoot);
+			
+			String jsSrcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_uimodule", "xlsys.base.model.UIModuleModel", null, jsSrcRoot);
 		}
 		catch(Exception e)
 		{

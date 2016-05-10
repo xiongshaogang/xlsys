@@ -11,13 +11,15 @@ import java.util.ArrayList;
  */
 public class FrameDetailModel implements ITableModel
 {
-	private static final long serialVersionUID = -6019165613856355153L;
+	private static final long serialVersionUID = 2985631319675183292L;
 	
 	private BigDecimal frameid;
 	private String fdtid;
 	private String name;
 	private BigDecimal uimid;
 	private String diyimpl;
+	private String registname;
+	private BigDecimal viewid;
 	private List<FrameDetailParamModel> frameDetailParamList;
 
 	protected FrameDetailModel() {}
@@ -76,6 +78,26 @@ public class FrameDetailModel implements ITableModel
 	public void setDiyimpl(String diyimpl)
 	{
 		this.diyimpl = diyimpl;
+	}
+
+	public String getRegistname()
+	{
+		return registname;
+	}
+
+	public void setRegistname(String registname)
+	{
+		this.registname = registname;
+	}
+
+	public BigDecimal getViewid()
+	{
+		return viewid;
+	}
+
+	public void setViewid(BigDecimal viewid)
+	{
+		this.viewid = viewid;
 	}
 
 	public List<FrameDetailParamModel> getFrameDetailParamList()

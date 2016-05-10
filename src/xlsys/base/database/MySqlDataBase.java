@@ -52,6 +52,7 @@ public class MySqlDataBase extends DataBase
 		keyWordSet = new HashSet<String>();
 		keyWordSet.add("condition");
 		keyWordSet.add("range");
+		keyWordSet.add("precision");
 	}
 	
 	protected MySqlDataBase(ConnectionPool conPool, Connection con) throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, DocumentException
@@ -111,11 +112,17 @@ public class MySqlDataBase extends DataBase
 	@Override
 	public Map<String, String> getAllTableBaseInfo() throws Exception
 	{
-		String selectSql = "select table_name,table_comment from information_schema.tables where table_schema<>'information_schema'";
+		String dataSource = this.conPool.getDataSource();
+		String[] params = dataSource.split("/");
+		String scheme = params[params.length-1];
+		String selectSql = "select table_name,table_comment from information_schema.tables where table_schema=?";
+		ParamBean pb = new ParamBean(selectSql);
+		pb.addParamGroup();
+		pb.setParam(1, scheme);
 		IDataSet ds = null;
 		try
 		{
-			ds = doSqlSelect(new ParamBean(selectSql), false);
+			ds = doSqlSelect(pb, false);
 		}
 		catch (AlreadyClosedException e)
 		{

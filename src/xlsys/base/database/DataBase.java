@@ -32,7 +32,7 @@ public abstract class DataBase implements IDataBase
 {
 	private static Field[] typesFields = Types.class.getFields();
 	
-	private ConnectionPool conPool; 
+	protected ConnectionPool conPool; 
 	protected Connection con;
 	private boolean close;
 	

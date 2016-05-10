@@ -9,11 +9,13 @@ import java.math.BigDecimal;
  */
 public class UIModuleModel implements ITableModel
 {
-	private static final long serialVersionUID = -6650534107983129643L;
+	private static final long serialVersionUID = 4367986566378368840L;
 	
 	private BigDecimal uimid;
 	private String name;
 	private String defaultimpl;
+	private BigDecimal platform;
+	private BigDecimal isview;
 
 	protected UIModuleModel() {}
 
@@ -50,6 +52,26 @@ public class UIModuleModel implements ITableModel
 	public void setDefaultimpl(String defaultimpl)
 	{
 		this.defaultimpl = defaultimpl;
+	}
+
+	public BigDecimal getPlatform()
+	{
+		return platform;
+	}
+
+	public void setPlatform(BigDecimal platform)
+	{
+		this.platform = platform;
+	}
+
+	public BigDecimal getIsview()
+	{
+		return isview;
+	}
+
+	public void setIsview(BigDecimal isview)
+	{
+		this.isview = isview;
 	}
 
 	@Override

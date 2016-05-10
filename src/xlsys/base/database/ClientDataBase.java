@@ -1,14 +1,11 @@
 package xlsys.base.database;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.dom4j.DocumentException;
 
 import xlsys.base.XLSYS;
 import xlsys.base.XlsysFactory;
@@ -21,7 +18,6 @@ import xlsys.base.database.bean.ISqlBean;
 import xlsys.base.database.bean.ParamBean;
 import xlsys.base.dataset.DataSet;
 import xlsys.base.dataset.IDataSet;
-import xlsys.base.exception.ParameterNotEnoughException;
 import xlsys.base.io.transfer.client.ClientTransfer;
 import xlsys.base.session.Session;
 import xlsys.base.session.SessionManager;
@@ -42,19 +38,20 @@ public class ClientDataBase implements IClientDataBase
 	/**
 	 * 获取客户端Database实例
 	 * @return
-	 * @throws NoSuchMethodException
-	 * @throws SecurityException
-	 * @throws ClassNotFoundException
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 * @throws IllegalArgumentException
-	 * @throws InvocationTargetException
-	 * @throws DocumentException
-	 * @throws ParameterNotEnoughException
 	 */
-	public synchronized static final ClientDataBase getInstance() throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, DocumentException, ParameterNotEnoughException
+	public synchronized static final ClientDataBase getInstance()
 	{
-		if(clientTransfer==null) clientTransfer = (ClientTransfer) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_CLIENT_TRANSFER).getInstance();
+		if(clientTransfer==null)
+		{
+			try
+			{
+				clientTransfer = (ClientTransfer) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_CLIENT_TRANSFER).getInstance();
+			}
+			catch (Exception e)
+			{
+				throw new RuntimeException(e);
+			}
+		}
 		return new ClientDataBase();
 	}
 	

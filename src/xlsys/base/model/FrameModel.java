@@ -2,7 +2,6 @@ package xlsys.base.model;
 
 import java.math.BigDecimal;
 import java.util.List;
-
 import java.util.ArrayList;
 
 /**
@@ -12,10 +11,11 @@ import java.util.ArrayList;
  */
 public class FrameModel implements ITableModel
 {
-	private static final long serialVersionUID = 2095155010569151599L;
+	private static final long serialVersionUID = 8231607259239982237L;
 	
 	private BigDecimal frameid;
 	private String name;
+	private List<FrameParamModel> frameParamList;
 	private List<FrameDetailModel> frameDetailList;
 
 	protected FrameModel() {}
@@ -43,6 +43,22 @@ public class FrameModel implements ITableModel
 	public void setName(String name)
 	{
 		this.name = name;
+	}
+
+	public List<FrameParamModel> getFrameParamList()
+	{
+		return frameParamList;
+	}
+
+	public void setFrameParamList(List<FrameParamModel> frameParamList)
+	{
+		this.frameParamList = frameParamList;
+	}
+
+	public void addFrameParam(FrameParamModel frameParam)
+	{
+		if(frameParamList==null) frameParamList = new ArrayList<FrameParamModel>();
+		frameParamList.add(frameParam);
 	}
 
 	public List<FrameDetailModel> getFrameDetailList()
