@@ -1,0 +1,5 @@
+视图在框架界面的属性调用视图的伪UI模块来获取和设置, 获取伪UI模块的属性时, 去掉layout属性
+视图在视图界面的属性调用视图本身的属性来获取和设置, 获取属性时, 去掉layoutData属性
+Control视图列在视图界面设置属性时, 需要分成两部分设置. 伪列控件一部分, 去掉layout属性; 列控件本身一部分, 去掉layoutData属性
+
+视图创建顺序 : new, setParams, addColumn, column.setParams, createQueryParam, buildColumns
