@@ -805,11 +805,17 @@ public class ModelUtil
 			jsChildrenList.add("xlsys.base.model.ToolHandlerParamModel");
 			ModelUtil.generateJsModelClass(dataBase, "xlv2_tool", "xlsys.base.model.ToolModel", jsChildrenList, jsSrcRoot);*/
 			
-			String srcRoot = "D:/work/code/MyProject/xlsys.base/src";
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.base/src";
 			ModelUtil.generateModelClass(dataBase, "xlv2_uimodule", "xlsys.base.model.UIModuleModel", null, byte[].class, srcRoot);
 			
 			String jsSrcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
-			ModelUtil.generateJsModelClass(dataBase, "xlv2_uimodule", "xlsys.base.model.UIModuleModel", null, jsSrcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_uimodule", "xlsys.base.model.UIModuleModel", null, jsSrcRoot);*/
+			
+			String srcRoot = "D:/work/code/MyProject/xlsys.base/src";
+			ModelUtil.generateModelClass(dataBase, "xlv2_dialog", "xlsys.base.model.DialogModel", null, byte[].class, srcRoot);
+			
+			String jsSrcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_dialog", "xlsys.base.model.DialogModel", null, jsSrcRoot);
 		}
 		catch(Exception e)
 		{

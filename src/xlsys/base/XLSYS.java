@@ -207,6 +207,14 @@ public interface XLSYS
 	 * 获取工具模型
 	 */
 	public final static String COMMAND_GET_TOOL_MODEL = "_COMMAND_GET_TOOL_MODEL";
+	/**
+	 * 获取所有对话框模型
+	 */
+	public final static String COMMAND_GET_ALL_DIALOG_MODEL = "_COMMAND_GET_ALL_DIALOG_MODEL";
+	/**
+	 * 获取对话框模型
+	 */
+	public final static String COMMAND_GET_DIALOG_MODEL = "_COMMAND_GET_DIALOG_MODEL";
 	
 	// 以下是Base包中的Session相关常量
 	/**
@@ -541,6 +549,10 @@ public interface XLSYS
 	 * 工具模型缓冲
 	 */
 	public final static String BUFFER_TOOL_MODEL = "_BUFFER_TOOL_MODEL";
+	/**
+	 * 对话框模型缓冲
+	 */
+	public final static String BUFFER_DIALOG_MODEL = "_BUFFER_DIALOG_MODEL";
 	
 	// 系统内置工厂
 	/**
