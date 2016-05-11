@@ -12,12 +12,13 @@ public class ViewParamModel implements ITableModel
 	private static final long serialVersionUID = 6210362938349458857L;
 	
 	private BigDecimal viewid;
+	private BigDecimal type;
 	private String attrname;
 	private String attrvalue;
 
 	protected ViewParamModel() {}
 
-	public ViewParamModel(BigDecimal viewid, String attrname)
+	public ViewParamModel(BigDecimal viewid, BigDecimal type, String attrname)
 	{
 		this.viewid = viewid;
 		this.attrname = attrname;
@@ -31,6 +32,16 @@ public class ViewParamModel implements ITableModel
 	protected void setViewid(BigDecimal viewid)
 	{
 		this.viewid = viewid;
+	}
+
+	public BigDecimal getType()
+	{
+		return type;
+	}
+
+	protected void setType(BigDecimal type)
+	{
+		this.type = type;
 	}
 
 	public String getAttrname()
