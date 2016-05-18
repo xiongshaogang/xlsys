@@ -81,7 +81,9 @@ public class TranslateUtil extends ModelBuffer
 					{
 						pb.addParamGroup();
 						if(lan!=null) pb.setParam(1, lan);
+						else pb.setParam(1, null, String.class.getName());
 						if(tbnm!=null) pb.setParam(2, tbnm);
+						else pb.setParam(2, null, String.class.getName());
 					}
 					initByParamBean(envId, dataBase, pb);
 					// 检查所有的表, 如果没有对应的tablenameMap, 则放置一个空的Map到对应的表中去, 避免对于没有翻译配置的表的多次加载

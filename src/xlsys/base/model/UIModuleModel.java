@@ -15,7 +15,7 @@ public class UIModuleModel implements ITableModel
 	private String name;
 	private String defaultimpl;
 	private BigDecimal platform;
-	private BigDecimal isview;
+	private BigDecimal type;
 
 	protected UIModuleModel() {}
 
@@ -64,14 +64,14 @@ public class UIModuleModel implements ITableModel
 		this.platform = platform;
 	}
 
-	public BigDecimal getIsview()
+	public BigDecimal getType()
 	{
-		return isview;
+		return type;
 	}
 
-	public void setIsview(BigDecimal isview)
+	public void setType(BigDecimal type)
 	{
-		this.isview = isview;
+		this.type = type;
 	}
 
 	@Override
