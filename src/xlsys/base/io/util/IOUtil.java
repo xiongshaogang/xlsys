@@ -799,58 +799,33 @@ public class IOUtil
 					int nameHashcode = dis.readInt();
 					String objClassName = (String) rebuildInternalObject(nameHashcode, hasWriteObjMap, rebuiltObjMap, classLoader);
 					Class<?> objClass = classLoader.loadClass(objClassName);
-					if(Exception.class.isAssignableFrom(objClass))
+					obj = tryInitObj(objClass);
+					if(obj==null) throw new UnsupportedException();
+					// 先将对象放入重建Map, 以免出现死循环
+					rebuiltObjMap.put(hashcode, obj);
+					// 读取长度
+					int length = dis.readInt();
+					// 读取内容
+					byte[] bytes = new byte[length];
+					dis.readFully(bytes, 0, length);
+					// 填充对象Field
+					tempIn = new DataInputStream(new ByteArrayInputStream(bytes));
+					while(tempIn.available()>0)
 					{
-						// 读取长度
-						int length = dis.readInt();
-						// 读取内容
-						byte[] bytes = new byte[length];
-						dis.readFully(bytes, 0, length);
-						// 填充对象Field
-						tempIn = new DataInputStream(new ByteArrayInputStream(bytes));
-						// Exception单独处理
-						// 读取Field名称, 注意, 该名称不使用
+						// 读取Field名称
 						int fieldNameHashcode = tempIn.readInt();
-						rebuildInternalObject(fieldNameHashcode, hasWriteObjMap, rebuiltObjMap, classLoader);
-						// 读取内容
-						int msgHashcode = tempIn.readInt();
-						String msg = (String) rebuildInternalObject(msgHashcode, hasWriteObjMap, rebuiltObjMap, classLoader);
-						Constructor<?> constructor = objClass.getDeclaredConstructor(String.class);
-						constructor.setAccessible(true);
-						obj = constructor.newInstance(msg);
-						// 先将对象放入重建Map, 以免出现死循环
-						rebuiltObjMap.put(hashcode, obj);
-					}
-					else
-					{
-						obj = tryInitObj(objClass);
-						if(obj==null) throw new UnsupportedException();
-						// 先将对象放入重建Map, 以免出现死循环
-						rebuiltObjMap.put(hashcode, obj);
-						// 读取长度
-						int length = dis.readInt();
-						// 读取内容
-						byte[] bytes = new byte[length];
-						dis.readFully(bytes, 0, length);
-						// 填充对象Field
-						tempIn = new DataInputStream(new ByteArrayInputStream(bytes));
-						while(tempIn.available()>0)
+						String fieldName = (String) rebuildInternalObject(fieldNameHashcode, hasWriteObjMap, rebuiltObjMap, classLoader);
+						// 获取Field对象
+						int tempHashcode = tempIn.readInt();
+						Object fieldObj = rebuildInternalObject(tempHashcode, hasWriteObjMap, rebuiltObjMap, classLoader);
+						// 设置field到obj对象
+						Field field = obj.getClass().getDeclaredField(fieldName);
+						if(fieldObj!=null&&field.getType().getName().indexOf('.')>=0&&!field.getType().isAssignableFrom(fieldObj.getClass()))
 						{
-							// 读取Field名称
-							int fieldNameHashcode = tempIn.readInt();
-							String fieldName = (String) rebuildInternalObject(fieldNameHashcode, hasWriteObjMap, rebuiltObjMap, classLoader);
-							// 获取Field对象
-							int tempHashcode = tempIn.readInt();
-							Object fieldObj = rebuildInternalObject(tempHashcode, hasWriteObjMap, rebuiltObjMap, classLoader);
-							// 设置field到obj对象
-							Field field = obj.getClass().getDeclaredField(fieldName);
-							if(fieldObj!=null&&field.getType().getName().indexOf('.')>=0&&!field.getType().isAssignableFrom(fieldObj.getClass()))
-							{
-								LogUtil.printlnError("Type mismatch: hashcode:"+tempHashcode+"\tneed type:"+field.getType().getName()+"\tcurrent type:"+fieldObj.getClass().getName());
-							}
-							field.setAccessible(true);
-							field.set(obj, fieldObj);
+							LogUtil.printlnError("Type mismatch: hashcode:"+tempHashcode+"\tneed type:"+field.getType().getName()+"\tcurrent type:"+fieldObj.getClass().getName());
 						}
+						field.setAccessible(true);
+						field.set(obj, fieldObj);
 					}
 				}
 				rebuiltObjMap.put(hashcode, obj);
@@ -1200,37 +1175,19 @@ public class IOUtil
 				// 放入所有的非final以及非transient的Field对象
 				ByteArrayOutputStream baosTemp = new ByteArrayOutputStream();
 				tempOut = new DataOutputStream(baosTemp);
-				if(obj instanceof Exception)
+				Field[] fields = obj.getClass().getDeclaredFields();
+				for(Field field : fields)
 				{
-					// Exception
-					Exception exception = (Exception) obj;
-					// 插入虚拟field
-					String fieldName = "msg";
-					String fieldObj = exception.getMessage();
-					if(fieldObj==null) fieldObj = "";
-					// 写入Field名称
-					tempOut.writeInt(getHashCode(fieldName));
-					prepareInternalBytes(fieldName, hasWriteObjMap);
-					// 写入Field的hashcode
-					tempOut.writeInt(getHashCode(fieldObj));
-					prepareInternalBytes(fieldObj, hasWriteObjMap);
-				}
-				else
-				{
-					Field[] fields = obj.getClass().getDeclaredFields();
-					for(Field field : fields)
+					if(!Modifier.isFinal(field.getModifiers())&&!Modifier.isTransient(field.getModifiers()))
 					{
-						if(!Modifier.isFinal(field.getModifiers())&&!Modifier.isTransient(field.getModifiers()))
-						{
-							field.setAccessible(true);
-							// 写入Field名称
-							tempOut.writeInt(getHashCode(field.getName()));
-							prepareInternalBytes(field.getName(), hasWriteObjMap);
-							// 写入Field的hashcode
-							Object fieldObj = field.get(obj);
-							tempOut.writeInt(getHashCode(fieldObj));
-							prepareInternalBytes(fieldObj, hasWriteObjMap);
-						}
+						field.setAccessible(true);
+						// 写入Field名称
+						tempOut.writeInt(getHashCode(field.getName()));
+						prepareInternalBytes(field.getName(), hasWriteObjMap);
+						// 写入Field的hashcode
+						Object fieldObj = field.get(obj);
+						tempOut.writeInt(getHashCode(fieldObj));
+						prepareInternalBytes(fieldObj, hasWriteObjMap);
 					}
 				}
 				// 写入长度

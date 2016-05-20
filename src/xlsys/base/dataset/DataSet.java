@@ -559,8 +559,14 @@ public class DataSet implements IDataSet
 		else newRow = row;
 		if(index<0) index = 0;
 		else if(index>rows.size()) index = rows.size();
+		DataSetEvent event = new DataSetEvent(this);
+		event.row = newRow;
+		fireBeforeInsertRow(event);
 		rows.add(index, newRow);
 		if(index<=getRowCursor()) setRowCursor(index+1);
+		event = new DataSetEvent(this);
+		event.row = newRow;
+		fireAfterInsertRow(event);
 		return newRow;
 	}
 	
@@ -631,8 +637,14 @@ public class DataSet implements IDataSet
 			DataSetCell cell = new DataSetCell();
 			newRow.addCell(cell);
 		}
+		DataSetEvent event = new DataSetEvent(this);
+		event.row = newRow;
+		fireBeforeInsertRow(event);
 		rows.add(index, newRow);
 		if(index<=getRowCursor()) setRowCursor(index+1);
+		event = new DataSetEvent(this);
+		event.row = newRow;
+		fireAfterInsertRow(event);
 		return newRow;
 	}
 	
@@ -663,6 +675,9 @@ public class DataSet implements IDataSet
 			if(index<0) index = 0;
 			else if(index>columns.size()) index = columns.size();
 			newColumn = new DataSetColumn();
+			DataSetEvent event = new DataSetEvent(this);
+			event.col = newColumn;
+			fireBeforeInsertCol(event);
 			columns.add(index, newColumn);
 			for(int i=0;i<rows.size();i++)
 			{
@@ -671,6 +686,9 @@ public class DataSet implements IDataSet
 				row.getCells().add(index, cell);
 			}
 			if(index<=getColCursor()) setColCursor(index+1);
+			event = new DataSetEvent(this);
+			event.col = newColumn;
+			fireAfterInsertCol(event);
 		}
 		return newColumn;
 	}
@@ -685,17 +703,22 @@ public class DataSet implements IDataSet
 	public synchronized DataSetRow removeRow(int rowIndex)
 	{
 		if(!rowRegionCheck(rowIndex)||!expandToRow(rowIndex)) return null;
-		DataSetRow toRemoveRow = rows.get(rowIndex);
-		DataSetEvent event = new DataSetEvent(this);
-		event.row = toRemoveRow;
-		fireBeforeRemoveRow(event);
-		if(event.doit)
+		DataSetRow toRemoveRow = doRemoveRow(rowIndex);
+		if(toRemoveRow!=null)
 		{
-			toRemoveRow = doRemoveRow(rowIndex);
 			if(oldEditRow==toRemoveRow) oldEditRow = null;
-			event = new DataSetEvent(this);
-			event.row = toRemoveRow;
-			fireAfterRemoveRow(event);
+			int cursor = getRowCursor();
+			if(cursor>rowIndex) setRowCursor(cursor-1);
+			else if(cursor==rowIndex)
+			{
+				if(cursor>=rows.size()) gotoRow(cursor-1);
+				else
+				{
+					int oldCursor = cursor;
+					setRowCursor(-1);
+					gotoRow(oldCursor);
+				}
+			}
 		}
 		return toRemoveRow;
 	}
@@ -703,19 +726,17 @@ public class DataSet implements IDataSet
 	protected DataSetRow doRemoveRow(int rowNum)
 	{
 		DataSetRow toRemoveRow = rows.get(rowNum);
-		rows.remove(rowNum);
-		int cursor = getRowCursor();
-		if(cursor>rowNum) setRowCursor(cursor-1);
-		else if(cursor==rowNum)
+		DataSetEvent event = new DataSetEvent(this);
+		event.row = toRemoveRow;
+		fireBeforeRemoveRow(event);
+		if(event.doit)
 		{
-			if(cursor>=rows.size()) gotoRow(cursor-1);
-			else
-			{
-				int oldCursor = cursor;
-				setRowCursor(-1);
-				gotoRow(oldCursor);
-			}
+			rows.remove(rowNum);
+			event = new DataSetEvent(this);
+			event.row = toRemoveRow;
+			fireAfterRemoveRow(event);
 		}
+		else toRemoveRow = null;
 		return toRemoveRow;
 	}
 	
@@ -1113,6 +1134,98 @@ public class DataSet implements IDataSet
 	public void setEventLock(boolean lock)
 	{
 		setEventLock(getClass(), lock);
+	}
+	
+	public void fireBeforeInsertCol(DataSetEvent event)
+	{
+		if(isOption(OPTION_LOCK_INSERT_COL_EVENT)) return;
+		try
+		{
+			if(dataSetListenerSet!=null)
+			{
+				for(DataSetListener listener : dataSetListenerSet)
+				{
+					listener.beforeInsertCol(event);
+					if(event.interrupt) break;
+				}
+				if(!event.doit&&event.errMsg!=null) fireShowMessage(event);
+			}
+		}
+		catch(Exception e)
+		{
+			event.doit = false;
+			event.errMsg = e;
+			fireShowMessage(event);
+		}
+	}
+	
+	public void fireAfterInsertCol(DataSetEvent event)
+	{
+		if(isOption(OPTION_LOCK_INSERT_COL_EVENT)) return;
+		try
+		{
+			if(dataSetListenerSet!=null)
+			{
+				for(DataSetListener listener : dataSetListenerSet)
+				{
+					listener.afterInsertCol(event);
+					if(event.interrupt) break;
+				}
+				if(!event.doit&&event.errMsg!=null) fireShowMessage(event);
+			}
+		}
+		catch(Exception e)
+		{
+			event.doit = false;
+			event.errMsg = e;
+			fireShowMessage(event);
+		}
+	}
+	
+	public void fireBeforeInsertRow(DataSetEvent event)
+	{
+		if(isOption(OPTION_LOCK_INSERT_ROW_EVENT)) return;
+		try
+		{
+			if(dataSetListenerSet!=null)
+			{
+				for(DataSetListener listener : dataSetListenerSet)
+				{
+					listener.beforeInsertRow(event);
+					if(event.interrupt) break;
+				}
+				if(!event.doit&&event.errMsg!=null) fireShowMessage(event);
+			}
+		}
+		catch(Exception e)
+		{
+			event.doit = false;
+			event.errMsg = e;
+			fireShowMessage(event);
+		}
+	}
+	
+	public void fireAfterInsertRow(DataSetEvent event)
+	{
+		if(isOption(OPTION_LOCK_INSERT_ROW_EVENT)) return;
+		try
+		{
+			if(dataSetListenerSet!=null)
+			{
+				for(DataSetListener listener : dataSetListenerSet)
+				{
+					listener.afterInsertRow(event);
+					if(event.interrupt) break;
+				}
+				if(!event.doit&&event.errMsg!=null) fireShowMessage(event);
+			}
+		}
+		catch(Exception e)
+		{
+			event.doit = false;
+			event.errMsg = e;
+			fireShowMessage(event);
+		}
 	}
 	
 	public void fireBeforeRemoveRow(DataSetEvent event)

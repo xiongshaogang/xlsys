@@ -122,4 +122,32 @@ public class DataSetAdapter implements DataSetListener
 		
 	}
 
+	@Override
+	public void beforeInsertRow(DataSetEvent event)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void afterInsertRow(DataSetEvent event)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void beforeInsertCol(DataSetEvent event)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void afterInsertCol(DataSetEvent event)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -84,6 +84,34 @@ public interface DataSetListener extends EventListener
 	public void afterCursorChange(DataSetEvent event);
 	
 	/**
+	 * 行插入前事件.
+	 * <li> event.row 将要插入的行
+	 * @param event
+	 */
+	public void beforeInsertRow(DataSetEvent event);
+	
+	/**
+	 * 行插入后事件.
+	 * <li> event.row 插入的行
+	 * @param event
+	 */
+	public void afterInsertRow(DataSetEvent event);
+	
+	/**
+	 * 列插入前事件.
+	 * <li> event.col 将要插入的列
+	 * @param event
+	 */
+	public void beforeInsertCol(DataSetEvent event);
+	
+	/**
+	 * 列插入后事件.
+	 * <li> event.col 插入的列
+	 * @param event
+	 */
+	public void afterInsertCol(DataSetEvent event);
+	
+	/**
 	 * 行删除前事件.
 	 * <li> event.getDataSet() : dataSet
 	 * <li> event.row 将要删除的行

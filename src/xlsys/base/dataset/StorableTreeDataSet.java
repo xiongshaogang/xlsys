@@ -230,4 +230,16 @@ public class StorableTreeDataSet extends StorableDataSet implements ITreeDataSet
 	{
 		return TreeDataSet.doGetAllParent(this, rowAt);
 	}
+	
+	@Override
+	public synchronized DataSetRow removeRow(int rowIndex)
+	{
+		// 删除子行
+		List<Integer> children = getChildrenRowNums(rowIndex);
+		if(children!=null)
+		{
+			for(int i=children.size()-1;i>=0;--i) removeRow(children.get(i));
+		}
+		return super.removeRow(rowIndex);
+	}
 }

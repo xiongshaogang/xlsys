@@ -51,6 +51,14 @@ public interface IDataSet extends Serializable
 	 * removeColumn事件锁(由removeColumn触发)
 	 */
 	public final static int OPTION_LOCK_REMOVE_COL_EVENT = 4;
+	/**
+	 * insertRow和insertNewRow事件锁
+	 */
+	public final static int OPTION_LOCK_INSERT_ROW_EVENT = 5;
+	/**
+	 * insertNewCol事件锁
+	 */
+	public final static int OPTION_LOCK_INSERT_COL_EVENT = 6;
 	
 	/**
 	 * 设置行数(只有当style类型包含STYLE_VIRTUAL时有效)
