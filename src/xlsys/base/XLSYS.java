@@ -7,7 +7,9 @@ package xlsys.base;
  */
 public interface XLSYS
 {
-
+	public final static int PLATFORM_WEB = 1;
+	public final static int PLATFORM_MOBILE = 2;
+	
 	// 以下是Base包中的Command命令
 	/**
 	 * 当没有权限运行时，返回该命令字
@@ -207,6 +209,18 @@ public interface XLSYS
 	 * 获取工具模型
 	 */
 	public final static String COMMAND_GET_TOOL_MODEL = "_COMMAND_GET_TOOL_MODEL";
+	/**
+	 * 获取指定的模型
+	 */
+	public final static String COMMAND_GET_MODEL = "_COMMAND_GET_MODEL";
+	/**
+	 * 获取指定的所有模型
+	 */
+	public final static String COMMAND_GET_ALL_MODEL = "_COMMAND_GET_ALL_MODEL";
+	/**
+	 * 获取指定模型的数量
+	 */
+	public final static String COMMAND_GET_MODEL_COUNT = "_COMMAND_GET_MODEL_COUNT";
 	
 	// 以下是Base包中的Session相关常量
 	/**

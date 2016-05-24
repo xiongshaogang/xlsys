@@ -743,7 +743,7 @@ public class DataSet implements IDataSet
 	@Override
 	public synchronized void removeAllRow()
 	{
-		for(int i=0;i<rows.size();++i) removeRow(i);
+		for(int i=rows.size()-1;i>=0;--i) removeRow(i);
 		rows.clear();
 		oldEditRow = null;
 		setRowCursor(-1);
