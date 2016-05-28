@@ -744,6 +744,12 @@ public class DataSet implements IDataSet
 	public synchronized void removeAllRow()
 	{
 		for(int i=rows.size()-1;i>=0;--i) removeRow(i);
+		truncateAllRow();
+	}
+	
+	@Override
+	public synchronized void truncateAllRow()
+	{
 		rows.clear();
 		oldEditRow = null;
 		setRowCursor(-1);

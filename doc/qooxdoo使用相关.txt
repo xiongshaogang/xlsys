@@ -4,3 +4,5 @@
 	"TMPDIR"       : "c:/temp"
 3. (无效)如果要看sdk中的示例，需要安装npm : https://nodejs.org/en/download/
 4. JS高级算法 : http://www.webtoolkit.info
+
+5. 注意 : (0=="")在JS中返回是true

@@ -968,7 +968,7 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 		{
 			Serializable inObj = innerPackage.getObj();
 			Date date = null;
-			if(inObj instanceof String)
+			if(inObj instanceof Date)
 			{
 				db = EnvDataBase.getInstance(ObjectUtil.objectToInt(innerPackage.getSession().getAttribute(XLSYS.SESSION_ENV_ID)));
 				date = (Date) inObj;

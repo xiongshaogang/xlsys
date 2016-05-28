@@ -561,6 +561,7 @@ public class ModelUtil
 	
 	public static <T extends IModel> T cloneModel(T model)
 	{
+		if(model==null) return null;
 		T cloneModel = null;
 		try
 		{

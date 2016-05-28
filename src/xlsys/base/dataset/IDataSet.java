@@ -460,6 +460,11 @@ public interface IDataSet extends Serializable
 	public void removeAllRow();
 	
 	/**
+	 * 快速删除所有的行, 不会触发任务事件
+	 */
+	public void truncateAllRow();
+	
+	/**
 	 * 获取当前行列游标所在位置的单元格的值
 	 * @return
 	 */
