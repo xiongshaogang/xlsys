@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -44,7 +43,7 @@ import xlsys.base.util.SystemUtil;
  * @author Lewis
  *
  */
-public class XlsysServlet extends HttpServlet
+public class XlsysServlet extends AbstractServlet
 {
 	private static final long serialVersionUID = -5772354685874961574L;
 	
@@ -55,15 +54,6 @@ public class XlsysServlet extends HttpServlet
 	public XlsysServlet()
 	{
 		super();
-		try
-		{
-			SystemUtil.systemInit();
-			XlsysScheduledExecutor.startSchedule();
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
 	}
 
 	private synchronized static void initServletServerTransfer() throws Exception

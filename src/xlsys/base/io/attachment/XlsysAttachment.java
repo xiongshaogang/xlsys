@@ -34,6 +34,7 @@ public class XlsysAttachment implements IModel
 	private String innerName;
 	private long size;
 	private long lastModified;
+	private String type;
 	private int style;
 	private boolean compress;
 	private byte[] attachmentData;
@@ -158,6 +159,24 @@ public class XlsysAttachment implements IModel
 	public long getLastModified()
 	{
 		return lastModified;
+	}
+
+	/**
+	 * 获取文件类型
+	 * @return
+	 */
+	public String getType()
+	{
+		return type;
+	}
+
+	/**
+	 * 设置文件类型
+	 * @param type
+	 */
+	public void setType(String type)
+	{
+		this.type = type;
 	}
 
 	/**

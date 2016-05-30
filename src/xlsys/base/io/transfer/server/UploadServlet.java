@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.net.URLDecoder;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,26 +19,15 @@ import xlsys.base.io.attachment.XlsysAttachment;
 import xlsys.base.io.util.IOUtil;
 import xlsys.base.script.XlsysClassLoader;
 import xlsys.base.session.SessionManager;
-import xlsys.base.task.XlsysScheduledExecutor;
 import xlsys.base.util.StringUtil;
-import xlsys.base.util.SystemUtil;
 
-public class UploadServlet extends HttpServlet
+public class UploadServlet extends AbstractServlet
 {
 	private static final long serialVersionUID = -510198373556743326L;
 	
 	public UploadServlet()
 	{
 		super();
-		try
-		{
-			SystemUtil.systemInit();
-			XlsysScheduledExecutor.startSchedule();
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
 	}
 	
     @Override
