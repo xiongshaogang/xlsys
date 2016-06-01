@@ -15,6 +15,7 @@ public class ToolModel implements ITableModel
 	private static final long serialVersionUID = 6196182691886113828L;
 	
 	private String toolid;
+	private String levelid;
 	private BigDecimal handlerid;
 	private String name;
 	private BigDecimal type;
@@ -38,6 +39,16 @@ public class ToolModel implements ITableModel
 	protected void setToolid(String toolid)
 	{
 		this.toolid = toolid;
+	}
+
+	public String getLevelid()
+	{
+		return levelid;
+	}
+
+	public void setLevelid(String levelid)
+	{
+		this.levelid = levelid;
 	}
 
 	public BigDecimal getHandlerid()

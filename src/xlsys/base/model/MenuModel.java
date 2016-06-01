@@ -12,7 +12,10 @@ import java.util.ArrayList;
  */
 public class MenuModel implements ITableModel
 {
+	private static final long serialVersionUID = 2142963854731354040L;
+	
 	private String menuid;
+	private String levelid;
 	private String name;
 	private BigDecimal type;
 	private XlsysAttachment icon;
@@ -36,6 +39,16 @@ public class MenuModel implements ITableModel
 	protected void setMenuid(String menuid)
 	{
 		this.menuid = menuid;
+	}
+
+	public String getLevelid()
+	{
+		return levelid;
+	}
+
+	public void setLevelid(String levelid)
+	{
+		this.levelid = levelid;
 	}
 
 	public String getName()

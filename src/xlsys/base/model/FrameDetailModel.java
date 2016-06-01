@@ -15,6 +15,7 @@ public class FrameDetailModel implements ITableModel
 	
 	private BigDecimal frameid;
 	private String fdtid;
+	private String levelid;
 	private String name;
 	private BigDecimal uimid;
 	private String diyimpl;
@@ -48,6 +49,16 @@ public class FrameDetailModel implements ITableModel
 	protected void setFdtid(String fdtid)
 	{
 		this.fdtid = fdtid;
+	}
+
+	public String getLevelid()
+	{
+		return levelid;
+	}
+
+	public void setLevelid(String levelid)
+	{
+		this.levelid = levelid;
 	}
 
 	public String getName()
