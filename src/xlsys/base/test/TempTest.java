@@ -1,11 +1,14 @@
 package xlsys.base.test;
 
+import org.json.JSONObject;
+
 public class TempTest
 {
 	
 	public static void main(String[] args) throws Exception
 	{
-		long l = 1456649430000l;
-		System.out.println(l>>1);
+		String json = "{\"_hashcode\":1372126285,\"_content\":{\"_datatype\":7,\"_content\":false}}";
+		JSONObject jo = new JSONObject(json);
+		System.out.println(jo.get("_hashcode"));
 	}
 }

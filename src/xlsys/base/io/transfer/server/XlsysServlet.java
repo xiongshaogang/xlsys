@@ -6,11 +6,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,16 +37,16 @@ import xlsys.base.log.LogUtil;
 import xlsys.base.script.XlsysClassLoader;
 import xlsys.base.script.XlsysCompiler;
 import xlsys.base.session.Session;
-import xlsys.base.task.XlsysScheduledExecutor;
 import xlsys.base.util.ObjectUtil;
 import xlsys.base.util.StringUtil;
-import xlsys.base.util.SystemUtil;
 
 /**
  * 标准的HttpServlet实现类，当使用Web形式来进行数据交互时，使用该类来进行数据交互处理
  * @author Lewis
  *
  */
+@WebServlet
+@MultipartConfig
 public class XlsysServlet extends AbstractServlet
 {
 	private static final long serialVersionUID = -5772354685874961574L;
@@ -199,6 +203,36 @@ public class XlsysServlet extends AbstractServlet
 		}
 	}
 	
+	private String decodeUrl(String src) throws UnsupportedEncodingException
+	{
+		if(src==null) return null;
+		return URLDecoder.decode(src, "utf-8");
+	}
+	
+	/*private void doWebPost(HttpServletRequest req, HttpServletResponse resp) throws Exception
+	{
+		req.setCharacterEncoding("UTF-8");
+		resp.setCharacterEncoding("UTF-8");
+		resp.setContentType("text/html");
+		String cmd = decodeUrl(req.getParameter(XLSYS.WEB_COMMAND));
+		String sessionStr = decodeUrl(req.getParameter(XLSYS.WEB_SESSION));
+		Session session = (Session) IOUtil.readJSONObject(sessionStr);
+		String data = decodeUrl(req.getParameter(XLSYS.WEB_DATA));
+		Serializable inObj = (Serializable) IOUtil.readJSONObject(data);
+		boolean retPkg = ObjectUtil.objectToBoolean(decodeUrl(req.getParameter(XLSYS.WEB_RETPKG)));
+		Serializable outObj = null;
+		if(retPkg)
+		{
+			InnerPackage inPkg = new InnerPackage(session);
+			inPkg.setCommand(cmd);
+			inPkg.setObj(inObj);
+			outObj = virtualPost(inPkg);
+		}
+		else outObj = virtualPost(session, cmd, inObj);
+		PrintWriter pw = resp.getWriter();
+		pw.write(IOUtil.getJSONObjectStr(outObj));
+	}*/
+	
 	private void doWebPost(HttpServletRequest req, HttpServletResponse resp) throws Exception
 	{
 		req.setCharacterEncoding("UTF-8");
@@ -212,12 +246,12 @@ public class XlsysServlet extends AbstractServlet
 			byte[] b = IOUtil.readBytesFromInputStream(is, length);
 			String str = new String(b, "UTF-8");
 			Map<String, String> paramMap = StringUtil.getParamMap(str, "=", "&");
-			String cmd = paramMap.get(XLSYS.WEB_COMMAND);
-			String sessionStr = paramMap.get(XLSYS.WEB_SESSION);
+			String cmd = decodeUrl(paramMap.get(XLSYS.WEB_COMMAND));
+			String sessionStr = decodeUrl(paramMap.get(XLSYS.WEB_SESSION));
 			Session session = (Session) IOUtil.readJSONObject(sessionStr);
-			String data = paramMap.get(XLSYS.WEB_DATA);
+			String data = decodeUrl(paramMap.get(XLSYS.WEB_DATA));
 			Serializable inObj = (Serializable) IOUtil.readJSONObject(data);
-			boolean retPkg = ObjectUtil.objectToBoolean(paramMap.get(XLSYS.WEB_RETPKG));
+			boolean retPkg = ObjectUtil.objectToBoolean(decodeUrl(paramMap.get(XLSYS.WEB_RETPKG)));
 			Serializable outObj = null;
 			if(retPkg)
 			{

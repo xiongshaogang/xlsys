@@ -812,11 +812,45 @@ public class ModelUtil
 			String jsSrcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
 			ModelUtil.generateJsModelClass(dataBase, "xlv2_uimodule", "xlsys.base.model.UIModuleModel", null, jsSrcRoot);*/
 			
-			String srcRoot = "D:/work/code/MyProject/xlsys.base/src";
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.base/src";
 			ModelUtil.generateModelClass(dataBase, "xlv2_dialog", "xlsys.base.model.DialogModel", null, byte[].class, srcRoot);
 			
 			String jsSrcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
-			ModelUtil.generateJsModelClass(dataBase, "xlv2_dialog", "xlsys.base.model.DialogModel", null, jsSrcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_dialog", "xlsys.base.model.DialogModel", null, jsSrcRoot);*/
+			
+			String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
+			ModelUtil.generateModelClass(dataBase, "xlv2_flowright", "xlsys.business.model.FlowRightModel", null, byte[].class, srcRoot);
+			List<String> childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.business.model.FlowRightModel");
+			ModelUtil.generateModelClass(dataBase, "xlv2_flowcondition", "xlsys.business.model.FlowConditionModel", childrenList, byte[].class, srcRoot);
+			ModelUtil.generateModelClass(dataBase, "xlv2_flowframe", "xlsys.business.model.FlowFrameModel", null, byte[].class, srcRoot);
+			ModelUtil.generateModelClass(dataBase, "xlv2_flowviewlistener", "xlsys.business.model.FlowViewListenerModel", null, byte[].class, srcRoot);
+			ModelUtil.generateModelClass(dataBase, "xlv2_flowsubtable", "xlsys.business.model.FlowSubTableModel", null, byte[].class, srcRoot);
+			ModelUtil.generateModelClass(dataBase, "xlv2_flowlogic", "xlsys.business.model.FlowLogicModel", null, byte[].class, srcRoot);
+			childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.business.model.FlowConditionModel");
+			childrenList.add("xlsys.business.model.FlowFrameModel");
+			childrenList.add("xlsys.business.model.FlowViewListenerModel");
+			childrenList.add("xlsys.business.model.FlowSubTableModel");
+			childrenList.add("xlsys.business.model.FlowLogicModel");
+			ModelUtil.generateModelClass(dataBase, "xlv2_flow", "xlsys.business.model.FlowModel", childrenList, byte[].class, srcRoot);
+			
+			String jsSrcRoot = "D:/work/code/MyProject/xlsys.web/web/xlsys.web.business/source/class";
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_flowright", "xlsys.business.model.FlowRightModel", null, jsSrcRoot);
+			List<String> jsChildrenList = new ArrayList<String>();
+			jsChildrenList.add("xlsys.business.model.FlowRightModel");
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_flowcondition", "xlsys.business.model.FlowConditionModel", jsChildrenList, jsSrcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_flowframe", "xlsys.business.model.FlowFrameModel", null, jsSrcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_flowviewlistener", "xlsys.business.model.FlowViewListenerModel", null, jsSrcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_flowsubtable", "xlsys.business.model.FlowSubTableModel", null, jsSrcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_flowlogic", "xlsys.business.model.FlowLogicModel", null, jsSrcRoot);
+			jsChildrenList = new ArrayList<String>();
+			jsChildrenList.add("xlsys.business.model.FlowConditionModel");
+			jsChildrenList.add("xlsys.business.model.FlowFrameModel");
+			jsChildrenList.add("xlsys.business.model.FlowViewListenerModel");
+			jsChildrenList.add("xlsys.business.model.FlowSubTableModel");
+			jsChildrenList.add("xlsys.business.model.FlowLogicModel");
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_flow", "xlsys.business.model.FlowModel", jsChildrenList, jsSrcRoot);
 		}
 		catch(Exception e)
 		{

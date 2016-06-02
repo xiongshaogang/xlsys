@@ -15,3 +15,7 @@
         "xlsys.*"
       ]
     }
+    
+7. 接收formdata数据默认使用multipart方式, 服务端的servlet类上必须加上注释
+@WebServlet
+@MultipartConfig

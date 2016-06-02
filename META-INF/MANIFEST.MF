@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Base
+Bundle-Name: XlsysBase
 Bundle-SymbolicName: xlsys.base
 Bundle-Version: 1.0.0.1
 Bundle-Activator: xlsys.base.XlsysBaseActivator
