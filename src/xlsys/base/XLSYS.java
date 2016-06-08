@@ -7,6 +7,7 @@ package xlsys.base;
  */
 public interface XLSYS
 {
+	public final static String PLATFORM = "_PLATFORM";
 	public final static int PLATFORM_WEB = 1;
 	public final static int PLATFORM_MOBILE = 2;
 	
@@ -285,6 +286,10 @@ public interface XLSYS
 	 */
 	public final static String SESSION_LANGUAGE = "_SESSION_LANGUAGE";
 	/**
+	 * Session中临时传递的context
+	 */
+	public final static String SESSION_TEMP_CONTEXT = "_SESSION_TEMP_CONTEXT";
+	/**
 	 * Session中临时传递的dataSet
 	 */
 	public final static String SESSION_TEMP_DATASET = "_SESSION_TEMP_DATASET";
@@ -304,6 +309,18 @@ public interface XLSYS
 	 * Session中临时传递的多个列名
 	 */
 	public final static String SESSION_TEMP_COLUMN_NAMES = "_SESSION_TEMP_COLUMN_NAMES";
+	/**
+	 * Session中临时传递的编码获取模板
+	 */
+	public final static String SESSION_TEMP_CODE_LIKE = "_SESSION_TEMP_CODE_LIKE";
+	/**
+	 * Session中临时传递的获取编码是否使用缓存
+	 */
+	public final static String SESSION_TEMP_USE_CACHE = "_SESSION_TEMP_USE_CACHE";
+	/**
+	 * Session中临时传递的分配编码的步长
+	 */
+	public final static String SESSION_TEMP_STEP = "_SESSION_TEMP_STEP";
 	
 	/**
 	 * 系统默认的配置名称(非文件名称)
@@ -597,37 +614,12 @@ public interface XLSYS
 	public final static String EXTRA_DATA = "EXTRA_DATA";
 
 	/**
-	 * 客户端类型
-	 */
-	public final static String CLIENT_TYPE = "CLIENT_TYPE";
-	/**
 	 * 客户端类型 : WEB
 	 */
-	public final static String CLIENT_TYPE_WEB = "WEB";
 	public final static String WEB_COMMAND = "WEB_COMMAND";
 	public final static String WEB_SESSION = "WEB_SESSION";
 	public final static String WEB_DATA = "WEB_DATA";
 	public final static String WEB_RETPKG = "WEB_RETPKG";
-	/**
-	 * 客户端类型 : RAP
-	 */
-	public final static String CLIENT_TYPE_RAP = "RAP";
-	/**
-	 * 客户端类型 : RCP
-	 */
-	public final static String CLIENT_TYPE_RCP = "RCP";
-	/**
-	 * 客户端类型 : Android
-	 */
-	public final static String CLIENT_TYPE_ANDROID = "ANDROID";
-	/**
-	 * 客户端类型 : IOS
-	 */
-	public final static String CLIENT_TYPE_IOS = "IOS";
-	/**
-	 * 客户端类型　：WP
-	 */
-	public final static String CLIENT_TYPE_WP = "WP";
 	
 	/**
 	 * 统计方式 : 加总

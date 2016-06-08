@@ -1097,7 +1097,7 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 		}
 		else if(inObj.length==5)
 		{
-			outObj = autoIdAllocate.allocateId(dbid, tableName, (String) inObj[1], (String) inObj[2], (Boolean) inObj[3], (Integer) inObj[4]);
+			outObj = autoIdAllocate.allocateId(dbid, tableName, (String) inObj[1], (String) inObj[2], (Boolean) inObj[3], ObjectUtil.objectToInt(inObj[4]));
 		}
 		return outObj;
 	}

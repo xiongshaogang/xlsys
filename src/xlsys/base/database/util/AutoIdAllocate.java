@@ -13,12 +13,9 @@ import java.util.Set;
 import org.dom4j.DocumentException;
 
 import xlsys.base.XLSYS;
-import xlsys.base.XlsysFactory;
 import xlsys.base.buffer.BufferManager;
 import xlsys.base.buffer.ModelBuffer;
-import xlsys.base.database.ConnectionPool;
 import xlsys.base.database.EnvDataBase;
-import xlsys.base.database.IDataBase;
 import xlsys.base.database.IEnvDataBase;
 import xlsys.base.dataset.DataSetColumn;
 import xlsys.base.exception.AllocateException;

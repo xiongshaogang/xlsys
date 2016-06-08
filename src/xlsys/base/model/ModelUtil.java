@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -188,7 +189,8 @@ public class ModelUtil
 				String pkColName = pkColList.get(i);
 				DataSetColumn dsc = tableInfo.getDataSetColumn(pkColName);
 				String fieldJavaClass = dsc.getJavaClass();
-				if(byte[].class.getName().equals(fieldJavaClass)) fieldJavaClass = blobClass.getName();
+				if("java.sql.Timestamp".equals(fieldJavaClass)||"java.sql.Time".equals(fieldJavaClass)||"java.sql.Date".equals(fieldJavaClass)) fieldJavaClass = Date.class.getName();
+				else if(byte[].class.getName().equals(fieldJavaClass)) fieldJavaClass = blobClass.getName();
 				String fieldColumnName = dsc.getColumnName();
 				if(!fieldJavaClass.startsWith("java.lang.")&&!byte[].class.getName().equals(fieldJavaClass)) addImportClass(packageName, fieldJavaClass, importSb, importedClass);
 				if(byte[].class.getName().equals(fieldJavaClass)) fieldJavaClass = "byte[]";
@@ -212,7 +214,8 @@ public class ModelUtil
 		{
 			// 生成属性
 			String fieldJavaClass = dsc.getJavaClass();
-			if(byte[].class.getName().equals(fieldJavaClass)) fieldJavaClass = blobClass.getName();
+			if("java.sql.Timestamp".equals(fieldJavaClass)||"java.sql.Time".equals(fieldJavaClass)||"java.sql.Date".equals(fieldJavaClass)) fieldJavaClass = Date.class.getName();
+			else if(byte[].class.getName().equals(fieldJavaClass)) fieldJavaClass = blobClass.getName();
 			String fieldColumnName = dsc.getColumnName();
 			if(!fieldJavaClass.startsWith("java.lang.")&&!byte[].class.getName().equals(fieldJavaClass)) addImportClass(packageName, fieldJavaClass, importSb, importedClass);
 			fieldSb.append('\t').append("private ");
@@ -818,7 +821,7 @@ public class ModelUtil
 			String jsSrcRoot = "D:/work/code/MyProject/xlsys.client.web.base/source/class";
 			ModelUtil.generateJsModelClass(dataBase, "xlv2_dialog", "xlsys.base.model.DialogModel", null, jsSrcRoot);*/
 			
-			String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
 			ModelUtil.generateModelClass(dataBase, "xlv2_flowright", "xlsys.business.model.FlowRightModel", null, byte[].class, srcRoot);
 			List<String> childrenList = new ArrayList<String>();
 			childrenList.add("xlsys.business.model.FlowRightModel");
@@ -850,7 +853,57 @@ public class ModelUtil
 			jsChildrenList.add("xlsys.business.model.FlowViewListenerModel");
 			jsChildrenList.add("xlsys.business.model.FlowSubTableModel");
 			jsChildrenList.add("xlsys.business.model.FlowLogicModel");
-			ModelUtil.generateJsModelClass(dataBase, "xlv2_flow", "xlsys.business.model.FlowModel", jsChildrenList, jsSrcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_flow", "xlsys.business.model.FlowModel", jsChildrenList, jsSrcRoot);*/
+			
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
+			ModelUtil.generateModelClass(dataBase, "xlv2_authorisedright", "xlsys.business.model.AuthorisedRightModel", null, byte[].class, srcRoot);
+			List<String> childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.business.model.AuthorisedRightModel");
+			ModelUtil.generateModelClass(dataBase, "xlv2_authorizedetail", "xlsys.business.model.AuthorizeDetailModel", childrenList, byte[].class, srcRoot);
+			childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.business.model.AuthorizeDetailModel");
+			ModelUtil.generateModelClass(dataBase, "xlv2_authorize", "xlsys.business.model.AuthorizeModel", childrenList, byte[].class, srcRoot);
+			
+			String jsSrcRoot = "D:/work/code/MyProject/xlsys.web/web/xlsys.web.business/source/class";
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_authorisedright", "xlsys.business.model.AuthorisedRightModel", null, jsSrcRoot);
+			List<String> jsChildrenList = new ArrayList<String>();
+			jsChildrenList.add("xlsys.business.model.AuthorisedRightModel");
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_authorizedetail", "xlsys.business.model.AuthorizeDetailModel", jsChildrenList, jsSrcRoot);
+			jsChildrenList = new ArrayList<String>();
+			jsChildrenList.add("xlsys.business.model.AuthorizeDetailModel");
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_authorize", "xlsys.business.model.AuthorizeModel", jsChildrenList, jsSrcRoot);*/
+			
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
+			ModelUtil.generateModelClass(dataBase, "xlv2_ratifydetail", "xlsys.business.model.RatifyDetailModel", null, byte[].class, srcRoot);
+			List<String> childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.business.model.RatifyDetailModel");
+			ModelUtil.generateModelClass(dataBase, "xlv2_ratify", "xlsys.business.model.RatifyModel", childrenList, byte[].class, srcRoot);
+			
+			String jsSrcRoot = "D:/work/code/MyProject/xlsys.web/web/xlsys.web.business/source/class";
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_ratifydetail", "xlsys.business.model.RatifyDetailModel", null, jsSrcRoot);
+			List<String> jsChildrenList = new ArrayList<String>();
+			jsChildrenList.add("xlsys.business.model.RatifyDetailModel");
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_ratify", "xlsys.business.model.RatifyModel", jsChildrenList, jsSrcRoot);*/
+			
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
+			ModelUtil.generateModelClass(dataBase, "xlv2_codealloc", "xlsys.business.model.CodeAllocModel", null, byte[].class, srcRoot);
+			ModelUtil.generateModelClass(dataBase, "xlv2_flowcodealloc", "xlsys.business.model.FlowCodeAllocModel", null, byte[].class, srcRoot);
+			
+			String jsSrcRoot = "D:/work/code/MyProject/xlsys.web/web/xlsys.web.business/source/class";
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_codealloc", "xlsys.business.model.CodeAllocModel", null, jsSrcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlv2_flowcodealloc", "xlsys.business.model.FlowCodeAllocModel", null, jsSrcRoot);*/
+			
+			String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
+			ModelUtil.generateModelClass(dataBase, "xlsys_useremail", "xlsys.business.model.UserEmailModel", null, byte[].class, srcRoot);
+			List<String> childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.business.model.UserEmailModel");
+			ModelUtil.generateModelClass(dataBase, "xlsys_user", "xlsys.business.model.UserModel", childrenList, byte[].class, srcRoot);
+			
+			String jsSrcRoot = "D:/work/code/MyProject/xlsys.web/web/xlsys.web.business/source/class";
+			ModelUtil.generateJsModelClass(dataBase, "xlsys_useremail", "xlsys.business.model.UserEmailModel", null, jsSrcRoot);
+			List<String> jsChildrenList = new ArrayList<String>();
+			jsChildrenList.add("xlsys.business.model.UserEmailModel");
+			ModelUtil.generateJsModelClass(dataBase, "xlsys_user", "xlsys.business.model.UserModel", jsChildrenList, jsSrcRoot);
 		}
 		catch(Exception e)
 		{

@@ -115,10 +115,10 @@ public class XlsysServlet extends AbstractServlet
 	{
 		try
 		{
-			String clientType = req.getHeader(XLSYS.CLIENT_TYPE);
-			if(XLSYS.CLIENT_TYPE_WEB.equals(clientType))
+			Integer platForm = ObjectUtil.objectToInt(req.getHeader(XLSYS.PLATFORM));
+			if(platForm!=null)
 			{
-				doWebPost(req, resp);
+				if(platForm==XLSYS.PLATFORM_WEB) doWebPost(req, resp);
 			}
 			else
 			{

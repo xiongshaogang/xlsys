@@ -1,1 +1,5 @@
 RWT中有很多客户端信息
+
+获取url中的parameter
+StartupParameters service = RWT.getClient().getService(StartupParameters.class);
+String foo = service.getParameter("foo");
