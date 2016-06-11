@@ -2,6 +2,7 @@ package xlsys.base.buffer;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -10,8 +11,10 @@ import java.util.Map;
 
 import xlsys.base.XLSYS;
 import xlsys.base.database.EnvDataBase;
+import xlsys.base.database.IDataBase;
 import xlsys.base.database.IEnvDataBase;
 import xlsys.base.database.util.DBUtil;
+import xlsys.base.database.util.TranslateUtil;
 import xlsys.base.log.LogUtil;
 import xlsys.base.model.IModel;
 import xlsys.base.model.IModelCreator;
@@ -255,13 +258,40 @@ public abstract class ModelBuffer implements XlsysBuffer
 	public List<? extends IModel> getAllModelObjects(String bufferName, Session session, Class<? extends IModel> modelClass, Class<? extends Serializable> keyClass, IModelCreator<? extends IModel, ? extends Serializable> modelCreator) throws Exception
 	{
 		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
-		return getAllModelObjects(bufferName, envId, modelClass, keyClass, modelCreator);
+		List<? extends IModel> modelList = getAllModelObjects(bufferName, envId, modelClass, keyClass, modelCreator);
+		return getTranslatedModelList(session, modelList);
+	}
+	
+	private <M extends IModel> List<M> getTranslatedModelList(Session session, List<M> modelList) throws Exception
+	{
+		List<M> mList = null;
+		IEnvDataBase dataBase = null;
+		try
+		{
+			int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
+			String language = ObjectUtil.objectToString(session.getAttribute(XLSYS.SESSION_LANGUAGE));
+			dataBase = EnvDataBase.getInstance(envId);
+			mList = TranslateUtil.getInstance().translateModelList(dataBase, modelList, language);
+			// 查找当前Model的所有属性, 如果属性为List, 并且List中的元素为IModel, 则翻译该属性
+			for(M m : mList) translateSubList(m, envId, dataBase, language);
+		}
+		catch(Exception e)
+		{
+			LogUtil.printlnError(e);
+			throw e;
+		}
+		finally
+		{
+			DBUtil.close(dataBase);
+		}
+		return mList;
 	}
 	
 	public <M extends IModel, K extends Serializable> List<M> getAllModels(String bufferName, Session session, Class<M> modelClass, Class<K> keyClass, IModelCreator<M, K> modelCreator) throws Exception
 	{
 		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
-		return getAllModels(bufferName, envId, modelClass, keyClass, modelCreator);
+		List<M> modelList = getAllModels(bufferName, envId, modelClass, keyClass, modelCreator);
+		return getTranslatedModelList(session, modelList);
 	}
 	
 	public <M extends IModel, K extends Serializable> List<M> getAllModels(String bufferName, int envId) throws Exception
@@ -371,13 +401,58 @@ public abstract class ModelBuffer implements XlsysBuffer
 	public IModel getModelObject(String bufferName, Session session, Serializable key, Class<? extends IModel> modelClass, Class<? extends Serializable> keyClass, IModelCreator<? extends IModel, ? extends Serializable> modelCreator) throws Exception
 	{
 		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
-		return getModelObject(bufferName, envId, key, modelClass, keyClass, modelCreator);
+		IModel model = getModelObject(bufferName, envId, key, modelClass, keyClass, modelCreator);
+		return getTranslatedModel(session, model);
+	}
+	
+	private void translateSubList(IModel model, int envId, IDataBase dataBase, String language) throws Exception
+	{
+		Field[] fields = model.getClass().getDeclaredFields();
+		for(Field field : fields)
+		{
+			if(List.class.isAssignableFrom(field.getType()))
+			{
+				field.setAccessible(true);
+				List<?> subList = (List<?>) field.get(model);
+				if(subList!=null&&!subList.isEmpty()&&subList.get(0) instanceof IModel)
+				{
+					List<IModel> translatedList = TranslateUtil.getInstance().translateModelList(envId, dataBase, (List<IModel>) subList, language);
+					field.set(model, translatedList);
+				}
+			}
+		}
+	}
+	
+	private <M extends IModel> M getTranslatedModel(Session session, M model) throws Exception
+	{
+		M m = null;
+		IEnvDataBase dataBase = null;
+		try
+		{
+			int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
+			String language = ObjectUtil.objectToString(session.getAttribute(XLSYS.SESSION_LANGUAGE));
+			dataBase = EnvDataBase.getInstance(envId);
+			m = TranslateUtil.getInstance().translateModel(dataBase, model, language);
+			// 查找当前Model的所有属性, 如果属性为List, 并且List中的元素为IModel, 则翻译该属性
+			translateSubList(m, envId, dataBase, language);
+		}
+		catch(Exception e)
+		{
+			LogUtil.printlnError(e);
+			throw e;
+		}
+		finally
+		{
+			DBUtil.close(dataBase);
+		}
+		return m;
 	}
 	
 	public <M extends IModel, K extends Serializable> M getModel(String bufferName, Session session, K key, Class<M> modelClass, Class<K> keyClass, IModelCreator<M, K> modelCreator) throws Exception
 	{
 		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
-		return getModel(bufferName, envId, key, modelClass, keyClass, modelCreator);
+		M model = getModel(bufferName, envId, key, modelClass, keyClass, modelCreator);
+		return getTranslatedModel(session, model);
 	}
 	
 	public <M extends IModel, K extends Serializable> M getModel(String bufferName, int envId, K key) throws Exception

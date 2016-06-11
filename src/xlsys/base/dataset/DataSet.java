@@ -703,7 +703,18 @@ public class DataSet implements IDataSet
 	public synchronized DataSetRow removeRow(int rowIndex)
 	{
 		if(!rowRegionCheck(rowIndex)||!expandToRow(rowIndex)) return null;
-		DataSetRow toRemoveRow = doRemoveRow(rowIndex);
+		DataSetRow toRemoveRow = rows.get(rowIndex);
+		DataSetEvent event = new DataSetEvent(this);
+		event.row = toRemoveRow;
+		fireBeforeRemoveRow(event);
+		if(event.doit)
+		{
+			doRemoveRow(rowIndex);
+			event = new DataSetEvent(this);
+			event.row = toRemoveRow;
+			fireAfterRemoveRow(event);
+		}
+		else toRemoveRow = null;
 		if(toRemoveRow!=null)
 		{
 			if(oldEditRow==toRemoveRow) oldEditRow = null;
@@ -726,17 +737,7 @@ public class DataSet implements IDataSet
 	protected DataSetRow doRemoveRow(int rowNum)
 	{
 		DataSetRow toRemoveRow = rows.get(rowNum);
-		DataSetEvent event = new DataSetEvent(this);
-		event.row = toRemoveRow;
-		fireBeforeRemoveRow(event);
-		if(event.doit)
-		{
-			rows.remove(rowNum);
-			event = new DataSetEvent(this);
-			event.row = toRemoveRow;
-			fireAfterRemoveRow(event);
-		}
-		else toRemoveRow = null;
+		rows.remove(rowNum);
 		return toRemoveRow;
 	}
 	
