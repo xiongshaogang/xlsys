@@ -115,6 +115,8 @@ public class XlsysServlet extends AbstractServlet
 	{
 		try
 		{
+			
+			// resp.addHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
 			Integer platForm = ObjectUtil.objectToInt(req.getHeader(XLSYS.PLATFORM));
 			if(platForm!=null)
 			{

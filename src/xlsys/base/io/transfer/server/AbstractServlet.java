@@ -1,6 +1,13 @@
 package xlsys.base.io.transfer.server;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import xlsys.base.task.XlsysScheduledExecutor;
 import xlsys.base.util.SystemUtil;
@@ -21,5 +28,13 @@ public abstract class AbstractServlet extends HttpServlet
 		{
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
+	{
+		resp.setHeader("Access-Control-Allow-Origin", "*");
+		resp.setHeader("Access-Control-Allow-Headers", "_PLATFORM");
+		super.service(req, resp);
 	}
 }
