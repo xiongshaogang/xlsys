@@ -148,12 +148,29 @@ public abstract class PackageProcessor
 		}
 	}
 	
+	protected InnerPackage _processWithPermission(InnerPackage innerInPackage) throws ClassNotFoundException, DocumentException, IOException, NativeException
+	{
+		// 检测合法性
+		InnerPackage innerOutPackage = null;
+		if(hasPermission(innerInPackage))
+		{
+			innerOutPackage = _process(innerInPackage);
+		}
+		else
+		{
+			innerOutPackage = new InnerPackage(innerInPackage.getSession());
+			innerOutPackage.setCommand(XLSYS.COMMAND_PERMISSION_DENIED);
+			innerOutPackage.setObj(new PermissionDeniedException(innerInPackage.getCommand()));
+		}
+		return innerOutPackage;
+	}
+	
 	/**
 	 * 处理一个内部包
 	 * @param innerInPkg 要处理的内部包
 	 * @return 带有结果信息的内部包
 	 */
-	protected InnerPackage _process(InnerPackage innerInPkg)
+	private InnerPackage _process(InnerPackage innerInPkg)
 	{
 		InnerPackage innerOutPkg = null;
 		if(mainPackageProcessor!=null)
@@ -216,17 +233,7 @@ public abstract class PackageProcessor
 	{
 		InnerPackage innerInPackage = xlsysTransfer.getInnerPackage(xlsysInPkg);
 		// 检测合法性
-		InnerPackage innerOutPackage = null;
-		if(hasPermission(innerInPackage))
-		{
-			innerOutPackage = _process(innerInPackage);
-		}
-		else
-		{
-			innerOutPackage = new InnerPackage(innerInPackage.getSession());
-			innerOutPackage.setCommand(XLSYS.COMMAND_PERMISSION_DENIED);
-			innerOutPackage.setObj(new PermissionDeniedException(innerInPackage.getCommand()));
-		}
+		InnerPackage innerOutPackage = _processWithPermission(innerInPackage);
 		XlsysPackage xlsysOutPackage = xlsysTransfer.getXlsysPackage(innerOutPackage, seriMode);
 		return xlsysOutPackage;
 	}

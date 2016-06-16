@@ -1,7 +1,6 @@
 package xlsys.base.database.util;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -288,7 +287,7 @@ public class DBUtil
 		try
 		{
 			int dbid = 1001; // 目标库的数据库编号
-			String exportFilePath = "d:/temp.data"; // 要导出的数据文件的路径
+			String exportFilePath = "d:/20160616.data"; // 要导出的数据文件的路径
 			dataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(dbid)).getNewDataBase();
 			dbBackup(dataBase, exportFilePath);
 		}

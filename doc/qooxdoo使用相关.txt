@@ -16,6 +16,8 @@
       ]
     }
     
-7. 接收formdata数据默认使用multipart方式, 服务端的servlet类上必须加上注释
+7. 接收formdata数据默认使用multipart方式, 服务端的servlet类上必须加上注释      (经测试无效果)
 @WebServlet
 @MultipartConfig
+
+8. 使用eval时，传入的str一定要在外面加上括号eval("(" + str + ")");

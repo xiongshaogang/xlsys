@@ -88,7 +88,8 @@ public class XlsysServlet extends AbstractServlet
 	public static InnerPackage virtualPost(InnerPackage inPkg) throws Exception
 	{
 		initServletServerTransfer();
-		return ServerTransfer.packageProcessor._process(inPkg);
+		
+		return ServerTransfer.packageProcessor._processWithPermission(inPkg);
 	}
 	
 	/**
