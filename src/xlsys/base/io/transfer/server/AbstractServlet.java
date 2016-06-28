@@ -3,8 +3,6 @@ package xlsys.base.io.transfer.server;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,8 +31,9 @@ public abstract class AbstractServlet extends HttpServlet
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
 	{
+		resp.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE, OPTIONS");
 		resp.setHeader("Access-Control-Allow-Origin", "*");
-		resp.setHeader("Access-Control-Allow-Headers", "_PLATFORM");
+		resp.setHeader("Access-Control-Allow-Headers", "_PLATFORM, Content-type");
 		super.service(req, resp);
 	}
 }

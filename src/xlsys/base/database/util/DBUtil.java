@@ -61,7 +61,7 @@ public class DBUtil
 		FileUtil.writeFile(exportFilePath, IOUtil.getObjectBytes(sdsList));
 	}
 	
-	private static List<PairModel<String, String>> getAllTableExportSql(IDataBase dataBase) throws Exception
+	public static List<PairModel<String, String>> getAllTableExportSql(IDataBase dataBase) throws Exception
 	{
 		List<PairModel<String, String>> pairList = new ArrayList<PairModel<String, String>>();
 		// 获取数据库中所有表信息
@@ -281,13 +281,34 @@ public class DBUtil
 		}
 	}
 	
-	public static void main(String[] args) throws Exception
+	private static void dbRestore()
 	{
 		IDataBase dataBase = null;
 		try
 		{
-			int dbid = 1001; // 目标库的数据库编号
-			String exportFilePath = "d:/20160616.data"; // 要导出的数据文件的路径
+			int dbid = 2002; // 目标库的数据库编号
+			String dataFilePath = "d:/20160627.data"; // 要导出的数据文件的路径
+			dataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(dbid)).getNewDataBase();
+			dbRestore(dataBase, dataFilePath);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			DBUtil.close(dataBase);
+		}
+		System.exit(0);
+	}
+	
+	private static void dbBackup()
+	{
+		IDataBase dataBase = null;
+		try
+		{
+			int dbid = 1002; // 目标库的数据库编号
+			String exportFilePath = "d:/20160627.data"; // 要导出的数据文件的路径
 			dataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(dbid)).getNewDataBase();
 			dbBackup(dataBase, exportFilePath);
 		}
@@ -300,5 +321,11 @@ public class DBUtil
 			DBUtil.close(dataBase);
 		}
 		System.exit(0);
+	}
+	
+	public static void main(String[] args)
+	{
+		// dbBackup();
+		dbRestore();
 	}
 }

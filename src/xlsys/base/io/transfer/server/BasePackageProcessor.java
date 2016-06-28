@@ -32,6 +32,7 @@ import xlsys.base.database.bean.ISqlBean;
 import xlsys.base.database.bean.ParamBean;
 import xlsys.base.database.util.AutoIdAllocate;
 import xlsys.base.database.util.DBUtil;
+import xlsys.base.database.util.ExportData;
 import xlsys.base.dataset.IDataSet;
 import xlsys.base.dataset.util.DataSetUtil;
 import xlsys.base.env.Env;
@@ -47,9 +48,12 @@ import xlsys.base.io.util.IOUtil;
 import xlsys.base.io.util.LockUtil;
 import xlsys.base.io.xml.XmlModel;
 import xlsys.base.log.LogUtil;
+import xlsys.base.model.PairModel;
 import xlsys.base.session.Session;
+import xlsys.base.thread.XlsysThreadPool;
 import xlsys.base.util.FTPUtil;
 import xlsys.base.util.ObjectUtil;
+import xlsys.base.util.StringUtil;
 
 /**
  * 基础处理中心实现类，该类实现了一些常用的处理操作
@@ -240,8 +244,97 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 			outObj = getEnvModel(innerPackage);
 			outPkg.setCommand(XLSYS.COMMAND_OK);
 		}
+		else if(XLSYS.COMMAND_EXPORT_DATA.equals(innerPackage.getCommand()))
+		{
+			outObj = exportData(innerPackage);
+			outPkg.setCommand(XLSYS.COMMAND_OK);
+		}
+		else if(XLSYS.COMMAND_EXPORT_DATA_PROGRESS.equals(innerPackage.getCommand()))
+		{
+			outObj = exportDataProgress(innerPackage);
+			outPkg.setCommand(XLSYS.COMMAND_OK);
+		}
+		else if(XLSYS.COMMAND_DB_BACKUP.equals(innerPackage.getCommand()))
+		{
+			outObj = dbBackup(innerPackage);
+			outPkg.setCommand(XLSYS.COMMAND_OK);
+		}
 		outPkg.setObj(outObj);
 		return outPkg;
+	}
+
+	private Serializable dbBackup(InnerPackage innerPackage) throws Exception
+	{
+		Session session = innerPackage.getSession();
+		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
+		IDataBase dataBase = null;
+		int size = 0;
+		try
+		{
+			dataBase = EnvDataBase.getInstance(envId);
+			List<PairModel<String, String>> sqlPairList = DBUtil.getAllTableExportSql(dataBase);
+			size = sqlPairList.size();
+			String[] sqls = new String[size];
+			String[] tableNames = new String[size];
+			for(int i=0;i<size;++i)
+			{
+				PairModel<String, String> pair = sqlPairList.get(i);
+				sqls[i] = pair.first;
+				tableNames[i] = pair.second;
+			}
+			ExportData exportData = new ExportData(envId, sqls, tableNames);
+			ExportData.exportSessionMap.put(session.getSessionId(), exportData);
+			XlsysThreadPool.getInstance().execute(exportData);
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.close(dataBase);
+		}
+		return size+1;
+	}
+
+	private Serializable exportDataProgress(InnerPackage innerPackage) throws Exception
+	{
+		Session session = innerPackage.getSession();
+		ExportData exportData = ExportData.exportSessionMap.get(session.getSessionId());
+		if(exportData==null) throw new NullPointerException();
+		Serializable result = exportData.popNextResult();
+		if(result instanceof Integer)
+		{
+			Integer value = (Integer) result;
+			if(value==exportData.getMaximum())
+			{
+				// 返回服务端的url
+				byte[] datas = exportData.getDatas();
+				String md5 = StringUtil.getMD5String(datas);
+				String fileSuffix = "data";
+				String resourceName = md5 + '.' + fileSuffix;
+				XlsysResourceManager resourceManager = XlsysResourceManager.getInstance();
+				resourceManager.registResource(resourceName, datas, fileSuffix);
+				result = resourceManager.getResourceUrlWithName(resourceName);
+				ExportData.exportSessionMap.remove(session.getSessionId());
+			}
+		}
+		else if(result instanceof Exception)
+		{
+			ExportData.exportSessionMap.remove(session.getSessionId());
+		}
+		return result;
+	}
+
+	private Serializable exportData(InnerPackage innerPackage) throws DocumentException
+	{
+		Session session = innerPackage.getSession();
+		String[] sqls = (String[]) innerPackage.getObj();
+		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
+		ExportData exportData = new ExportData(envId, sqls);
+		ExportData.exportSessionMap.put(session.getSessionId(), exportData);
+		XlsysThreadPool.getInstance().execute(exportData);
+		return sqls.length+1;
 	}
 
 	private Serializable getEnvModel(InnerPackage innerPackage) throws UnsupportedException, NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, DocumentException

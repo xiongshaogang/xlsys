@@ -222,6 +222,18 @@ public interface XLSYS
 	 * 获取指定模型的数量
 	 */
 	public final static String COMMAND_GET_MODEL_COUNT = "_COMMAND_GET_MODEL_COUNT";
+	/**
+	 * 导出数据
+	 */
+	public final static String COMMAND_EXPORT_DATA = "_COMMAND_EXPORT_DATA";
+	/**
+	 * 导出数据过程
+	 */
+	public final static String COMMAND_EXPORT_DATA_PROGRESS = "_COMMAND_EXPORT_DATA_PROGRESS";
+	/**
+	 * 数据库备份
+	 */
+	public final static String COMMAND_DB_BACKUP = "_COMMAND_DB_BACKUP";
 	
 	// 以下是Base包中的Session相关常量
 	/**

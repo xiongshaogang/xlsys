@@ -21,3 +21,8 @@
 @MultipartConfig
 
 8. 使用eval时，传入的str一定要在外面加上括号eval("(" + str + ")");
+
+9. Appearance是所有主题部分的集合, 返回一个叫style的function, 里面是对应widget的所有properties, 参数states中的属性值都是widget通过addState和removeState来设置
+而Decoration则是定义一个style属性, style中能设置的值都是qx.ui.decoration.Decorator中的properties
+
+自定义主题风格最好的方法就是拷贝一个原有的，然后改写所有的参数, 这样不会漏掉state

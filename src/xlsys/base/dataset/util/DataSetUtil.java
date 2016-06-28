@@ -401,7 +401,7 @@ public class DataSetUtil
 		try
 		{
 			int dbid = 1002; // 目标库的数据库编号
-			String dataFilePath = "dbmodel/init_data.data"; // 要导入的数据文件的路径
+			String dataFilePath = "d:/20160620.data"; // 要导入的数据文件的路径
 			dataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(dbid)).getNewDataBase();
 			dataBase.setAutoCommit(false);
 			List<StorableDataSet> sdsList = (List<StorableDataSet>) IOUtil.readObject(FileUtil.getByteFromFile(dataFilePath));
