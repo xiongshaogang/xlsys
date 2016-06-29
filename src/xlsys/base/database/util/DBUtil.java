@@ -326,7 +326,7 @@ public class DBUtil
 	
 	public static void main(String[] args)
 	{
-		dbBackup();
-		// dbRestore();
+		// dbBackup();
+		dbRestore();
 	}
 }

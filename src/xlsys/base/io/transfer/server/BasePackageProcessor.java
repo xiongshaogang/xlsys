@@ -2,6 +2,7 @@ package xlsys.base.io.transfer.server;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -43,6 +44,8 @@ import xlsys.base.io.XlsysResourceManager;
 import xlsys.base.io.attachment.XlsysAttachment;
 import xlsys.base.io.ftp.FtpModel;
 import xlsys.base.io.pack.InnerPackage;
+import xlsys.base.io.print.ExcelPrinter;
+import xlsys.base.io.print.Printer;
 import xlsys.base.io.transport.Transport;
 import xlsys.base.io.util.FileUtil;
 import xlsys.base.io.util.IOUtil;
@@ -270,8 +273,63 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 			outObj = importDataProgress(innerPackage);
 			outPkg.setCommand(XLSYS.COMMAND_OK);
 		}
+		else if(XLSYS.COMMAND_PRINT_EXCEL.equals(innerPackage.getCommand()))
+		{
+			outObj = printExcel(innerPackage);
+			outPkg.setCommand(XLSYS.COMMAND_OK);
+		}
 		outPkg.setObj(outObj);
 		return outPkg;
+	}
+
+	private Serializable printExcel(InnerPackage innerPackage) throws Exception
+	{
+		Map<String, Serializable> paramMap = (Map<String, Serializable>) innerPackage.getObj();
+		Session session = innerPackage.getSession();
+		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
+		String printId = (String) paramMap.get("printId");
+		IDataBase dataBase = null;
+		String url = null;
+		try
+		{
+			dataBase = EnvDataBase.getInstance(envId);
+			// 获取模板
+			String selectSql = "select template from xlsys_print where printid=? and printtype=?";
+			ParamBean pb = new ParamBean(selectSql);
+			pb.addParamGroup();
+			pb.setParam(1, printId);
+			pb.setParam(2, Printer.TYPE_EXCEL);
+			byte[] template = (byte[]) dataBase.sqlSelectAsOneValue(pb);
+			XlsysAttachment attachment = (XlsysAttachment) IOUtil.readInternalObject(template);
+			byte[] xlsData = getAttachmentContent(attachment);
+			if(attachment.isCompress()) xlsData = IOUtil.decompress(xlsData);
+			Printer printer = new ExcelPrinter(xlsData);
+			// 放置变量
+			printer.putVar("dataBase", dataBase);
+			for(String key : paramMap.keySet()) printer.putVar(key, paramMap.get(key));
+			// 打印
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			printer.print(baos);
+			baos.flush();
+			// 返回服务端的url
+			byte[] datas = baos.toByteArray();
+			baos.close();
+			String md5 = StringUtil.getMD5String(datas);
+			String fileSuffix = "xls";
+			String resourceName = md5 + '.' + fileSuffix;
+			XlsysResourceManager resourceManager = XlsysResourceManager.getInstance();
+			resourceManager.registResource(resourceName, datas, fileSuffix);
+			url = resourceManager.getResourceUrlWithName(resourceName);
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
+		finally
+		{
+			DBUtil.close(dataBase);
+		}
+		return url;
 	}
 
 	private Serializable importDataProgress(InnerPackage innerPackage) throws InterruptedException
@@ -446,47 +504,7 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 			{
 				if(!resourceManager.containsResourceWithName(resourceName))
 				{
-					byte[] bytes = null;
-					if(inAttachment.getStyle()==XlsysAttachment.STYLE_FILE_SYSTEM)
-					{
-						// 从文件系统下载
-						String workDir = null;
-						if(inAttachment.getId()!=null) workDir = (String) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_WORKDIR).getInstance(inAttachment.getId());
-						else workDir = (String) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_WORKDIR).getInstance();
-						// 使用内部名称获取文件
-						String filePath = workDir + '/' + (inAttachment.getPath()==null?"":inAttachment.getPath()) + '/' + inAttachment.getInnerName();
-						filePath = FileUtil.fixFilePath(filePath);
-						bytes = FileUtil.getByteFromFile(filePath);
-					}
-					else if(inAttachment.getStyle()==XlsysAttachment.STYLE_FTP)
-					{
-						// 从Ftp下载
-						FTPUtil ftpUtil = null;
-						InputStream is = null;
-						try
-						{
-							if(inAttachment.getId()!=null) ftpUtil = ((FtpModel)XlsysFactory.getFactoryInstance(XLSYS.FACTORY_FTP).getInstance(inAttachment.getId())).getFtpInstance();
-							else ftpUtil = ((FtpModel)XlsysFactory.getFactoryInstance(XLSYS.FACTORY_FTP).getInstance()).getFtpInstance();
-							if(inAttachment.getPath()!=null) ftpUtil.cd(inAttachment.getPath());
-							// 使用内部名称获取文件
-							is = ftpUtil.get(inAttachment.getInnerName());
-							BufferedInputStream bis = new BufferedInputStream(is);
-							bytes = IOUtil.readBytesFromInputStream(bis, -1);
-						}
-						catch(Exception e)
-						{
-							throw e;
-						}
-						finally
-						{
-							if(ftpUtil!=null) ftpUtil.close();
-							IOUtil.close(is);
-						}
-					}
-					else if(inAttachment.getStyle()==XlsysAttachment.STYLE_DATA_BASE)
-					{
-						bytes = inAttachment.getAttachmentData();
-					}
+					byte[] bytes = this.getAttachmentContent(inAttachment);
 					if(inAttachment.isCompress()) bytes = IOUtil.decompress(bytes);
 					resourceManager.registResource(resourceName, bytes, fileSuffix);
 				}
@@ -496,6 +514,49 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 		return url;
 	}
 
+	private byte[] getAttachmentContent(XlsysAttachment attachment) throws Exception
+	{
+		byte[] bytes = null;
+		if(attachment.getStyle()==XlsysAttachment.STYLE_FILE_SYSTEM)
+		{
+			// 从文件系统下载
+			String workDir = null;
+			if(attachment.getId()!=null) workDir = (String) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_WORKDIR).getInstance(attachment.getId());
+			else workDir = (String) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_WORKDIR).getInstance();
+			// 使用内部名称获取文件
+			String filePath = workDir + '/' + (attachment.getPath()==null?"":attachment.getPath()) + '/' + attachment.getInnerName();
+			filePath = FileUtil.fixFilePath(filePath);
+			bytes = FileUtil.getByteFromFile(filePath);
+		}
+		else if(attachment.getStyle()==XlsysAttachment.STYLE_FTP)
+		{
+			// 从Ftp下载
+			FTPUtil ftpUtil = null;
+			InputStream is = null;
+			try
+			{
+				if(attachment.getId()!=null) ftpUtil = ((FtpModel)XlsysFactory.getFactoryInstance(XLSYS.FACTORY_FTP).getInstance(attachment.getId())).getFtpInstance();
+				else ftpUtil = ((FtpModel)XlsysFactory.getFactoryInstance(XLSYS.FACTORY_FTP).getInstance()).getFtpInstance();
+				if(attachment.getPath()!=null) ftpUtil.cd(attachment.getPath());
+				// 使用内部名称获取文件
+				is = ftpUtil.get(attachment.getInnerName());
+				BufferedInputStream bis = new BufferedInputStream(is);
+				bytes = IOUtil.readBytesFromInputStream(bis, -1);
+			}
+			catch(Exception e)
+			{
+				throw e;
+			}
+			finally
+			{
+				if(ftpUtil!=null) ftpUtil.close();
+				IOUtil.close(is);
+			}
+		}
+		else bytes = attachment.getAttachmentData();
+		return bytes;
+	}
+	
 	private Serializable downFile(InnerPackage innerPackage) throws Exception
 	{
 		XlsysAttachment outAttachment = null;
@@ -503,43 +564,7 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 		if(inObj instanceof XlsysAttachment)
 		{
 			XlsysAttachment inAttachment = (XlsysAttachment) inObj;
-			byte[] bytes = null;
-			if(inAttachment.getStyle()==XlsysAttachment.STYLE_FILE_SYSTEM)
-			{
-				// 从文件系统下载
-				String workDir = null;
-				if(inAttachment.getId()!=null) workDir = (String) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_WORKDIR).getInstance(inAttachment.getId());
-				else workDir = (String) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_WORKDIR).getInstance();
-				// 使用内部名称获取文件
-				String filePath = workDir + '/' + (inAttachment.getPath()==null?"":inAttachment.getPath()) + '/' + inAttachment.getInnerName();
-				filePath = FileUtil.fixFilePath(filePath);
-				bytes = FileUtil.getByteFromFile(filePath);
-			}
-			else if(inAttachment.getStyle()==XlsysAttachment.STYLE_FTP)
-			{
-				// 从Ftp下载
-				FTPUtil ftpUtil = null;
-				InputStream is = null;
-				try
-				{
-					if(inAttachment.getId()!=null) ftpUtil = ((FtpModel)XlsysFactory.getFactoryInstance(XLSYS.FACTORY_FTP).getInstance(inAttachment.getId())).getFtpInstance();
-					else ftpUtil = ((FtpModel)XlsysFactory.getFactoryInstance(XLSYS.FACTORY_FTP).getInstance()).getFtpInstance();
-					if(inAttachment.getPath()!=null) ftpUtil.cd(inAttachment.getPath());
-					// 使用内部名称获取文件
-					is = ftpUtil.get(inAttachment.getInnerName());
-					BufferedInputStream bis = new BufferedInputStream(is);
-					bytes = IOUtil.readBytesFromInputStream(bis, -1);
-				}
-				catch(Exception e)
-				{
-					throw e;
-				}
-				finally
-				{
-					if(ftpUtil!=null) ftpUtil.close();
-					IOUtil.close(is);
-				}
-			}
+			byte[] bytes = getAttachmentContent(inAttachment);
 			outAttachment = new XlsysAttachment(inAttachment.getAttachmentName(), inAttachment.getLastModified(), inAttachment.getStyle(), bytes, inAttachment.isCompress(), inAttachment.getMd5());
 			outAttachment.setId(inAttachment.getId());
 			outAttachment.setPath(inAttachment.getPath());

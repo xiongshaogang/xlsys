@@ -18,7 +18,7 @@ import xlsys.base.script.XlsysScript;
  * @author Lewis
  *
  */
-public abstract class LPrinter
+public abstract class Printer
 {
 	/**
 	 * Excel类型打印格式
@@ -31,7 +31,7 @@ public abstract class LPrinter
 	 * 构造一个打印格式类
 	 * @param filePath 文件路径
 	 */
-	public LPrinter(String filePath)
+	public Printer(String filePath)
 	{
 		this(new File(filePath));
 	}
@@ -40,7 +40,7 @@ public abstract class LPrinter
 	 * 构造一个打印格式类
 	 * @param file 文件
 	 */
-	public LPrinter(File file)
+	public Printer(File file)
 	{
 		FileInputStream fis = null;
 		try
@@ -63,7 +63,7 @@ public abstract class LPrinter
 	 * 构造一个打印格式类
 	 * @param bytes 数据
 	 */
-	public LPrinter(byte[] bytes)
+	public Printer(byte[] bytes)
 	{
 		ByteArrayInputStream bais = null;
 		try
@@ -86,7 +86,7 @@ public abstract class LPrinter
 	 * 构造一个打印格式类
 	 * @param is 读入流
 	 */
-	public LPrinter(InputStream is)
+	public Printer(InputStream is)
 	{
 		try
 		{

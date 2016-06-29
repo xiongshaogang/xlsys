@@ -47,7 +47,7 @@ import xlsys.base.log.LogUtil;
 import xlsys.base.util.ObjectUtil;
 import xlsys.base.util.StringUtil;
 
-public class ExcelPrinter extends LPrinter
+public class ExcelPrinter extends Printer
 {
 	/**
 	 * sheet页循环类型:一次
@@ -938,7 +938,7 @@ public class ExcelPrinter extends LPrinter
 	
 	public static void main(String[] args) throws Exception
 	{
-		LPrinter xlsPrint = new ExcelPrinter("d:/test.xls");
+		Printer xlsPrint = new ExcelPrinter("d:/test.xls");
 		xlsPrint.print("d:/test1.xls");
 	}
 }

@@ -242,6 +242,10 @@ public interface XLSYS
 	 * 导入数据过程
 	 */
 	public final static String COMMAND_IMPORT_DATA_PROGRESS = "_COMMAND_IMPORT_DATA_PROGRESS";
+	/**
+	 * 打印Excel模板
+	 */
+	public final static String COMMAND_PRINT_EXCEL = "_COMMAND_PRINT_EXCEL";
 	
 	// 以下是Base包中的Session相关常量
 	/**
