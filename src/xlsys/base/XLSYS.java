@@ -234,6 +234,14 @@ public interface XLSYS
 	 * 数据库备份
 	 */
 	public final static String COMMAND_DB_BACKUP = "_COMMAND_DB_BACKUP";
+	/**
+	 * 导入数据
+	 */
+	public final static String COMMAND_IMPORT_DATA = "_COMMAND_IMPORT_DATA";
+	/**
+	 * 导入数据过程
+	 */
+	public final static String COMMAND_IMPORT_DATA_PROGRESS = "_COMMAND_IMPORT_DATA_PROGRESS";
 	
 	// 以下是Base包中的Session相关常量
 	/**

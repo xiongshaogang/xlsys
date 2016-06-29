@@ -144,6 +144,16 @@ public class XlsysAttachment implements IModel
 	}
 	
 	/**
+	 * 设置附件数据
+	 * @param attachmentData
+	 */
+	public void setAttachmentData(byte[] attachmentData)
+	{
+		this.attachmentData = attachmentData;
+		if(attachmentData!=null) size = attachmentData.length;
+	}
+	
+	/**
 	 * 获取存储路径
 	 * @return
 	 */

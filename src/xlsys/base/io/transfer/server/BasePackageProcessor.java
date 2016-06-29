@@ -33,6 +33,7 @@ import xlsys.base.database.bean.ParamBean;
 import xlsys.base.database.util.AutoIdAllocate;
 import xlsys.base.database.util.DBUtil;
 import xlsys.base.database.util.ExportData;
+import xlsys.base.database.util.ImportData;
 import xlsys.base.dataset.IDataSet;
 import xlsys.base.dataset.util.DataSetUtil;
 import xlsys.base.env.Env;
@@ -259,8 +260,50 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 			outObj = dbBackup(innerPackage);
 			outPkg.setCommand(XLSYS.COMMAND_OK);
 		}
+		else if(XLSYS.COMMAND_IMPORT_DATA.equals(innerPackage.getCommand()))
+		{
+			outObj = importData(innerPackage);
+			outPkg.setCommand(XLSYS.COMMAND_OK);
+		}
+		else if(XLSYS.COMMAND_IMPORT_DATA_PROGRESS.equals(innerPackage.getCommand()))
+		{
+			outObj = importDataProgress(innerPackage);
+			outPkg.setCommand(XLSYS.COMMAND_OK);
+		}
 		outPkg.setObj(outObj);
 		return outPkg;
+	}
+
+	private Serializable importDataProgress(InnerPackage innerPackage) throws InterruptedException
+	{
+		Session session = innerPackage.getSession();
+		ImportData importData = ImportData.importSessionMap.get(session.getSessionId());
+		if(importData==null) throw new NullPointerException();
+		Serializable result = importData.popNextResult();
+		PairModel<Serializable, String> ret = new PairModel<Serializable, String>(result, importData.popLog());
+		if(result instanceof Integer)
+		{
+			Integer value = (Integer) result;
+			if(value==importData.getMaximum()) ImportData.importSessionMap.remove(session.getSessionId());
+		}
+		else if(result instanceof Exception) ImportData.importSessionMap.remove(session.getSessionId());
+		return ret;
+	}
+
+	private Serializable importData(InnerPackage innerPackage) throws DocumentException
+	{
+		Session session = innerPackage.getSession();
+		Map<String, Serializable> paramMap = (Map<String, Serializable>) innerPackage.getObj();
+		Object[] temp = (Object[]) paramMap.get("attachments");
+		XlsysAttachment[] attachments = new XlsysAttachment[temp.length];
+		for(int i=0;i<temp.length;++i) attachments[i] = (XlsysAttachment) temp[i];
+		boolean batch = ObjectUtil.objectToBoolean(paramMap.get("batch"));
+		boolean override = ObjectUtil.objectToBoolean(paramMap.get("override"));
+		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
+		ImportData importData = new ImportData(envId, attachments, batch, override);
+		ImportData.importSessionMap.put(session.getSessionId(), importData);
+		XlsysThreadPool.getInstance().execute(importData);
+		return importData.getMaximum();
 	}
 
 	private Serializable dbBackup(InnerPackage innerPackage) throws Exception
