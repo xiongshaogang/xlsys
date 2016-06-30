@@ -318,7 +318,7 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 			String fileSuffix = "xls";
 			String resourceName = md5 + '.' + fileSuffix;
 			XlsysResourceManager resourceManager = XlsysResourceManager.getInstance();
-			resourceManager.registResource(resourceName, datas, fileSuffix);
+			if(!resourceManager.containsResourceWithName(resourceName)) resourceManager.registResource(resourceName, datas, fileSuffix);
 			url = resourceManager.getResourceUrlWithName(resourceName);
 		}
 		catch(Exception e)
@@ -335,16 +335,18 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 	private Serializable importDataProgress(InnerPackage innerPackage) throws InterruptedException
 	{
 		Session session = innerPackage.getSession();
-		ImportData importData = ImportData.importSessionMap.get(session.getSessionId());
+		String instanceId = (String) innerPackage.getObj();
+		String threadKey = session.getSessionId() + "_" + instanceId;
+		ImportData importData = ImportData.importSessionMap.get(threadKey);
 		if(importData==null) throw new NullPointerException();
 		Serializable result = importData.popNextResult();
 		PairModel<Serializable, String> ret = new PairModel<Serializable, String>(result, importData.popLog());
 		if(result instanceof Integer)
 		{
 			Integer value = (Integer) result;
-			if(value==importData.getMaximum()) ImportData.importSessionMap.remove(session.getSessionId());
+			if(value==importData.getMaximum()) ImportData.importSessionMap.remove(threadKey);
 		}
-		else if(result instanceof Exception) ImportData.importSessionMap.remove(session.getSessionId());
+		else if(result instanceof Exception) ImportData.importSessionMap.remove(threadKey);
 		return ret;
 	}
 
@@ -357,9 +359,11 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 		for(int i=0;i<temp.length;++i) attachments[i] = (XlsysAttachment) temp[i];
 		boolean batch = ObjectUtil.objectToBoolean(paramMap.get("batch"));
 		boolean override = ObjectUtil.objectToBoolean(paramMap.get("override"));
+		String instanceId = (String) paramMap.get("instanceId");
+		String threadKey = session.getSessionId() + "_" + instanceId;
 		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
 		ImportData importData = new ImportData(envId, attachments, batch, override);
-		ImportData.importSessionMap.put(session.getSessionId(), importData);
+		ImportData.importSessionMap.put(threadKey, importData);
 		XlsysThreadPool.getInstance().execute(importData);
 		return importData.getMaximum();
 	}
@@ -367,6 +371,8 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 	private Serializable dbBackup(InnerPackage innerPackage) throws Exception
 	{
 		Session session = innerPackage.getSession();
+		String instanceId = (String) innerPackage.getObj();
+		String threadKey = session.getSessionId() + "_" + instanceId;
 		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
 		IDataBase dataBase = null;
 		int size = 0;
@@ -384,7 +390,7 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 				tableNames[i] = pair.second;
 			}
 			ExportData exportData = new ExportData(envId, sqls, tableNames);
-			ExportData.exportSessionMap.put(session.getSessionId(), exportData);
+			ExportData.exportSessionMap.put(threadKey, exportData);
 			XlsysThreadPool.getInstance().execute(exportData);
 		}
 		catch(Exception e)
@@ -401,7 +407,9 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 	private Serializable exportDataProgress(InnerPackage innerPackage) throws Exception
 	{
 		Session session = innerPackage.getSession();
-		ExportData exportData = ExportData.exportSessionMap.get(session.getSessionId());
+		String instanceId = (String) innerPackage.getObj();
+		String threadKey = session.getSessionId() + "_" + instanceId;
+		ExportData exportData = ExportData.exportSessionMap.get(threadKey);
 		if(exportData==null) throw new NullPointerException();
 		Serializable result = exportData.popNextResult();
 		if(result instanceof Integer)
@@ -415,14 +423,14 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 				String fileSuffix = "data";
 				String resourceName = md5 + '.' + fileSuffix;
 				XlsysResourceManager resourceManager = XlsysResourceManager.getInstance();
-				resourceManager.registResource(resourceName, datas, fileSuffix);
+				if(!resourceManager.containsResourceWithName(resourceName)) resourceManager.registResource(resourceName, datas, fileSuffix);
 				result = resourceManager.getResourceUrlWithName(resourceName);
-				ExportData.exportSessionMap.remove(session.getSessionId());
+				ExportData.exportSessionMap.remove(threadKey);
 			}
 		}
 		else if(result instanceof Exception)
 		{
-			ExportData.exportSessionMap.remove(session.getSessionId());
+			ExportData.exportSessionMap.remove(threadKey);
 		}
 		return result;
 	}
@@ -430,10 +438,12 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 	private Serializable exportData(InnerPackage innerPackage) throws DocumentException
 	{
 		Session session = innerPackage.getSession();
-		String[] sqls = (String[]) innerPackage.getObj();
+		Map<String, Serializable> paramMap = (Map<String, Serializable>) innerPackage.getObj();
+		String[] sqls = (String[]) paramMap.get("sqls");
+		String instanceId = (String) paramMap.get("instanceId");
 		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
 		ExportData exportData = new ExportData(envId, sqls);
-		ExportData.exportSessionMap.put(session.getSessionId(), exportData);
+		ExportData.exportSessionMap.put(session.getSessionId()+"_"+instanceId, exportData);
 		XlsysThreadPool.getInstance().execute(exportData);
 		return sqls.length+1;
 	}
@@ -506,7 +516,7 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 				{
 					byte[] bytes = this.getAttachmentContent(inAttachment);
 					if(inAttachment.isCompress()) bytes = IOUtil.decompress(bytes);
-					resourceManager.registResource(resourceName, bytes, fileSuffix);
+					if(!resourceManager.containsResourceWithName(resourceName)) resourceManager.registResource(resourceName, bytes, fileSuffix);
 				}
 			}
 			url = resourceManager.getResourceUrlWithName(resourceName);

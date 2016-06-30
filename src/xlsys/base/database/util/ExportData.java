@@ -20,7 +20,7 @@ public class ExportData implements Runnable
 	private Exception e;
 	private byte[] datas;
 	
-	// <sessionId, ExportData>
+	// <sessionId_instanceId, ExportData>
 	public static Map<String, ExportData> exportSessionMap = new HashMap<String, ExportData>();
 	
 	public ExportData(int envId, String[] sqls)
