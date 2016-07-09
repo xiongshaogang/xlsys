@@ -1,7 +1,5 @@
 package xlsys.base.script.util;
 
-import sun.org.mozilla.javascript.internal.NativeArray;
-
 /**
  * 对于在JavaScript脚本中不能使用的部分Java功能给予支持
  * @author Lewis
@@ -60,34 +58,5 @@ public class JSUtil
 			if(result) break;
 		}
 		return result;
-	}
-	
-	/**
-	 * 获取Js数组对应的Java数组
-	 * @param jsArr JS数组
-	 * @param toArr Java数组
-	 * @return
-	 */
-	public static <T> T[] getJavaArray(Object jsArr, T[] toArr)
-	{
-		if(jsArr instanceof NativeArray)
-		{
-			NativeArray fromArr = (NativeArray) jsArr;
-			for(int i=0;i<fromArr.size();i++)
-			{
-				toArr[i] = (T) fromArr.get(i);
-			}
-		}
-		return toArr;
-	}
-	
-	/**
-	 * 获取Java数组对应的Js数组
-	 * @param arr Java数组
-	 * @return
-	 */
-	public static NativeArray getJsArray(Object[] arr)
-	{
-		return new NativeArray(arr);
 	}
 }

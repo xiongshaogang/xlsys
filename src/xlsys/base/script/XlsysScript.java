@@ -1,9 +1,5 @@
 package xlsys.base.script;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import javax.script.Bindings;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -13,7 +9,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import sun.org.mozilla.javascript.internal.NativeArray;
 import xlsys.base.exception.UnsupportedException;
 
 /**
@@ -144,7 +139,6 @@ public class XlsysScript
 			else result = engine.eval(script,bindings);
 		}
 		changed = false;
-		result = reverseResult(result);
 		return result;
 	}
 	
@@ -157,7 +151,7 @@ public class XlsysScript
 	 */
 	public Object invokeFunctionWithOneArrayParam(String functionName, Object[] param) throws ScriptException
 	{
-		return invoke(functionName, new NativeArray(param));
+		return invoke(functionName, param);
 	}
 	
 	/**
@@ -170,13 +164,6 @@ public class XlsysScript
 	public Object invoke(String functionName, Object... params) throws ScriptException
 	{
 		Thread.currentThread().setContextClassLoader(XlsysClassLoader.getInstance());
-		if(params!=null)
-		{
-			for(int i=0;i<params.length;i++)
-			{
-				params[i] = reverseParam(params[i]);
-			}
-		}
 		// 执行方法
 		Object result = null;
 		if(changed) invoke();
@@ -192,102 +179,7 @@ public class XlsysScript
 			}
 		}
 		catch (NoSuchMethodException e) {}
-		result = reverseResult(result);
 		return result;
-	}
-	
-	/**
-	 * 将Java参数转换为Js参数，目前已知的转换包含:
-	 * 1. 将Java数组Object[]转换为NativeArray
-	 * @param param Java对象
-	 * @return Js对象
-	 */
-	private Object reverseParam(Object param)
-	{
-		if(param==null) return null;
-		if(param instanceof NativeArray) return param;
-		if(param instanceof Object[])
-		{
-			Object[] arr = (Object[]) param;
-			for(int i=0;i<arr.length;i++)
-			{
-				arr[i] = reverseParam(arr[i]);
-			}
-			param = new NativeArray(arr);
-		}
-		else if(param instanceof Collection)
-		{
-			Collection<Object> collection = (Collection<Object>) param;
-			Object[] objArr = collection.toArray();
-			reverseParam(objArr);
-			collection.clear();
-			for(Object obj : objArr) collection.add(obj);
-		}
-		else if(param instanceof Map)
-		{
-			Map<Object, Object> map = (Map<Object, Object>) param;
-			map.clear();
-			Object[] entrys = map.entrySet().toArray();
-			for(int i=0;i<entrys.length;i++)
-			{
-				Entry<?, ?> entry = (Entry<?, ?>) entrys[i];
-				Object key = entry.getKey();
-				key = reverseParam(key);
-				Object value = entry.getValue();
-				value = reverseParam(value);
-				map.put(key, value);
-			}
-		}
-		return param;
-	}
-	
-	/**
-	 * 将Js返回的结果进行转换，目前已知的转换包含：
-	 * 1. 将Js数组NativeArray转换为Object[]
-	 * @param result Js对象
-	 * @return Java对象
-	 */
-	private Object reverseResult(Object result)
-	{
-		if(result==null) return null;
-		if(result instanceof NativeArray)
-		{
-			result = ((NativeArray) result).toArray();
-			Object[] objArr = (Object[]) result;
-			reverseArray(objArr);
-		}
-		else if(result instanceof Collection)
-		{
-			Collection<Object> collection = (Collection<Object>) result;
-			Object[] objArr = collection.toArray();
-			reverseArray(objArr);
-			collection.clear();
-			for(Object obj : objArr) collection.add(obj);
-		}
-		else if(result instanceof Map)
-		{
-			Map<Object, Object> map = (Map<Object, Object>) result;
-			map.clear();
-			Object[] entrys = map.entrySet().toArray();
-			for(int i=0;i<entrys.length;i++)
-			{
-				Entry<?, ?> entry = (Entry<?, ?>) entrys[i];
-				Object key = entry.getKey();
-				key = reverseResult(key);
-				Object value = entry.getValue();
-				value = reverseResult(value);
-				map.put(key, value);
-			}
-		}
-		return result;
-	}
-	
-	private void reverseArray(Object[] objArr)
-	{
-		for(int i=0;i<objArr.length;i++)
-		{
-			objArr[i] = reverseResult(objArr[i]);
-		}
 	}
 	
 	/**
