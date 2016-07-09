@@ -26,3 +26,22 @@
 而Decoration则是定义一个style属性, style中能设置的值都是qx.ui.decoration.Decorator中的properties
 
 自定义主题风格最好的方法就是拷贝一个原有的，然后改写所有的参数, 这样不会漏掉state
+
+10. 手机端开发需要安装ruby : http://rubyinstaller.org/downloads/
+安装完后运行以下命令:
+gem install sass
+
+还要安装Cordova : http://cordova.apache.org/docs/en/latest/guide/cli/index.html
+npm install -g cordova
+
+每个平台都需要装各个平台的sdk, 上手向导 : http://cordova.apache.org/docs/en/latest/guide/cli/index.html
+
+11. 手机端使用VBox布局时, 容器一定得有高度, 否则alignY属性没有用
+
+
+
+
+
+qooxdoo源码Bug:
+1. qx.ui.mobile.layout.AbstractBox 193行
+	widget.removeCssClass("qx-flex" + value);  ->  widget.removeCssClass("qx-flex" + old);

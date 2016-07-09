@@ -15,6 +15,7 @@ public class FrameModel implements ITableModel
 	
 	private BigDecimal frameid;
 	private String name;
+	private BigDecimal platform;
 	private String innerlisteners;
 	private byte[] scriptlistener;
 	private List<FrameParamModel> frameParamList;
@@ -45,6 +46,16 @@ public class FrameModel implements ITableModel
 	public void setName(String name)
 	{
 		this.name = name;
+	}
+
+	public BigDecimal getPlatform()
+	{
+		return platform;
+	}
+
+	public void setPlatform(BigDecimal platform)
+	{
+		this.platform = platform;
 	}
 
 	public String getInnerlisteners()
