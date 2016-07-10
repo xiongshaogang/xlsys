@@ -228,7 +228,7 @@ public final class SystemInfoModel implements IModel
 		SystemInfoModel currentInfoModel = (SystemInfoModel) IOUtil.readObject(FileUtil.getByteFromFile("D:/systeminfo.xlsys"));
 		Set<String> set = new HashSet<String>();
 		set.add(".*");
-		SystemInfoModel effective = SystemInfoModel.generateEffectiveSystemInfoModel(currentInfoModel, DateUtil.addTime(new Date(), Calendar.YEAR, 5), null, set);
+		SystemInfoModel effective = SystemInfoModel.generateEffectiveSystemInfoModel(currentInfoModel, DateUtil.addTime(new Date(), Calendar.YEAR, 99), null, set);
 		SystemInfoModel.writeOfficalSystemInfoModel(effective, "D:/license.xlsys");
 	}
 }

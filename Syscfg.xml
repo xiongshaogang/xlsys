@@ -2,7 +2,7 @@
 <config>
 	<LicenseFile desc="指明系统license文件所在路径">license.xlsys</LicenseFile>
 	<SharedLib desc="要加载的动态库,注意客户端和服务端不能同时共享同一个动态库文件">
-		<libFile desc="动态库所在的路径,可以写全路径,也可以直接写动态库名称">cpplib/libXlsysVideo.dll</libFile>
+		<!-- <libFile desc="动态库所在的路径,可以写全路径,也可以直接写动态库名称">cpplib/libXlsysVideo.dll</libFile> -->
 		<libFile>cpplib/libwinpthread-1.dll</libFile>
   		<libFile>cpplib/libgcc_s_seh-1.dll</libFile>
   		<libFile>cpplib/libstdc++-6.dll</libFile>
