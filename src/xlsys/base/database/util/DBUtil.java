@@ -309,7 +309,7 @@ public class DBUtil
 		try
 		{
 			int dbid = 2001; // 目标库的数据库编号
-			String exportFilePath = "d:/20160706.data"; // 要导出的数据文件的路径
+			String exportFilePath = "d:/20160714.data"; // 要导出的数据文件的路径
 			dataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(dbid)).getNewDataBase();
 			dbBackup(dataBase, exportFilePath);
 		}
@@ -326,7 +326,7 @@ public class DBUtil
 	
 	public static void main(String[] args)
 	{
-		// dbBackup();
-		dbRestore();
+		dbBackup();
+		// dbRestore();
 	}
 }

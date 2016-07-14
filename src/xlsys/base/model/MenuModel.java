@@ -16,6 +16,7 @@ public class MenuModel implements ITableModel
 	
 	private String menuid;
 	private String levelid;
+	private BigDecimal platform;
 	private String name;
 	private BigDecimal type;
 	private XlsysAttachment icon;
@@ -49,6 +50,16 @@ public class MenuModel implements ITableModel
 	public void setLevelid(String levelid)
 	{
 		this.levelid = levelid;
+	}
+
+	public BigDecimal getPlatform()
+	{
+		return platform;
+	}
+
+	public void setPlatform(BigDecimal platform)
+	{
+		this.platform = platform;
 	}
 
 	public String getName()

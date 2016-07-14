@@ -16,6 +16,7 @@ public class ToolModel implements ITableModel
 	
 	private String toolid;
 	private String levelid;
+	private BigDecimal platform;
 	private BigDecimal handlerid;
 	private String name;
 	private BigDecimal type;
@@ -49,6 +50,16 @@ public class ToolModel implements ITableModel
 	public void setLevelid(String levelid)
 	{
 		this.levelid = levelid;
+	}
+
+	public BigDecimal getPlatform()
+	{
+		return platform;
+	}
+
+	public void setPlatform(BigDecimal platform)
+	{
+		this.platform = platform;
 	}
 
 	public BigDecimal getHandlerid()
