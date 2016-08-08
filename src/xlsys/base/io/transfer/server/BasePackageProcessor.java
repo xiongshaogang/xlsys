@@ -724,7 +724,7 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 		try
 		{
 			Integer dbid = (Integer) innerPackage.getObj();
-			if(dbid==null) db = EnvDataBase.getInstance((int)innerPackage.getSession().getAttribute(XLSYS.SESSION_ENV_ID));
+			if(dbid==null) db = EnvDataBase.getInstance(ObjectUtil.objectToInt(innerPackage.getSession().getAttribute(XLSYS.SESSION_ENV_ID)));
 			else db = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(dbid)).getNewDataBase();
 			outObj = (Serializable) db.getAllTableBaseInfo();
 		}
