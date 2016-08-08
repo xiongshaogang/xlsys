@@ -905,7 +905,7 @@ public class ModelUtil
 			jsChildrenList.add("xlsys.business.model.UserEmailModel");
 			ModelUtil.generateJsModelClass(dataBase, "xlsys_user", "xlsys.business.model.UserModel", jsChildrenList, jsSrcRoot);*/
 			
-			String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
 			ModelUtil.generateModelClass(dataBase, "xlsys_iddetail", "xlsys.business.model.IdDetailModel", null, byte[].class, srcRoot);
 			ModelUtil.generateModelClass(dataBase, "xlsys_idrelation", "xlsys.business.model.IdRelationModel", null, byte[].class, srcRoot);
 			List<String> childrenList = new ArrayList<String>();
@@ -919,7 +919,15 @@ public class ModelUtil
 			List<String> jsChildrenList = new ArrayList<String>();
 			jsChildrenList.add("xlsys.business.model.IdDetailModel");
 			jsChildrenList.add("xlsys.business.model.IdRelationModel");
-			ModelUtil.generateJsModelClass(dataBase, "xlsys_identity", "xlsys.business.model.IdentityModel", jsChildrenList, jsSrcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlsys_identity", "xlsys.business.model.IdentityModel", jsChildrenList, jsSrcRoot);*/
+			
+			String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
+			ModelUtil.generateModelClass(dataBase, "xlsys_department", "xlsys.business.model.DepartmentModel", null, byte[].class, srcRoot);
+			ModelUtil.generateModelClass(dataBase, "xlsys_position", "xlsys.business.model.PositionModel", null, byte[].class, srcRoot);
+			
+			String jsSrcRoot = "D:/work/code/MyProject/xlsys.web/web/xlsys.web.business/source/class";
+			ModelUtil.generateJsModelClass(dataBase, "xlsys_department", "xlsys.business.model.DepartmentModel", null, jsSrcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlsys_position", "xlsys.business.model.PositionModel", null, jsSrcRoot);
 		}
 		catch(Exception e)
 		{
