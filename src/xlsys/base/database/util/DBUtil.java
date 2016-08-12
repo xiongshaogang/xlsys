@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -26,6 +27,7 @@ import xlsys.base.dataset.StorableDataSet;
 import xlsys.base.io.util.FileUtil;
 import xlsys.base.io.util.IOUtil;
 import xlsys.base.model.PairModel;
+import xlsys.base.util.DateUtil;
 
 /**
  * 数据库工具
@@ -287,7 +289,7 @@ public class DBUtil
 		try
 		{
 			int dbid = 2002; // 目标库的数据库编号
-			String dataFilePath = "d:/20160808.data"; // 要导出的数据文件的路径
+			String dataFilePath = "d:/20160810.data"; // 要导出的数据文件的路径
 			// String dataFilePath = "D:/xlsysWorkDir/4cf6795072f6c35f0cbf48d6e7caac75";
 			dataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(dbid)).getNewDataBase();
 			dbRestore(dataBase, dataFilePath);
@@ -309,7 +311,7 @@ public class DBUtil
 		try
 		{
 			int dbid = 2001; // 目标库的数据库编号
-			String exportFilePath = "d:/20160808.data"; // 要导出的数据文件的路径
+			String exportFilePath = "d:/20160810.data"; // 要导出的数据文件的路径
 			dataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(dbid)).getNewDataBase();
 			dbBackup(dataBase, exportFilePath);
 		}
@@ -324,9 +326,36 @@ public class DBUtil
 		System.exit(0);
 	}
 	
+	private static void dbAutoSync()
+	{
+		IDataBase fromDataBase = null;
+		IDataBase toDataBase = null;
+		try
+		{
+			int fromDbid = 2001;
+			int toDbid = 2002;
+			String dataFilePath = "d:/"+DateUtil.getDateString(new Date(), "yyyyMMdd")+".data";
+			fromDataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(fromDbid)).getNewDataBase();
+			dbBackup(fromDataBase, dataFilePath);
+			toDataBase = ((ConnectionPool) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_DATABASE).getInstance(toDbid)).getNewDataBase();
+			dbRestore(toDataBase, dataFilePath);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			DBUtil.close(fromDataBase);
+			DBUtil.close(toDataBase);
+		}
+		System.exit(0);
+	}
+	
 	public static void main(String[] args)
 	{
 		// dbBackup();
-		dbRestore();
+		// dbRestore();
+		dbAutoSync();
 	}
 }

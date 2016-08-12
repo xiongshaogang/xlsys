@@ -20,6 +20,7 @@ public class MenuModel implements ITableModel
 	private String name;
 	private BigDecimal type;
 	private XlsysAttachment icon;
+	private String iconurl;
 	private String shortcut;
 	private BigDecimal handlerid;
 	private List<MenuRightModel> menuRightList;
@@ -90,6 +91,16 @@ public class MenuModel implements ITableModel
 	public void setIcon(XlsysAttachment icon)
 	{
 		this.icon = icon;
+	}
+
+	public String getIconurl()
+	{
+		return iconurl;
+	}
+
+	public void setIconurl(String iconurl)
+	{
+		this.iconurl = iconurl;
 	}
 
 	public String getShortcut()

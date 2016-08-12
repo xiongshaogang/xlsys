@@ -38,7 +38,8 @@ npm install -g cordova
 
 11. 手机端使用VBox布局时, 容器一定得有高度, 否则alignY属性没有用
 
-
+12. svg图标库
+http://glyph.smarticons.co/#usage
 
 
 
