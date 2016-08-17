@@ -575,6 +575,7 @@ public abstract class ModelBuffer implements XlsysBuffer
 	public void loadAllData()
 	{
 		allEnvBufferMap.clear();
+		modelCountMap.clear();
 	}
 
 	@Override
