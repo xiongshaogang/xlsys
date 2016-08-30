@@ -1,8 +1,8 @@
-1. 安装eclipse cdt
+﻿1. 安装eclipse cdt
 2. 安装eclipse e4 tools和e4 spy, 参见文档: http://www.vogella.com/tutorials/EclipseRCP/article.html
-3. 安装RAP Tools, 参见文档 : http://www.eclipse.org/rap/developers-guide/devguide.php?topic=setup-ide.html&version=3.0
-4. 安装WAR Products, 参见文档: http://www.eclipse.org/rap/developers-guide/devguide.php?topic=deployment.html&version=3.0
-5. 安装Subclipse, 参见网址 : http://marketplace.eclipse.org/content/subclipse
+3. 安装RAP Tools, 参见文档 : http://www.eclipse.org/rap/developers-guide/devguide.php?topic=setup-ide.html&version=3.1
+4. 安装WAR Products, 参见文档: http://www.eclipse.org/rap/developers-guide/devguide.php?topic=deployment.html&version=3.1
+5. 安装Subclipse, 参见网址 : http://subclipse.tigris.org/servlets/ProjectProcess?pageID=p4wYuA
 7. (可选) 安装Android SDK, 安装时参见网址 : 
 安装Off-line installation : http://marketplace.eclipse.org/content/android-development-tools-eclipse
 http://www.androiddevtools.cn/
