@@ -6,7 +6,7 @@
 -libraryjars 'C:\Program Files\Java\jre8\lib\jce.jar'
 -libraryjars 'D:\work\code\MyProject\xlsys.base\export\plugins\xlsys.orbit_1.0.0.jar'
 -libraryjars 'D:\work\code\eclipse\plugins\javax.servlet_3.1.0.v201410161800.jar'
--libraryjars 'D:\work\code\eclipse\plugins\org.eclipse.osgi_3.10.101.v20150820-1432.jar'
+-libraryjars 'D:\work\code\eclipse\plugins\org.eclipse.osgi_3.11.0.v20160603-1336.jar'
 
 -dontshrink
 -optimizations code/*

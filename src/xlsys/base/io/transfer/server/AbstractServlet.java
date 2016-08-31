@@ -33,7 +33,7 @@ public abstract class AbstractServlet extends HttpServlet
 	{
 		resp.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE, OPTIONS");
 		resp.setHeader("Access-Control-Allow-Origin", "*");
-		resp.setHeader("Access-Control-Allow-Headers", "_PLATFORM, Content-type");
+		resp.setHeader("Access-Control-Allow-Headers", "_PLATFORM, Content-type, X-File-Name");
 		super.service(req, resp);
 	}
 }
