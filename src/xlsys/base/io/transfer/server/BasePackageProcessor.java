@@ -9,6 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -878,7 +879,9 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 					{
 						// 先排序后分段查询使用缓冲
 						ParamBean pb = (ParamBean)inArr[0];
-						Map<String, Integer> sortColMap = (Map<String, Integer>)inArr[1];
+						Map<String, Serializable> tempMap = (Map<String, Serializable>)inArr[1];
+						Map<String, Integer> sortColMap = new LinkedHashMap<String, Integer>();
+						for(String key : tempMap.keySet()) sortColMap.put(key, ObjectUtil.objectToInt(tempMap.get(key)));
 						int beginRowNum = ObjectUtil.objectToInt(inArr[2]);
 						int endRowNum = ObjectUtil.objectToInt(inArr[3]);
 						IDataSet dataSet = getDataSetFromQueryBuffer(db, pb, sortColMap);
