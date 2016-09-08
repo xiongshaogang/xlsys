@@ -635,7 +635,7 @@ public class SQLiteDataBase extends DataBase
 									{
 										if(byte[].class.getName().equals(dsc.getJavaClass()))
 										{
-											ps.setBytes(idx, (byte[])dataMap.get(paramCol));
+											ps.setBytes(idx, (byte[]) ObjectUtil.objectCast(dataMap.get(paramCol), byte[].class));
 										}
 										else
 										{
@@ -660,7 +660,7 @@ public class SQLiteDataBase extends DataBase
 											{
 												if(byte[].class.getName().equals(dsc.getJavaClass()))
 												{
-													ps.setBytes(idx, (byte[])oldDataMap.get(updateWhereCol));
+													ps.setBytes(idx, (byte[]) ObjectUtil.objectCast(oldDataMap.get(updateWhereCol), byte[].class));
 												}
 												else
 												{
