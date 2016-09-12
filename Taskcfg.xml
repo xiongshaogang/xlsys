@@ -3,14 +3,14 @@
 	<TaskThreadPool desc="任务线程池的配置">
 		<corePoolSize desc="核心池大小">5</corePoolSize>
 	</TaskThreadPool>
-	<Task desc="任务配置">
+	<Task desc="任务配置,可配置多个">
 		<id desc="任务ID编号">1001</id>
 		<name desc="任务名称">测试任务</name>
-		<runnableClass desc="实现了Runnable接口的目标类">5</runnableClass>
+		<runnableClass desc="实现了Runnable接口的目标类">xlsys.base.Xlsys</runnableClass>
 		<param desc="构造方法中的参数，可多个" name="serverIp" javaClass="java.lang.String">172.17.5.160</param>
 		<param name="serverPort" javaClass="java.lang.Integer">8080</param>
 		<field desc="成员属性，可多个" name="outStr">Hello everyone!</field>
-		<ScheduleTime desc="调度时间配置">
+		<ScheduleTime desc="调度时间配置,可配置多个">
 			<mode desc="调度模式,详见ScheduleTime类">4</mode>
 			<year>0</year>
 			<month>0</month>
