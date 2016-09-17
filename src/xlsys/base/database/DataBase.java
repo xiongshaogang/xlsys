@@ -14,7 +14,6 @@ import java.util.Map;
 
 import org.dom4j.DocumentException;
 
-import xlsys.base.buffer.BufferPool;
 import xlsys.base.database.bean.ExecuteBean;
 import xlsys.base.database.bean.ISqlBean;
 import xlsys.base.database.bean.ParamBean;
@@ -46,7 +45,7 @@ public abstract class DataBase implements IDataBase
 	@Override
 	public TableInfo getTableInfo(String tableName) throws Exception
 	{
-		BufferPool<String, TableInfo> tableInfoBuffer = conPool.getTableInfoBuffer();
+		Map<String, TableInfo> tableInfoBuffer = conPool.getTableInfoBuffer();
 		TableInfo tableInfo = tableInfoBuffer.get(tableName);
 		if(tableInfo==null)
 		{

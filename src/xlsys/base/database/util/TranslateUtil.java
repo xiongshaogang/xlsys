@@ -11,7 +11,7 @@ import java.util.Set;
 
 import xlsys.base.XLSYS;
 import xlsys.base.buffer.BufferManager;
-import xlsys.base.buffer.ModelBuffer;
+import xlsys.base.buffer.UnstorageBuffer;
 import xlsys.base.database.IDataBase;
 import xlsys.base.database.IEnvDataBase;
 import xlsys.base.database.bean.ParamBean;
@@ -29,7 +29,7 @@ import xlsys.base.util.ObjectUtil;
  * @author Lewis
  *
  */
-public class TranslateUtil extends ModelBuffer
+public class TranslateUtil extends UnstorageBuffer
 {
 	public final static String DEFAULT_TABLENAME = "_default_table";
 	

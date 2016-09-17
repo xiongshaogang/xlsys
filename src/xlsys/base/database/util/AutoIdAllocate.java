@@ -14,7 +14,7 @@ import org.dom4j.DocumentException;
 
 import xlsys.base.XLSYS;
 import xlsys.base.buffer.BufferManager;
-import xlsys.base.buffer.ModelBuffer;
+import xlsys.base.buffer.UnstorageBuffer;
 import xlsys.base.database.EnvDataBase;
 import xlsys.base.database.IEnvDataBase;
 import xlsys.base.dataset.DataSetColumn;
@@ -26,7 +26,7 @@ import xlsys.base.log.LogUtil;
  * @author Lewis
  *
  */
-public class AutoIdAllocate extends ModelBuffer
+public class AutoIdAllocate extends UnstorageBuffer
 {
 	private static AutoIdAllocate autoIdAllocate;
 	

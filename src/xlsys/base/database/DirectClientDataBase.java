@@ -11,7 +11,6 @@ import org.dom4j.DocumentException;
 
 import xlsys.base.XLSYS;
 import xlsys.base.XlsysFactory;
-import xlsys.base.buffer.BufferPool;
 import xlsys.base.buffer.MutiLRUBufferPool;
 import xlsys.base.database.bean.ExecuteBean;
 import xlsys.base.database.bean.ISqlBean;
@@ -31,7 +30,7 @@ public class DirectClientDataBase implements IClientDataBase
 {
 	private static ClientTransfer clientTransfer;
 	private int dbId;
-	private BufferPool<String, TableInfo> tableInfoBuffer;
+	private Map<String, TableInfo> tableInfoBuffer;
 	
 	private boolean autoCommit;
 	private List<ISqlBean> transactionList;

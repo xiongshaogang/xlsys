@@ -10,6 +10,10 @@ import xlsys.base.io.xml.XmlModel;
 public abstract class Log
 {
 	/**
+	 * 调试日志等级
+	 */
+	public final static int LOG_LEVEL_DEBUG = 50;
+	/**
 	 * 信息日志等级
 	 */
 	public final static int LOG_LEVEL_INFO = 40;
@@ -60,6 +64,16 @@ public abstract class Log
 	public int print(Object content)
 	{
 		return print(logLevel, content);
+	}
+	
+	/**
+	 * 使用{@link #LOG_LEVEL_DEBUG}等级写日志
+	 * @param content 日志内容
+	 * @return
+	 */
+	public int printDebug(Object content)
+	{
+		return print(LOG_LEVEL_DEBUG, content);
 	}
 	
 	/**
@@ -133,6 +147,16 @@ public abstract class Log
 	public int println(Object content)
 	{
 		return println(logLevel, content);
+	}
+	
+	/**
+	 * 使用{@link #LOG_LEVEL_DEBUG}等级写日志. 该方法包含一个换行符
+	 * @param content 日志内容
+	 * @return
+	 */
+	public int printlnDebug(Object content)
+	{
+		return println(LOG_LEVEL_DEBUG, content);
 	}
 	
 	/**

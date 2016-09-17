@@ -45,10 +45,10 @@
 	        <className desc="工厂类">xlsys.base.log.LogFactory</className>
 	        <instanceMethod desc="获取工厂类实例的静态方法名">getFactoryInstance</instanceMethod>
 	    </Factory>
+	    <LogLevel desc="系统日志等级">50</LogLevel>
 		<Log desc="日志">
 			<id default="false" desc="日志实例标识,一个标识只可能有一个实例,只能有一个实例设置为默认日志实例">1001</id>
 			<logType desc="日志类，不同的类型可能有不同的配置参数">xlsys.base.log.FileLog</logType>
-			<logLevel desc="默认的日志等级">20</logLevel>
 			<params desc="该日志类型专有参数">
 				<outFilePath desc="普通日志输出路径">xlsysout.log</outFilePath>
 				<errFilePath desc="错误日志输出路径">xlsyserr.log</errFilePath>
@@ -57,7 +57,6 @@
 		<Log desc="日志">
 			<id default="true" desc="日志实例标识,一个标识只可能有一个实例,只能有一个实例设置为默认日志实例">1002</id>
 			<logType desc="日志类，不同的类型可能有不同的配置参数">xlsys.base.log.ConsoleLog</logType>
-			<logLevel desc="默认的日志等级">40</logLevel>
 		</Log>
 	</LogConfig>
 	<Session desc="会话相关配置">

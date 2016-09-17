@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.dom4j.DocumentException;
 
+import xlsys.base.XLSYS;
 import xlsys.base.XlsysFactory;
 import xlsys.base.cfg.BaseConfig;
 import xlsys.base.io.xml.XmlModel;
@@ -52,6 +53,8 @@ public class LogFactory extends XlsysFactory<Integer, Log>
 		{
 			XmlModel sysCfgXm = BaseConfig.getInstance().getConfigXmlModel(BaseConfig.SYSTEM_CONFIG);
 			XmlModel logConfigXm = sysCfgXm.getChild("LogConfig");
+			int logLevel = Integer.parseInt(logConfigXm.getChild("LogLevel").getText());
+			System.setProperty(XLSYS.ENV_LOG_LEVEL, ""+logLevel);
 			List<XmlModel> logXmList = logConfigXm.getChilds("Log");
 			for(int i=0;i<logXmList.size();i++)
 			{
@@ -62,7 +65,6 @@ public class LogFactory extends XlsysFactory<Integer, Log>
 				defaultValue = defaultValue==null?"false":defaultValue;
 				boolean isDefault = Boolean.parseBoolean(defaultValue);
 				String logType = logXm.getChild("logType").getText();
-				int logLevel = Integer.parseInt(logXm.getChild("logLevel").getText());
 				XmlModel paramsXm = logXm.getChild("params");
 				String logClassName = null;
 				if(logType.indexOf('.')!=-1)

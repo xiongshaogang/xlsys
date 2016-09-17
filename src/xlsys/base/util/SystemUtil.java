@@ -19,6 +19,8 @@ import java.util.Set;
 
 import xlsys.base.LibraryLoader;
 import xlsys.base.XLSYS;
+import xlsys.base.log.Log;
+import xlsys.base.log.LogFactory;
 
 /**
  * 系统工具类
@@ -155,6 +157,31 @@ public class SystemUtil
     	}
     	return inetAddressList.toArray(new InetAddress[inetAddressList.size()]);
     }
+    
+    /**
+     * 返回系统当前日志级别是否为debug
+     * @return
+     */
+    public static boolean isDebug()
+	{
+    	boolean flag = false;
+    	try
+    	{
+    		String logLevelStr = System.getProperty(XLSYS.ENV_LOG_LEVEL);
+        	if(logLevelStr==null)
+        	{
+        		LogFactory.getFactoryInstance();
+        		logLevelStr = System.getProperty(XLSYS.ENV_LOG_LEVEL);
+        	}
+    		int logLevel = ObjectUtil.objectToInt(logLevelStr);
+    		flag = logLevel>=Log.LOG_LEVEL_DEBUG;
+    	}
+    	catch(Exception e)
+    	{
+    		throw new RuntimeException(e);
+    	}
+    	return flag;
+	}
     
     /**
      * 返回当前操作系统的行分隔符

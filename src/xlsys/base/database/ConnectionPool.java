@@ -20,8 +20,6 @@ import org.dom4j.DocumentException;
 
 import xlsys.base.XLSYS;
 import xlsys.base.buffer.BufferManager;
-import xlsys.base.buffer.BufferPool;
-import xlsys.base.buffer.MapBufferPool;
 import xlsys.base.buffer.XlsysBuffer;
 import xlsys.base.database.util.DBUtil;
 import xlsys.base.exception.AlreadyClosedException;
@@ -48,7 +46,7 @@ public abstract class ConnectionPool extends Thread implements XlsysBuffer
 	private int maximumPoolSize;
 	private int keepAliveTime;
 	private int queueCapacity;
-	private BufferPool<String, TableInfo> tableInfoBuffer;
+	private Map<String, TableInfo> tableInfoBuffer;
 
 	private boolean corePoolTimeOut; // 是否允许核心池使用超时关闭策略
 	private boolean close;
@@ -76,7 +74,7 @@ public abstract class ConnectionPool extends Thread implements XlsysBuffer
 		this.maximumPoolSize = maximumPoolSize;
 		this.keepAliveTime = keepAliveTime;
 		this.queueCapacity = queueCapacity;
-		tableInfoBuffer = new MapBufferPool<String, TableInfo>();
+		tableInfoBuffer = new HashMap<String, TableInfo>();
 		if (maximumPoolSize < corePoolSize)
 			maximumPoolSize = corePoolSize;
 		busyConSet = new HashSet<Connection>();
@@ -488,27 +486,47 @@ public abstract class ConnectionPool extends Thread implements XlsysBuffer
 	 * 获取表信息缓冲池
 	 * @return
 	 */
-	public BufferPool<String, TableInfo> getTableInfoBuffer()
+	public Map<String, TableInfo> getTableInfoBuffer()
 	{
 		return tableInfoBuffer;
 	}
-	
-	public void loadAllData()
+
+	@Override
+	public Serializable getStorageObject(int envId, String bufferName)
 	{
-		tableInfoBuffer.clear();
+		return (Serializable) tableInfoBuffer;
 	}
-	
-	/**
-	 * 重新加载缓冲
-	 * @param paramMap 参数表
-	 */
-	public void loadData(Map<String, Serializable> paramMap)
+
+	@Override
+	public boolean isBufferComplete(int envId, String bufferName)
+	{
+		return false;
+	}
+
+	@Override
+	public void reloadDataDirectly(int envId, String bufferName, Map<String, Object> paramMap, boolean forceLoad)
 	{
 		if(paramMap!=null)
 		{
 			String tableName = ObjectUtil.objectToString(paramMap.get(BUFFER_KEY_TABLE_NAME));
 			if(tableName!=null) tableInfoBuffer.remove(tableName);
-			else loadAllData();
+			else tableInfoBuffer.clear();
 		}
+		else tableInfoBuffer.clear();
+	}
+	
+	@Override
+	public boolean loadDataFromStorageObject(int envId, String bufferName, Serializable storageObj)
+	{
+		return false;
+	}
+	
+	@Override
+	public Serializable doGetBufferData(int envId, String bufferName, Map<String, Object> paramMap)
+	{
+		if(paramMap==null) return (Serializable) tableInfoBuffer;
+		String tableName = (String) paramMap.get(BUFFER_KEY_TABLE_NAME);
+		if(tableName==null) return (Serializable) tableInfoBuffer;
+		return tableInfoBuffer.get(tableName);
 	}
 }

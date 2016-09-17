@@ -1,11 +1,9 @@
 package xlsys.base.buffer;
 
 import java.io.Serializable;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,121 +19,49 @@ import xlsys.base.model.IModelCreator;
 import xlsys.base.model.TrisModel;
 import xlsys.base.session.Session;
 import xlsys.base.util.ObjectUtil;
-import xlsys.base.util.ReflectUtil;
 
-public abstract class ModelBuffer implements XlsysBuffer
+public abstract class ModelBuffer extends AbstractBuffer
 {
-	public static final String BUFFER_KEY_BUFFER_NAME = "_BUFFER_KEY_BUFFER_NAME";
+	public final static String BUFFER_KEY_MODEL_KEY = "_BUFFER_KEY_MODEL_KEY";
+	public final static String BUFFER_KEY_DATABASE = "_BUFFER_KEY_DATABASE";
+	public final static String BUFFER_KEY_SESSION = "_BUFFER_KEY_SESSION";
+	public final static String BUFFER_KEY_ENV_ID = "_BUFFER_KEY_ENV_ID";
 	
+	/**
+	 * 模型信息Map
+	 * <bufferName, <modelClass, keyClass, modelCreator>>
+	 */
 	private Map<String, TrisModel<Class<? extends IModel>, Class<? extends Serializable>, IModelCreator<? extends IModel, ? extends Serializable>>> bindModelInfoMap;
 	/**
 	 * 模型数量Map
 	 * <envId, <bufferName, allModelCount>>
 	 */
 	private Map<Integer, Map<String, Integer>> modelCountMap;
-	
 	/**
-	 * 第一层 : envId, 第二层
-	 * 第二层 : bufferName, 第三层
-	 * 第三层 : 自定义Map, key和value都继承自Serializable
+	 * 模型翻译Map
+	 * <envId, <bufferName, <model, <language, transModel>>>>
 	 */
-	protected Map<Integer, Map<String, Map<? extends Serializable, ? extends Serializable>>> allEnvBufferMap;
+	private Map<Integer, Map<String, Map<IModel, Map<String, IModel>>>> modelTransMap;
 	
 	protected ModelBuffer()
 	{
-		allEnvBufferMap = new HashMap<Integer, Map<String, Map<? extends Serializable, ? extends Serializable>>>();
+		super();
 		bindModelInfoMap = new HashMap<String, TrisModel<Class<? extends IModel>, Class<? extends Serializable>, IModelCreator<? extends IModel, ? extends Serializable>>>();
 		modelCountMap = new HashMap<Integer, Map<String, Integer>>();
+		modelTransMap = new HashMap<Integer, Map<String, Map<IModel, Map<String, IModel>>>>();
 	}
 	
-	protected Map<? extends Serializable, ? extends Serializable> getBufferMap(int envId, String bufferName)
-	{
-		return getBufferMap(envId, bufferName, LinkedHashMap.class);
-	}
-
-	protected synchronized Map<? extends Serializable, ? extends Serializable> getBufferMap(int envId, String bufferName, Class<? extends Map> mapClass, Object ...params)
-	{
-		Map<String, Map<? extends Serializable, ? extends Serializable>> envBufferMap = allEnvBufferMap.get(envId);
-		if(envBufferMap==null)
-		{
-			envBufferMap = new HashMap<String, Map<? extends Serializable, ? extends Serializable>>();
-			allEnvBufferMap.put(envId, envBufferMap);
-		}
-		Map<? extends Serializable, ? extends Serializable> bufferMap = envBufferMap.get(bufferName);
-		if(bufferMap==null)
-		{
-			try
-			{
-				if(params!=null)
-				{
-					Constructor<?>[] constructors = mapClass.getConstructors();
-					for(Constructor<?> constructor : constructors)
-					{
-						Class<?>[] paramTypes = constructor.getParameterTypes();
-						boolean matched = true;
-						if(paramTypes.length==params.length)
-						{
-							for(int i=0;i<params.length;++i)
-							{
-								if(!ReflectUtil.isAssignableFrom(paramTypes[i], params[i].getClass()))
-								{
-									matched = false;
-									break;
-								}
-							}
-						}
-						else matched = false;
-						if(matched)
-						{
-							bufferMap = (Map<? extends Serializable, ? extends Serializable>) constructor.newInstance(params);
-							break;
-						}
-					}
-				}
-				else bufferMap = mapClass.newInstance();
-			}
-			catch (Exception e)
-			{
-				bufferMap = new LinkedHashMap<Serializable, Serializable>();
-			}
-			envBufferMap.put(bufferName, bufferMap);
-		}
-		return bufferMap;
-	}
-	
-	protected void initAllModelObjects(String bufferName, IEnvDataBase dataBase) throws Exception
+	protected void initAllModels(String bufferName, IEnvDataBase dataBase) throws Exception
 	{
 		TrisModel<Class<? extends IModel>, Class<? extends Serializable>, IModelCreator<? extends IModel, ? extends Serializable>> modelInfo = bindModelInfoMap.get(bufferName);
 		if(modelInfo==null) throw new RuntimeException("Please bind model info first!");
-		initAllModelObjects(bufferName, dataBase, modelInfo.first, modelInfo.second, modelInfo.third);
+		initAllModels(bufferName, dataBase, modelInfo.first, modelInfo.second, modelInfo.third);
 	}
 	
-	protected <M extends IModel, K extends Serializable> void initAllModels(String bufferName, IEnvDataBase dataBase) throws Exception
-	{
-		TrisModel<Class<? extends IModel>, Class<? extends Serializable>, IModelCreator<? extends IModel, ? extends Serializable>> modelInfo = bindModelInfoMap.get(bufferName);
-		if(modelInfo==null) throw new RuntimeException("Please bind model info first!");
-		initAllModels(bufferName, dataBase, (Class<M>)modelInfo.first, (Class<K>)modelInfo.second, (IModelCreator<M, K>)modelInfo.third);
-	}
-	
-	protected void initAllModelObjects(String bufferName, IEnvDataBase dataBase, Class<? extends IModel> modelClass, Class<? extends Serializable> keyClass, IModelCreator<? extends IModel, ? extends Serializable> modelCreator) throws Exception
+	protected void initAllModels(String bufferName, IEnvDataBase dataBase, Class<? extends IModel> modelClass, Class<? extends Serializable> keyClass, IModelCreator<? extends IModel, ? extends Serializable> modelCreator) throws Exception
 	{
 		int envId = dataBase.getEnvId();
 		Map modelMap = getBufferMap(envId, bufferName);
-		int allCount = getModelCount(bufferName, dataBase);
-		synchronized(modelMap)
-		{
-			if(allCount==-1||modelMap.size()<allCount)
-			{
-				modelMap.clear();
-				modelMap.putAll(modelCreator.createAllModels(dataBase));
-			}
-		}
-	}
-
-	protected <M extends IModel, K extends Serializable> void initAllModels(String bufferName, IEnvDataBase dataBase, Class<M> modelClass, Class<K> keyClass, IModelCreator<M, K> modelCreator) throws Exception
-	{
-		int envId = dataBase.getEnvId();
-		Map<K, M> modelMap = (Map<K, M>) getBufferMap(envId, bufferName);
 		int allCount = getModelCount(bufferName, dataBase);
 		synchronized(modelMap)
 		{
@@ -241,70 +167,45 @@ public abstract class ModelBuffer implements XlsysBuffer
 		return allCount;
 	}
 	
-	public List<? extends IModel> getAllModelObjects(String bufferName, Session session) throws Exception
+	public List<? extends IModel> getAllModels(String bufferName, Session session) throws Exception
 	{
-		TrisModel<Class<? extends IModel>, Class<? extends Serializable>, IModelCreator<? extends IModel, ? extends Serializable>> modelInfo = bindModelInfoMap.get(bufferName);
-		if(modelInfo==null) throw new RuntimeException("Please bind model info first!");
-		return getAllModelObjects(bufferName, session, modelInfo.first, modelInfo.second, modelInfo.third);
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
+		paramMap.put(BUFFER_KEY_SESSION, session);
+		return (List<? extends IModel>) getBufferData(envId, bufferName, paramMap);
 	}
 	
-	public <M extends IModel, K extends Serializable> List<M> getAllModels(String bufferName, Session session) throws Exception
+	private List<IModel> getAllTranslatedModels(String bufferName, Session session, List<IModel> srcModelList) throws Exception
 	{
-		TrisModel<Class<? extends IModel>, Class<? extends Serializable>, IModelCreator<? extends IModel, ? extends Serializable>> modelInfo = bindModelInfoMap.get(bufferName);
-		if(modelInfo==null) throw new RuntimeException("Please bind model info first!");
-		return getAllModels(bufferName, session, (Class<M>)modelInfo.first, (Class<K>)modelInfo.second, (IModelCreator<M, K>)modelInfo.third);
+		if(srcModelList==null) return null;
+		// 先翻译当前Model
+		List<IModel> transModelList = new ArrayList<IModel>();
+		for(int i=0;i<srcModelList.size();++i)
+		{
+			IModel transModel = this.getTranslatedModel(bufferName, session, srcModelList.get(i));
+			transModelList.add(transModel);
+		}
+		return transModelList;
 	}
 	
-	public List<? extends IModel> getAllModelObjects(String bufferName, Session session, Class<? extends IModel> modelClass, Class<? extends Serializable> keyClass, IModelCreator<? extends IModel, ? extends Serializable> modelCreator) throws Exception
+	private List<? extends IModel> doGetAllModels(String bufferName, Session session, Class<? extends IModel> modelClass, Class<? extends Serializable> keyClass, IModelCreator<? extends IModel, ? extends Serializable> modelCreator) throws Exception
 	{
 		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
-		List<? extends IModel> modelList = getAllModelObjects(bufferName, envId, modelClass, keyClass, modelCreator);
-		return getTranslatedModelList(session, modelList);
+		List<? extends IModel> modelList = doGetAllModels(bufferName, envId, modelClass, keyClass, modelCreator);
+		return getAllTranslatedModels(bufferName, session, (List<IModel>) modelList);
 	}
 	
-	private <M extends IModel> List<M> getTranslatedModelList(Session session, List<M> modelList) throws Exception
+	public List<? extends IModel> getAllModels(String bufferName, int envId) throws Exception
 	{
-		List<M> mList = null;
-		IEnvDataBase dataBase = null;
-		try
-		{
-			int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
-			String language = ObjectUtil.objectToString(session.getAttribute(XLSYS.SESSION_LANGUAGE));
-			dataBase = EnvDataBase.getInstance(envId);
-			mList = TranslateUtil.getInstance().translateModelList(dataBase, modelList, language);
-			// 查找当前Model的所有属性, 如果属性为List, 并且List中的元素为IModel, 则翻译该属性
-			for(M m : mList) translateSubList(m, envId, dataBase, language);
-		}
-		catch(Exception e)
-		{
-			LogUtil.printlnError(e);
-			throw e;
-		}
-		finally
-		{
-			DBUtil.close(dataBase);
-		}
-		return mList;
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put(BUFFER_KEY_ENV_ID, envId);
+		return (List<? extends IModel>) getBufferData(envId, bufferName, paramMap);
 	}
 	
-	public <M extends IModel, K extends Serializable> List<M> getAllModels(String bufferName, Session session, Class<M> modelClass, Class<K> keyClass, IModelCreator<M, K> modelCreator) throws Exception
+	private List<? extends IModel> doGetAllModels(String bufferName, int envId, Class<? extends IModel> modelClass, Class<? extends Serializable> keyClass, IModelCreator<? extends IModel, ? extends Serializable> modelCreator) throws Exception
 	{
-		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
-		List<M> modelList = getAllModels(bufferName, envId, modelClass, keyClass, modelCreator);
-		return getTranslatedModelList(session, modelList);
-	}
-	
-	public <M extends IModel, K extends Serializable> List<M> getAllModels(String bufferName, int envId) throws Exception
-	{
-		TrisModel<Class<? extends IModel>, Class<? extends Serializable>, IModelCreator<? extends IModel, ? extends Serializable>> modelInfo = bindModelInfoMap.get(bufferName);
-		if(modelInfo==null) throw new RuntimeException("Please bind model info first!");
-		return getAllModels(bufferName, envId, (Class<M>)modelInfo.first, (Class<K>)modelInfo.second, (IModelCreator<M, K>)modelInfo.third);
-	}
-	
-	public <M extends IModel, K extends Serializable> List<M> getAllModels(String bufferName, int envId, Class<M> modelClass, Class<K> keyClass, IModelCreator<M, K> modelCreator) throws Exception
-	{
-		Map<K, M> modelMap = (Map<K, M>) getBufferMap(envId, bufferName);
-		List<M> modelList = null;
+		Map modelMap = getBufferMap(envId, bufferName);
+		List<? extends IModel> modelList = null;
 		synchronized(modelMap)
 		{
 			int allCount = getModelCount(bufferName, envId);
@@ -326,83 +227,47 @@ public abstract class ModelBuffer implements XlsysBuffer
 					DBUtil.close(dataBase);
 				}
 			}
-			modelList = new ArrayList<M>();
-			modelList.addAll(modelMap.values());
-		}
-		return modelList;
-	}
-	
-	public List<? extends IModel> getAllModelObjects(String bufferName, int envId, Class<? extends IModel> modelClass, Class<? extends Serializable> keyClass, IModelCreator<? extends IModel, ? extends Serializable> modelCreator) throws Exception
-	{
-		Map modelMap = getBufferMap(envId, bufferName);
-		List<? extends IModel> modelList = null;
-		synchronized(modelMap)
-		{
-			int allCount = getModelCount(bufferName, envId);
-			if(modelMap.isEmpty()||modelMap.size()<allCount)
-			{
-				IEnvDataBase dataBase = null;
-				try
-				{
-					dataBase = EnvDataBase.getInstance(envId);
-					initAllModelObjects(bufferName, dataBase, modelClass, keyClass, modelCreator);
-				}
-				catch(Exception e)
-				{
-					LogUtil.printlnError(e);
-					throw e;
-				}
-				finally
-				{
-					DBUtil.close(dataBase);
-				}
-			}
 			modelList = new ArrayList<IModel>();
 			modelList.addAll(modelMap.values());
 		}
 		return modelList;
 	}
-
-	public <M extends IModel, K extends Serializable> List<M> getAllModels(String bufferName, IEnvDataBase dataBase) throws Exception
+	
+	public List<? extends IModel> getAllModels(String bufferName, IEnvDataBase dataBase) throws Exception
 	{
-		TrisModel<Class<? extends IModel>, Class<? extends Serializable>, IModelCreator<? extends IModel, ? extends Serializable>> modelInfo = bindModelInfoMap.get(bufferName);
-		if(modelInfo==null) throw new RuntimeException("Please bind model info first!");
-		return getAllModels(bufferName, dataBase, (Class<M>)modelInfo.first, (Class<K>)modelInfo.second, (IModelCreator<M, K>)modelInfo.third);
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put(BUFFER_KEY_DATABASE, dataBase);
+		return (List<? extends IModel>) getBufferData(dataBase.getEnvId(), bufferName, paramMap);
 	}
 	
-	public <M extends IModel, K extends Serializable> List<M> getAllModels(String bufferName, IEnvDataBase dataBase, Class<M> modelClass, Class<K> keyClass, IModelCreator<M, K> modelCreator) throws Exception
+	private List<? extends IModel> doGetAllModels(String bufferName, IEnvDataBase dataBase, Class<? extends IModel> modelClass, Class<? extends Serializable> keyClass, IModelCreator<? extends IModel, ? extends Serializable> modelCreator) throws Exception
 	{
-		Map<K, M> modelMap = (Map<K, M>) getBufferMap(dataBase.getEnvId(), bufferName);
-		List<M> modelList = null;
+		Map modelMap = getBufferMap(dataBase.getEnvId(), bufferName);
+		List<? extends IModel> modelList = null;
 		synchronized(modelMap)
 		{
 			int allCount = getModelCount(bufferName, dataBase.getEnvId());
 			if(modelMap.isEmpty()||modelMap.size()<allCount) initAllModels(bufferName, dataBase, modelClass, keyClass, modelCreator);
-			modelList = new ArrayList<M>();
+			modelList = new ArrayList<IModel>();
 			modelList.addAll(modelMap.values());
 		}
 		return modelList;
 	}
 	
-	public IModel getModelObject(String bufferName, Session session, Serializable key) throws Exception
+	public IModel getModel(String bufferName, Session session, Serializable key) throws Exception
 	{
-		TrisModel<Class<? extends IModel>, Class<? extends Serializable>, IModelCreator<? extends IModel, ? extends Serializable>> modelInfo = bindModelInfoMap.get(bufferName);
-		if(modelInfo==null) throw new RuntimeException("Please bind model info first!");
-		return getModelObject(bufferName, session, key, modelInfo.first, modelInfo.second, modelInfo.third);
-	}
-
-	public <M extends IModel, K extends Serializable> M getModel(String bufferName, Session session, K key) throws Exception
-	{
-		TrisModel<Class<? extends IModel>, Class<? extends Serializable>, IModelCreator<? extends IModel, ? extends Serializable>> modelInfo = bindModelInfoMap.get(bufferName);
-		if(modelInfo==null) throw new RuntimeException("Please bind model info first!");
-		return getModel(bufferName, session, key, (Class<M>)modelInfo.first, (Class<K>)modelInfo.second, (IModelCreator<M, K>)modelInfo.third);
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
+		paramMap.put(BUFFER_KEY_SESSION, session);
+		paramMap.put(BUFFER_KEY_MODEL_KEY, key);
+		return (IModel) getBufferData(envId, bufferName, paramMap);
 	}
 	
-	public IModel getModelObject(String bufferName, Session session, Serializable key, Class<? extends IModel> modelClass, Class<? extends Serializable> keyClass, IModelCreator<? extends IModel, ? extends Serializable> modelCreator) throws Exception
+	private IModel doGetModel(String bufferName, Session session, Serializable key, Class<? extends IModel> modelClass, Class<? extends Serializable> keyClass, IModelCreator<? extends IModel, ? extends Serializable> modelCreator) throws Exception
 	{
 		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
-		IModel model = getModelObject(bufferName, envId, key, modelClass, keyClass, modelCreator);
-		return getTranslatedModel(session, model);
+		IModel model = doGetModel(bufferName, envId, key, modelClass, keyClass, modelCreator);
+		return getTranslatedModel(bufferName, session, model);
 	}
 	
 	private void translateSubList(IModel model, int envId, IDataBase dataBase, String language) throws Exception
@@ -423,76 +288,63 @@ public abstract class ModelBuffer implements XlsysBuffer
 		}
 	}
 	
-	private <M extends IModel> M getTranslatedModel(Session session, M model) throws Exception
+	private IModel getTranslatedModel(String bufferName, Session session, IModel srcModel) throws Exception
 	{
-		M m = null;
-		IEnvDataBase dataBase = null;
-		try
-		{
-			int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
-			String language = ObjectUtil.objectToString(session.getAttribute(XLSYS.SESSION_LANGUAGE));
-			dataBase = EnvDataBase.getInstance(envId);
-			m = TranslateUtil.getInstance().translateModel(dataBase, model, language);
-			// 查找当前Model的所有属性, 如果属性为List, 并且List中的元素为IModel, 则翻译该属性
-			translateSubList(m, envId, dataBase, language);
-		}
-		catch(Exception e)
-		{
-			LogUtil.printlnError(e);
-			throw e;
-		}
-		finally
-		{
-			DBUtil.close(dataBase);
-		}
-		return m;
-	}
-	
-	public <M extends IModel, K extends Serializable> M getModel(String bufferName, Session session, K key, Class<M> modelClass, Class<K> keyClass, IModelCreator<M, K> modelCreator) throws Exception
-	{
+		if(srcModel==null) return null;
 		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
-		M model = getModel(bufferName, envId, key, modelClass, keyClass, modelCreator);
-		return getTranslatedModel(session, model);
-	}
-	
-	public <M extends IModel, K extends Serializable> M getModel(String bufferName, int envId, K key) throws Exception
-	{
-		TrisModel<Class<? extends IModel>, Class<? extends Serializable>, IModelCreator<? extends IModel, ? extends Serializable>> modelInfo = bindModelInfoMap.get(bufferName);
-		if(modelInfo==null) throw new RuntimeException("Please bind model info first!");
-		return getModel(bufferName, envId, key, (Class<M>)modelInfo.first, (Class<K>)modelInfo.second, (IModelCreator<M, K>)modelInfo.third);
-	}
-	
-	public <M extends IModel, K extends Serializable> M getModel(String bufferName, int envId, K key, Class<M> modelClass, Class<K> keyClass, IModelCreator<M, K> modelCreator) throws Exception
-	{
-		if(key==null) return null;
-		M model = null;
-		Map<K, M> modelMap = (Map<K, M>) getBufferMap(envId, bufferName);
-		synchronized(modelMap)
+		String language = (String) session.getAttribute(XLSYS.SESSION_LANGUAGE);
+		// 查询翻译缓存中是否存在
+		Map<String, Map<IModel, Map<String, IModel>>> envTransMap = modelTransMap.get(envId);
+		if(envTransMap==null)
 		{
-			model = modelMap.get(key);
-			if(model==null)
+			envTransMap = new HashMap<String, Map<IModel, Map<String, IModel>>>();
+			modelTransMap.put(envId, envTransMap);
+		}
+		Map<IModel, Map<String, IModel>> bnTransMap = envTransMap.get(bufferName);
+		if(bnTransMap==null)
+		{
+			bnTransMap = new HashMap<IModel, Map<String, IModel>>();
+			envTransMap.put(bufferName, bnTransMap);
+		}
+		Map<String, IModel> mTransMap = bnTransMap.get(srcModel);
+		if(mTransMap==null)
+		{
+			mTransMap = new HashMap<String, IModel>();
+			bnTransMap.put(srcModel, mTransMap);
+		}
+		IModel transModel = mTransMap.get(language);
+		if(transModel==null)
+		{
+			IEnvDataBase dataBase = null;
+			try
 			{
-				IEnvDataBase dataBase = null;
-				try
-				{
-					dataBase = EnvDataBase.getInstance(envId);
-					model = getModel(bufferName, dataBase, key, modelClass, keyClass, modelCreator);
-				}
-				catch(Exception e)
-				{
-					LogUtil.printlnError(e);
-					throw e;
-				}
-				finally
-				{
-					DBUtil.close(dataBase);
-				}
+				dataBase = EnvDataBase.getInstance(envId);
+				transModel = TranslateUtil.getInstance().translateModel(dataBase, srcModel, language);
+				// 查找当前Model的所有属性, 如果属性为List, 并且List中的元素为IModel, 则翻译该属性
+				translateSubList(transModel, envId, dataBase, language);
+			}
+			catch(Exception e)
+			{
+				LogUtil.printlnError(e);
+				throw e;
+			}
+			finally
+			{
+				DBUtil.close(dataBase);
 			}
 		}
-		return model;
+		return transModel;
+	}
+	
+	public IModel getModel(String bufferName, int envId, Serializable key) throws Exception
+	{
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put(BUFFER_KEY_ENV_ID, envId);
+		paramMap.put(BUFFER_KEY_MODEL_KEY, key);
+		return (IModel) getBufferData(envId, bufferName, paramMap);
 	}
 
-	public IModel getModelObject(String bufferName, int envId, Serializable key, Class<? extends IModel> modelClass, Class<? extends Serializable> keyClass, IModelCreator<? extends IModel, ? extends Serializable> modelCreator) throws Exception
+	private IModel doGetModel(String bufferName, int envId, Serializable key, Class<? extends IModel> modelClass, Class<? extends Serializable> keyClass, IModelCreator<? extends IModel, ? extends Serializable> modelCreator) throws Exception
 	{
 		if(key==null) return null;
 		IModel model = null;
@@ -506,7 +358,7 @@ public abstract class ModelBuffer implements XlsysBuffer
 				try
 				{
 					dataBase = EnvDataBase.getInstance(envId);
-					model = getModelObject(bufferName, dataBase, key, modelClass, keyClass, modelCreator);
+					model = doGetModel(bufferName, dataBase, key, modelClass, keyClass, modelCreator);
 				}
 				catch(Exception e)
 				{
@@ -521,36 +373,16 @@ public abstract class ModelBuffer implements XlsysBuffer
 		}
 		return model;
 	}
-
-	public <M extends IModel, K extends Serializable> M getModel(String bufferName, IEnvDataBase dataBase, K key) throws Exception
+	
+	public IModel getModel(String bufferName, IEnvDataBase dataBase, Serializable key) throws Exception
 	{
-		TrisModel<Class<? extends IModel>, Class<? extends Serializable>, IModelCreator<? extends IModel, ? extends Serializable>> modelInfo = bindModelInfoMap.get(bufferName);
-		if(modelInfo==null) throw new RuntimeException("Please bind model info first!");
-		return getModel(bufferName, dataBase, key, (Class<M>)modelInfo.first, (Class<K>)modelInfo.second, (IModelCreator<M, K>)modelInfo.third);
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put(BUFFER_KEY_DATABASE, dataBase);
+		paramMap.put(BUFFER_KEY_MODEL_KEY, key);
+		return (IModel) getBufferData(dataBase.getEnvId(), bufferName, paramMap);
 	}
 	
-	public <M extends IModel, K extends Serializable> M getModel(String bufferName, IEnvDataBase dataBase, K key, Class<M> modelClass, Class<K> keyClass, IModelCreator<M, K> modelCreator) throws Exception
-	{
-		if(key==null) return null;
-		M model = null;
-		Map<K, M> modelMap = (Map<K, M>) getBufferMap(dataBase.getEnvId(), bufferName);
-		model = modelMap.get(key);
-		if(model==null)
-		{
-			synchronized(modelMap)
-			{
-				model = modelMap.get(key);
-				if(model==null)
-				{
-					model = modelCreator.createModel(dataBase, key);
-					modelMap.put(key, model);
-				}
-			}
-		}
-		return model;
-	}
-	
-	public IModel getModelObject(String bufferName, IEnvDataBase dataBase, Serializable key, Class<? extends IModel> modelClass, Class<? extends Serializable> keyClass, IModelCreator<? extends IModel, ? extends Serializable> modelCreator)
+	private IModel doGetModel(String bufferName, IEnvDataBase dataBase, Serializable key, Class<? extends IModel> modelClass, Class<? extends Serializable> keyClass, IModelCreator<? extends IModel, ? extends Serializable> modelCreator)
 	{
 		if(key==null) return null;
 		IModel model = null;
@@ -570,37 +402,170 @@ public abstract class ModelBuffer implements XlsysBuffer
 		}
 		return model;
 	}
-	
+
 	@Override
-	public void loadAllData()
+	public Serializable getStorageObject(int envId, String bufferName)
 	{
-		allEnvBufferMap.clear();
-		modelCountMap.clear();
+		Map bufferMap = allEnvBufferMap.get(envId).get(bufferName);
+		int modelCount = modelCountMap.get(envId).get(bufferName);
+		Map transMap = this.modelTransMap.get(envId).get(bufferName);
+		Serializable[] storageObject = new Serializable[3];
+		storageObject[0] = (Serializable) bufferMap;
+		storageObject[1] = modelCount;
+		storageObject[2] = (Serializable) transMap;
+		return storageObject;
 	}
 
 	@Override
-	public void loadData(Map<String, Serializable> paramMap)
+	public boolean isBufferComplete(int envId, String bufferName)
 	{
-		if(paramMap!=null)
+		Map<String, Map<? extends Serializable, ? extends Serializable>> envBufferMap = allEnvBufferMap.get(envId);
+		Map<String, Integer> countMap = modelCountMap.get(envId);
+		if(envBufferMap==null||countMap==null) return false;
+		Map<? extends Serializable, ? extends Serializable> bufferMap = envBufferMap.get(bufferName);
+		Integer count = countMap.get(bufferName);
+		if(bufferMap==null||count==null) return false;
+		if(bufferMap.size()==count) return true;
+		return false;
+	}
+
+	@Override
+	public void reloadDataDirectly(int envId, String bufferName, Map<String, Object> paramMap, boolean forceLoad)
+	{
+		boolean reloadAll = false;
+		if(paramMap==null) reloadAll = true;
+		else
 		{
-			if(paramMap.containsKey(BUFFER_KEY_ENVID))
+			Serializable key = (Serializable) paramMap.get(BUFFER_KEY_MODEL_KEY);
+			if(key==null) reloadAll = true;
+			else
 			{
-				int envId = ObjectUtil.objectToInt(paramMap.get(BUFFER_KEY_ENVID));
-				if(paramMap.containsKey(BUFFER_KEY_BUFFER_NAME))
+				getBufferMap(envId, bufferName).remove(key);
+				if(forceLoad)
 				{
-					String bufferName = ObjectUtil.objectToString(paramMap.get(BUFFER_KEY_BUFFER_NAME));
-					Map<String, Map<? extends Serializable, ? extends Serializable>> envBufferMap = allEnvBufferMap.get(envId);
-					if(envBufferMap!=null) envBufferMap.remove(bufferName);
-					Map<String, Integer> countMap = modelCountMap.get(envId);
-					if(countMap!=null) countMap.remove(bufferName);
-				}
-				else
-				{
-					allEnvBufferMap.remove(envId);
-					modelCountMap.remove(envId);
+					try
+					{
+						getModel(bufferName, envId, key);
+					}
+					catch (Exception e)
+					{
+						throw new RuntimeException(e);
+					}
 				}
 			}
 		}
-		else loadAllData();
+		if(reloadAll)
+		{
+			getBufferMap(envId, bufferName).clear();
+			Map<String, Integer> countMap = modelCountMap.get(envId);
+			if(countMap!=null) countMap.remove(bufferName);
+			Map<String, Map<IModel, Map<String, IModel>>> envTransMap = this.modelTransMap.get(envId);
+			if(envTransMap!=null) envTransMap.remove(bufferName);
+			if(forceLoad)
+			{
+				try
+				{
+					getAllModels(bufferName, envId);
+				}
+				catch (Exception e)
+				{
+					throw new RuntimeException(e);
+				}
+			}
+		}
+	}
+
+	@Override
+	public boolean loadDataFromStorageObject(int envId, String bufferName, Serializable storageObj)
+	{
+		Serializable[] objArr = (Serializable[]) storageObj;
+		Map bufferMap = (Map) objArr[0];
+		int modelCount = ObjectUtil.objectToInt(objArr[1]);
+		Map transMap = (Map) objArr[2];
+		Map curBufferMap = getBufferMap(envId, bufferName);
+		synchronized(curBufferMap)
+		{
+			curBufferMap.clear();
+			curBufferMap.putAll(bufferMap);
+		}
+		Map<String, Integer> countMap = modelCountMap.get(envId);
+		if(countMap==null)
+		{
+			synchronized(modelCountMap)
+			{
+				countMap = modelCountMap.get(envId);
+				if(countMap==null)
+				{
+					countMap = new HashMap<String, Integer>();
+					modelCountMap.put(envId, countMap);
+				}
+			}
+		}
+		synchronized(countMap)
+		{
+			countMap.put(bufferName, modelCount);
+		}
+		Map<String, Map<IModel, Map<String, IModel>>> envTransMap = modelTransMap.get(envId);
+		if(envTransMap==null)
+		{
+			synchronized(modelTransMap)
+			{
+				envTransMap = modelTransMap.get(envId);
+				if(envTransMap==null)
+				{
+					envTransMap = new HashMap<String, Map<IModel, Map<String, IModel>>>();
+					modelTransMap.put(envId, envTransMap);
+				}
+			}
+		}
+		synchronized(envTransMap)
+		{
+			envTransMap.put(bufferName, transMap);
+		}
+		return true;
+	}
+	
+	public Serializable doGetBufferData(int envId, String bufferName, Map<String, Object> paramMap)
+	{
+		Serializable ret = null;
+		TrisModel<Class<? extends IModel>, Class<? extends Serializable>, IModelCreator<? extends IModel, ? extends Serializable>> modelInfo = bindModelInfoMap.get(bufferName);
+		if(modelInfo==null) throw new RuntimeException("Please bind model info first!");
+		try
+		{
+			if(paramMap==null) ret = dispatchGetAllModels(bufferName, null, envId, null, modelInfo);
+			else
+			{
+				Serializable key = (Serializable) paramMap.get(BUFFER_KEY_MODEL_KEY);
+				Session session = (Session) paramMap.get(BUFFER_KEY_SESSION);
+				IEnvDataBase dataBase = (IEnvDataBase) paramMap.get(BUFFER_KEY_DATABASE);
+				Integer tempEnvId = (Integer) paramMap.get(BUFFER_KEY_ENV_ID);
+				if(tempEnvId==null) tempEnvId = envId;
+				if(key==null) ret = dispatchGetAllModels(bufferName, session, tempEnvId, dataBase, modelInfo);
+				else ret = dispatchGetModel(bufferName, session, tempEnvId, dataBase, key, modelInfo);
+			}
+		}
+		catch(Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+		return ret;
+	}
+
+	private Serializable dispatchGetModel(String bufferName, Session session, int envId, IEnvDataBase dataBase, Serializable key, TrisModel<Class<? extends IModel>, Class<? extends Serializable>, IModelCreator<? extends IModel, ? extends Serializable>> modelInfo) throws Exception
+	{
+		Serializable model = null;
+		if(session!=null) model = doGetModel(bufferName, session, key, modelInfo.first, modelInfo.second, modelInfo.third);
+		else if(dataBase!=null) model = doGetModel(bufferName, dataBase, key, modelInfo.first, modelInfo.second, modelInfo.third);
+		else model = doGetModel(bufferName, envId, key, modelInfo.first, modelInfo.second, modelInfo.third);
+		return model;
+	}
+
+	private Serializable dispatchGetAllModels(String bufferName, Session session, int envId, IEnvDataBase dataBase, TrisModel<Class<? extends IModel>, Class<? extends Serializable>, IModelCreator<? extends IModel, ? extends Serializable>> modelInfo) throws Exception
+	{
+		Serializable modelList = null;
+		if(session!=null) modelList = (Serializable) doGetAllModels(bufferName, session, modelInfo.first, modelInfo.second, modelInfo.third);
+		else if(dataBase!=null) modelList = (Serializable) doGetAllModels(bufferName, dataBase, modelInfo.first, modelInfo.second, modelInfo.third);
+		else modelList = (Serializable) doGetAllModels(bufferName, envId, modelInfo.first, modelInfo.second, modelInfo.third);
+		return modelList;
 	}
 }

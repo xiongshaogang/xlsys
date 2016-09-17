@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,9 +20,7 @@ import org.dom4j.DocumentException;
 import xlsys.base.XLSYS;
 import xlsys.base.XlsysFactory;
 import xlsys.base.buffer.BufferManager;
-import xlsys.base.buffer.BufferPool;
-import xlsys.base.buffer.MapBufferPool;
-import xlsys.base.buffer.ModelBuffer;
+import xlsys.base.buffer.MXlsysBuffer;
 import xlsys.base.buffer.MutiLRUBufferPool;
 import xlsys.base.buffer.XlsysBuffer;
 import xlsys.base.cfg.BaseConfig;
@@ -70,7 +69,7 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 	/**
 	 * 对于排序查询的缓冲池
 	 */
-	private BufferPool<String, IDataSet> queryBuffer;
+	private Map<String, IDataSet> queryBuffer;
 	/**
 	 * 不需要使用缓冲的查询key集合
 	 */
@@ -90,7 +89,7 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 		if(criticalSize>=0)
 		{
 			int bufferSize = ObjectUtil.objectToInt(queryBufferModel.getChild("bufferSize").getText());
-			if(bufferSize<=0) queryBuffer = new MapBufferPool<String, IDataSet>();
+			if(bufferSize<=0) queryBuffer = new HashMap<String, IDataSet>();
 			else queryBuffer = new MutiLRUBufferPool<String, IDataSet>(bufferSize);
 			noneedBufferQuery = new HashSet<String>();
 			BufferManager.getInstance().registerBuffer(XLSYS.BUFFER_SQL_QUERY, this);
@@ -237,6 +236,26 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 		else if(XLSYS.COMMAND_REFRESH_BUFFER.equals(innerPackage.getCommand()))
 		{
 			outObj = refreshBuffer(innerPackage);
+			outPkg.setCommand(XLSYS.COMMAND_OK);
+		}
+		else if(XLSYS.COMMAND_FORCE_RELOAD_BUFFER.equals(innerPackage.getCommand()))
+		{
+			outObj = forceReloadBuffer(innerPackage);
+			outPkg.setCommand(XLSYS.COMMAND_OK);
+		}
+		else if(XLSYS.COMMAND_UPDATE_BUFFER_VERSION.equals(innerPackage.getCommand()))
+		{
+			outObj = updateBufferVersion(innerPackage);
+			outPkg.setCommand(XLSYS.COMMAND_OK);
+		}
+		else if(XLSYS.COMMAND_GET_BUFFER_VERSION.equals(innerPackage.getCommand()))
+		{
+			outObj = getBufferVersion(innerPackage);
+			outPkg.setCommand(XLSYS.COMMAND_OK);
+		}
+		else if(XLSYS.COMMAND_GET_LOCAL_BUFFER_VERSION.equals(innerPackage.getCommand()))
+		{
+			outObj = getLocalBufferVersion(innerPackage);
 			outPkg.setCommand(XLSYS.COMMAND_OK);
 		}
 		else if(XLSYS.COMMAND_GET_ALL_BUFFER_NAME.equals(innerPackage.getCommand()))
@@ -467,9 +486,7 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 		if(inObj instanceof String)
 		{
 			String bufferName = (String) inObj;
-			Map<String, Serializable> paramMap = new HashMap<String, Serializable>();
-			paramMap.put(ModelBuffer.BUFFER_KEY_ENVID, session.getAttribute(XLSYS.SESSION_ENV_ID));
-			BufferManager.getInstance().reloadBuffer(bufferName, paramMap);
+			BufferManager.getInstance().reloadBuffer(ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID)), bufferName);
 		}
 		else if(inObj instanceof Object[])
 		{
@@ -477,19 +494,103 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 			if(inParam.length==1)
 			{
 				String bufferName = (String) inParam[0];
-				Map<String, Serializable> paramMap = new HashMap<String, Serializable>();
-				paramMap.put(ModelBuffer.BUFFER_KEY_ENVID, session.getAttribute(XLSYS.SESSION_ENV_ID));
-				BufferManager.getInstance().reloadBuffer(bufferName, paramMap);
+				BufferManager.getInstance().reloadBuffer(ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID)), bufferName);
 			}
 			else if(inParam.length==2)
 			{
 				String bufferName = (String) inParam[0];
-				Map<String, Serializable> paramMap = (Map<String, Serializable>) inParam[1];
-				paramMap.put(ModelBuffer.BUFFER_KEY_ENVID, session.getAttribute(XLSYS.SESSION_ENV_ID));
-				BufferManager.getInstance().reloadBuffer(bufferName, paramMap);
+				Map<String, Object> paramMap = (Map<String, Object>) inParam[1];
+				BufferManager.getInstance().reloadBuffer(ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID)), bufferName, paramMap);
 			}
 		}
 		return null;
+	}
+	
+	private Serializable forceReloadBuffer(InnerPackage innerPackage)
+	{
+		Object inObj = innerPackage.getObj();
+		Session session = innerPackage.getSession();
+		if(inObj instanceof String)
+		{
+			String bufferName = (String) inObj;
+			BufferManager.getInstance().reloadBuffer(ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID)), bufferName, null, true);
+		}
+		else if(inObj instanceof Object[])
+		{
+			Object[] inParam = (Object[]) inObj;
+			if(inParam.length==1)
+			{
+				String bufferName = (String) inParam[0];
+				BufferManager.getInstance().reloadBuffer(ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID)), bufferName, null, true);
+			}
+			else if(inParam.length==2)
+			{
+				String bufferName = (String) inParam[0];
+				Map<String, Object> paramMap = (Map<String, Object>) inParam[1];
+				BufferManager.getInstance().reloadBuffer(ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID)), bufferName, paramMap, true);
+			}
+		}
+		return null;
+	}
+	
+	private Serializable updateBufferVersion(InnerPackage innerPackage) throws Exception
+	{
+		String bufferName = (String) innerPackage.getObj();
+		Session session = innerPackage.getSession();
+		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
+		Integer version = BufferManager.getInstance().updateBufferVersion(ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID)), bufferName);
+		if(version==null||version==-1) 
+		{
+			IDataBase dataBase = null;
+			try
+			{
+				dataBase = EnvDataBase.getInstance(envId);
+				version = MXlsysBuffer.doUpdateCurrentVersionToDB(dataBase, envId, bufferName, true);
+			}
+			catch(Exception e)
+			{
+				throw e;
+			}
+			finally
+			{
+				DBUtil.close(dataBase);
+			}
+		}
+		return version;
+	}
+	
+	private Serializable getLocalBufferVersion(InnerPackage innerPackage) throws Exception
+	{
+		String bufferName = (String) innerPackage.getObj();
+		Session session = innerPackage.getSession();
+		return BufferManager.getInstance().getLocalBufferVersion(ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID)), bufferName);
+	}
+	
+	private Serializable getBufferVersion(InnerPackage innerPackage) throws Exception
+	{
+		String bufferName = (String) innerPackage.getObj();
+		Session session = innerPackage.getSession();
+		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
+		Integer version = BufferManager.getInstance().getBufferVersion(envId, bufferName);
+		if(version==null||version.intValue()==-1)
+		{
+			IDataBase dataBase = null;
+			try
+			{
+				dataBase = EnvDataBase.getInstance(envId);
+				BigDecimal dbBufferVersion = MXlsysBuffer.doGetCurrentVersionFromDB(dataBase, envId, bufferName, true);
+				if(dbBufferVersion!=null) version = dbBufferVersion.intValue();
+			}
+			catch(Exception e)
+			{
+				throw e;
+			}
+			finally
+			{
+				DBUtil.close(dataBase);
+			}
+		}
+		return version;
 	}
 
 	private Serializable transportData(InnerPackage innerPackage) throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, DocumentException
@@ -1277,15 +1378,39 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 	}
 
 	@Override
-	public void loadAllData()
+	public Serializable getStorageObject(int envId, String bufferName)
+	{
+		Serializable[] objArr = new Serializable[2];
+		objArr[0] = (Serializable) queryBuffer;
+		objArr[1] = (Serializable) noneedBufferQuery;
+		return objArr;
+	}
+
+	@Override
+	public boolean isBufferComplete(int envId, String bufferName)
+	{
+		return false;
+	}
+
+	@Override
+	public void reloadDataDirectly(int envId, String bufferName, Map<String, Object> paramMap, boolean forceLoad)
 	{
 		queryBuffer.clear();
 		noneedBufferQuery.clear();
 	}
 
 	@Override
-	public void loadData(Map<String, Serializable> paramMap)
+	public boolean loadDataFromStorageObject(int envId, String bufferName, Serializable storageObj)
 	{
-		loadAllData();
+		Serializable[] objArr = (Serializable[]) storageObj;
+		queryBuffer = (Map<String, IDataSet>) objArr[0];
+		noneedBufferQuery = (Set<String>) objArr[1];
+		return true;
+	}
+
+	@Override
+	public Serializable doGetBufferData(int envId, String bufferName, Map<String, Object> paramMap)
+	{
+		return (Serializable) queryBuffer;
 	}
 }

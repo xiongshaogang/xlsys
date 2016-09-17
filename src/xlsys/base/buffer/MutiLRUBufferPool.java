@@ -15,7 +15,7 @@ import xlsys.base.exception.ParameterNotEnoughException;
  * @author Lewis
  * 
  */
-public class MutiLRUBufferPool<K, V> implements BufferPool<K, V>
+public class MutiLRUBufferPool<K, V> implements Map<K,V>
 {
 	// 每个值的热度
 	private Map<K, Integer> hotMap;
@@ -281,7 +281,7 @@ public class MutiLRUBufferPool<K, V> implements BufferPool<K, V>
 	
 	public static void main(String[] args) throws ParameterNotEnoughException
 	{
-		BufferPool<Integer, String> myBufPool = new MutiLRUBufferPool<Integer, String>(
+		Map<Integer, String> myBufPool = new MutiLRUBufferPool<Integer, String>(
 				6, 2, new int[] { 1, 1 }, new int[] { 1 });
 		myBufPool.put(1, "1");
 		myBufPool.put(2, "2");

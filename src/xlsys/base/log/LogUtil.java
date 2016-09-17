@@ -42,6 +42,16 @@ public class LogUtil
 	}
 	
 	/**
+	 * 等价于调用println(Log.LOG_LEVEL_DEBUG, content)
+	 * @param content
+	 * @return
+	 */
+	public static boolean printlnDebug(Object content)
+	{
+		return println(Log.LOG_LEVEL_DEBUG, content);
+	}
+	
+	/**
 	 * 等价于调用println(Log.LOG_LEVEL_INFO, content)
 	 * @param content
 	 * @return

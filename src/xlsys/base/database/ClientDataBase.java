@@ -10,8 +10,6 @@ import java.util.Map;
 import xlsys.base.XLSYS;
 import xlsys.base.XlsysFactory;
 import xlsys.base.buffer.BufferManager;
-import xlsys.base.buffer.BufferPool;
-import xlsys.base.buffer.MapBufferPool;
 import xlsys.base.buffer.XlsysBuffer;
 import xlsys.base.database.bean.ExecuteBean;
 import xlsys.base.database.bean.ISqlBean;
@@ -71,7 +69,7 @@ public class ClientDataBase implements IClientDataBase
 	public TableInfo getTableInfo(String tableName) throws Exception
 	{
 		int envId = getEnvId();
-		BufferPool<String, TableInfo> tableInfoBuffer = ClientTableInfoBuffer.getInstance(envId).getTableInfoBuffer();
+		Map<String, TableInfo> tableInfoBuffer = ClientTableInfoBuffer.getInstance(envId).getTableInfoBuffer();
 		TableInfo tableInfo = tableInfoBuffer.get(tableName);
 		if(tableInfo==null)
 		{
@@ -316,11 +314,13 @@ public class ClientDataBase implements IClientDataBase
 class ClientTableInfoBuffer implements XlsysBuffer
 {
 	private static Map<Integer, ClientTableInfoBuffer> ctibMap;
-	private BufferPool<String, TableInfo> tableInfoBuffer;
+	private Map<String, TableInfo> tableInfoBuffer;
+	private int envId;
 	
 	private ClientTableInfoBuffer(int envId)
 	{
-		tableInfoBuffer = new MapBufferPool<String, TableInfo>();
+		this.envId = envId;
+		tableInfoBuffer = new HashMap<String, TableInfo>();
 		BufferManager.getInstance().registerBuffer("_ENV"+XLSYS.BUFFER_TABLE_INFO_PREFIX+envId, this);
 	}
 	
@@ -336,28 +336,47 @@ class ClientTableInfoBuffer implements XlsysBuffer
 		return ctib;
 	}
 
-	public BufferPool<String, TableInfo> getTableInfoBuffer()
+	public Map<String, TableInfo> getTableInfoBuffer()
 	{
 		return tableInfoBuffer;
 	}
-
+	
 	@Override
-	public void loadAllData()
+	public Serializable getStorageObject(int envId, String bufferName)
 	{
-		tableInfoBuffer.clear();
+		return (Serializable) tableInfoBuffer;
 	}
-
+	
 	@Override
-	public void loadData(Map<String, Serializable> paramMap)
+	public boolean isBufferComplete(int envId, String bufferName)
+	{
+		return false;
+	}
+	
+	@Override
+	public void reloadDataDirectly(int envId, String bufferName, Map<String, Object> paramMap, boolean forceLoad)
 	{
 		if(paramMap!=null)
 		{
-			if(paramMap.containsKey(ConnectionPool.BUFFER_KEY_TABLE_NAME))
-			{
-				String tableName = ObjectUtil.objectToString(paramMap.get(ConnectionPool.BUFFER_KEY_TABLE_NAME));
-				tableInfoBuffer.remove(tableName);
-			}
-			else loadAllData();
+			String tableName = ObjectUtil.objectToString(paramMap.get(ConnectionPool.BUFFER_KEY_TABLE_NAME));
+			if(tableName!=null) tableInfoBuffer.remove(tableName);
+			else tableInfoBuffer.clear();
 		}
+		else tableInfoBuffer.clear();
+	}
+	
+	@Override
+	public boolean loadDataFromStorageObject(int envId, String bufferName, Serializable storageObj)
+	{
+		return false;
+	}
+
+	@Override
+	public Serializable doGetBufferData(int envId, String bufferName, Map<String, Object> paramMap)
+	{
+		if(paramMap==null) return (Serializable) tableInfoBuffer;
+		String tableName = (String) paramMap.get(ConnectionPool.BUFFER_KEY_TABLE_NAME);
+		if(tableName==null) return (Serializable) tableInfoBuffer;
+		return tableInfoBuffer.get(tableName);
 	}
 }

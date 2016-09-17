@@ -13,7 +13,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import xlsys.base.XLSYS;
 import xlsys.base.cfg.BaseConfig;
+import xlsys.base.io.transfer.server.XlsysServlet;
 import xlsys.base.io.xml.XmlModel;
+import xlsys.base.log.LogUtil;
 import xlsys.base.session.Session;
 import xlsys.base.util.ObjectUtil;
 import xlsys.base.util.StringUtil;
@@ -204,6 +206,32 @@ public class LockUtil
 		finally
 		{
 			lock.unlock();
+		}
+	}
+	
+	public static String getGlobalLock(Session session, String src)
+	{
+		String lockKey = null;
+		try
+		{
+			lockKey = (String) XlsysServlet.virtualPost(session, XLSYS.COMMAND_GET_LOCK, src);
+		}
+		catch(Exception e)
+		{
+			LogUtil.printlnError(e);
+		}
+		return lockKey;
+	}
+	
+	public static void releaseGlobalLock(Session session, String lockKey)
+	{
+		try
+		{
+			XlsysServlet.virtualPost(session, XLSYS.COMMAND_RELEASE_LOCK, lockKey);
+		}
+		catch(Exception e)
+		{
+			LogUtil.printlnError(e);
 		}
 	}
 	

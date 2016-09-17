@@ -141,6 +141,22 @@ public interface XLSYS
 	 */
 	public final static String COMMAND_REFRESH_BUFFER = "_COMMAND_REFRESH_BUFFER";
 	/**
+	 * 强制重载缓存的命令字
+	 */
+	public final static String COMMAND_FORCE_RELOAD_BUFFER = "_COMMAND_FORCE_RELOAD_BUFFER";
+	/**
+	 * 更新缓存版本的命令字
+	 */
+	public final static String COMMAND_UPDATE_BUFFER_VERSION = "_COMMAND_UPDATE_BUFFER_VERSION";
+	/**
+	 * 获取缓存的当前版本号
+	 */
+	public final static String COMMAND_GET_BUFFER_VERSION = "_COMMAND_GET_BUFFER_VERSION";
+	/**
+	 * 获取缓存的本地存储版本号
+	 */
+	public final static String COMMAND_GET_LOCAL_BUFFER_VERSION = "_COMMAND_GET_LOCAL_BUFFER_VERSION";
+	/**
 	 * 获取所有缓存名称
 	 */
 	public final static String COMMAND_GET_ALL_BUFFER_NAME = "_COMMAND_GET_ALL_BUFFER_NAME";
@@ -694,4 +710,6 @@ public interface XLSYS
 	public final static String UPLOAD_PARAM_ATTACHMENT = "_UPLOAD_PARAM_ATTACHMENT";
 	public final static String DOWNLOAD_PARAM_URL = "_DOWNLOAD_PARAM_URL";
 	public final static String DOWNLOAD_PARAM_FILE_NAME = "_DOWNLOAD_PARAM_FILE_NAME";
+	
+	public final static String ENV_LOG_LEVEL = "xlsys.loglevel";
 }
