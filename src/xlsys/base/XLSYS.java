@@ -706,6 +706,7 @@ public interface XLSYS
 	public final static String SYSTEM_PROPERTY_ABSOLUTELY_CONFIG_PATH = "xlsys.absolutelyConfigPath";
 	
 	public final static String RESOURCE_BASE_URL = "/xlsys-resource";
+	public final static String RESOURCE_TEMP_DIR = "temp-resource";
 	
 	public final static String UPLOAD_PARAM_ATTACHMENT = "_UPLOAD_PARAM_ATTACHMENT";
 	public final static String DOWNLOAD_PARAM_URL = "_DOWNLOAD_PARAM_URL";

@@ -46,3 +46,6 @@ http://glyph.smarticons.co/#usage
 qooxdoo源码Bug:
 1. qx.ui.mobile.layout.AbstractBox 193行
 	widget.removeCssClass("qx-flex" + value);  ->  widget.removeCssClass("qx-flex" + old);
+	
+qooxdoo使用特别注意:
+1. 手机端的Drawer会阻止任何第一个子元素的指针事件

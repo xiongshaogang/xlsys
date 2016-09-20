@@ -100,9 +100,10 @@ public class UploadServlet extends AbstractServlet
     				if(XLSYS.UPLOAD_PARAM_ATTACHMENT.equals(param)) attachmentStr = URLDecoder.decode(paramPart.getStringValue(), "UTF-8");
     			}
     		}
-    		XlsysAttachment src = (XlsysAttachment) IOUtil.readJSONObject(attachmentStr, XlsysClassLoader.getInstance());
+    		attachment = (XlsysAttachment) IOUtil.readJSONObject(attachmentStr, XlsysClassLoader.getInstance());
     		byte[] datas = baos.toByteArray();
-    		attachment = new XlsysAttachment(src.getAttachmentName(), src.getLastModified(), src.getStyle(), datas, false, StringUtil.getMD5String(datas));
+    		attachment.setAttachmentData(datas);
+    		attachment.setMd5(StringUtil.getMD5String(datas));
     	}
     	finally
     	{
