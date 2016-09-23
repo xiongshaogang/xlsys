@@ -49,3 +49,7 @@ qooxdoo源码Bug:
 	
 qooxdoo使用特别注意:
 1. 手机端的Drawer会阻止任何第一个子元素的指针事件
+
+cordova源码Bug:
+org.apache.cordova.camera.CameraLauncher 660行
+	this.callbackContext.success(fileLocation);  ->  this.callbackContext.success(uri.toString());

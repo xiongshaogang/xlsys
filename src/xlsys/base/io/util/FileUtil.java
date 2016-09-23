@@ -401,7 +401,7 @@ public class FileUtil
 			try
 			{
 				byte[] bytes = FileUtil.getByteFromFile(file.getAbsolutePath());
-				attachment = new XlsysAttachment(fileName, file.lastModified(), attachStyle, bytes, false, getFileMd5(bytes));
+				attachment = new XlsysAttachment(fileName, file.lastModified(), attachStyle, bytes, false);
 			}
 			catch (Exception e)
 			{

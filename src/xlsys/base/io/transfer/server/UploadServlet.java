@@ -93,6 +93,12 @@ public class UploadServlet extends AbstractServlet
     				is = filePart.getInputStream();
     				IOUtil.writeBytesFromIsToOs(is, -1, baos);
     			}
+    			else if("file".equals(part.getName()))
+    			{
+    				baos = new ByteArrayOutputStream();
+    				ParamPart paramPart = (ParamPart) part;
+    				baos.write(paramPart.getValue());
+    			}
     			else
     			{
     				ParamPart paramPart = (ParamPart) part;
@@ -103,7 +109,6 @@ public class UploadServlet extends AbstractServlet
     		attachment = (XlsysAttachment) IOUtil.readJSONObject(attachmentStr, XlsysClassLoader.getInstance());
     		byte[] datas = baos.toByteArray();
     		attachment.setAttachmentData(datas);
-    		attachment.setMd5(StringUtil.getMD5String(datas));
     	}
     	finally
     	{
@@ -124,9 +129,9 @@ public class UploadServlet extends AbstractServlet
         	is = request.getInputStream();
         	IOUtil.writeBytesFromIsToOs(is, -1, baos);
         	String attachmentStr = URLDecoder.decode(request.getParameter(XLSYS.UPLOAD_PARAM_ATTACHMENT), "UTF-8");
-    		XlsysAttachment src = (XlsysAttachment) IOUtil.readJSONObject(attachmentStr, XlsysClassLoader.getInstance());
+        	attachment = (XlsysAttachment) IOUtil.readJSONObject(attachmentStr, XlsysClassLoader.getInstance());
     		byte[] datas = baos.toByteArray();
-    		attachment = new XlsysAttachment(src.getAttachmentName(), src.getLastModified(), src.getStyle(), datas, false, StringUtil.getMD5String(datas));
+    		attachment.setAttachmentData(datas);
         }
         finally
         {

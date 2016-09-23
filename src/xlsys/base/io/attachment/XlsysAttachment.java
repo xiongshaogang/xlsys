@@ -57,16 +57,13 @@ public class XlsysAttachment implements IModel
 	 * @param compress 是否已压缩
 	 * @param md5 文件的md5值, 必须传入
 	 */
-	public XlsysAttachment(String attachmentName, long lastModified, int style, byte[] attachmentData, boolean compress, String md5)
+	public XlsysAttachment(String attachmentName, long lastModified, int style, byte[] attachmentData, boolean compress)
 	{
-		this.attachmentName = attachmentName;
-		if(attachmentName!=null) innerName = StringUtil.getMD5String(attachmentName);
+		this.setAttachmentName(attachmentName);
 		this.lastModified = lastModified;
 		this.style = style;
-		this.attachmentData = attachmentData;
-		if(attachmentData!=null) size = attachmentData.length;
+		this.setAttachmentData(attachmentData);
 		this.compress = compress;
-		this.md5 = md5;
 	}
 
 	/**
@@ -76,7 +73,11 @@ public class XlsysAttachment implements IModel
 	public void setAttachmentName(String attachmentName)
 	{
 		this.attachmentName = attachmentName;
-		if(attachmentName!=null) innerName = StringUtil.getMD5String(attachmentName);
+		if(attachmentName!=null)
+		{
+			String baseStr = attachmentName+System.currentTimeMillis()+this.hashCode();
+			innerName = StringUtil.getMD5String(baseStr);
+		}
 		else innerName = null;
 	}
 
@@ -150,7 +151,11 @@ public class XlsysAttachment implements IModel
 	public void setAttachmentData(byte[] attachmentData)
 	{
 		this.attachmentData = attachmentData;
-		if(attachmentData!=null) size = attachmentData.length;
+		if(attachmentData!=null)
+		{
+			size = attachmentData.length;
+			setMd5(StringUtil.getMD5String(attachmentData));
+		}
 	}
 	
 	/**
@@ -250,8 +255,7 @@ public class XlsysAttachment implements IModel
 	{
 		if(compress&&attachmentData!=null&&attachmentData.length>0)
 		{
-			attachmentData = IOUtil.decompress(attachmentData);
-			size = attachmentData.length;
+			this.setAttachmentData(IOUtil.decompress(attachmentData));
 			compress = false;
 		}
 	}

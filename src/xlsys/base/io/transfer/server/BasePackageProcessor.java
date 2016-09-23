@@ -675,11 +675,9 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 		Serializable inObj = innerPackage.getObj();
 		if(inObj instanceof XlsysAttachment)
 		{
-			XlsysAttachment inAttachment = (XlsysAttachment) inObj;
-			byte[] bytes = getAttachmentContent(inAttachment);
-			outAttachment = new XlsysAttachment(inAttachment.getAttachmentName(), inAttachment.getLastModified(), inAttachment.getStyle(), bytes, inAttachment.isCompress(), inAttachment.getMd5());
-			outAttachment.setId(inAttachment.getId());
-			outAttachment.setPath(inAttachment.getPath());
+			outAttachment = (XlsysAttachment) inObj;
+			byte[] bytes = getAttachmentContent(outAttachment);
+			outAttachment.setAttachmentData(bytes);
 		}
 		return outAttachment;
 	}
