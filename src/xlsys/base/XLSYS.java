@@ -270,6 +270,10 @@ public interface XLSYS
 	 * 移除关联记录
 	 */
 	public final static String COMMAND_REMOVE_RELATION_RECORD = "_COMMAND_REMOVE_RELATION_RECORD";
+	/**
+	 * 转换视频
+	 */
+	public final static String COMMAND_REMUXING_VIDEO = "_COMMAND_REMUXING_VIDEO";
 	
 	// 以下是Base包中的Session相关常量
 	/**
