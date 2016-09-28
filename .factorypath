@@ -1,0 +1,5 @@
+<factorypath>
+    <factorypathentry kind="PLUGIN" id="org.eclipse.jdt.apt.pluggable.tests" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="PLUGIN" id="org.eclipse.jdt.apt.tests" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/xlsys.base/lib/xlsys.base.annotation_1.0.0.0.jar" enabled="true" runInBatchMode="false"/>
+</factorypath>
