@@ -9,9 +9,6 @@ public class TempTest
 
 	public static void main(String[] args) throws Exception
 	{
-		for(int i=0;i<100;++i)
-		{
-			System.out.println(StringUtil.getMD5String(UUID.randomUUID().toString()));
-		}
+		System.out.println(TempTest.class.getSimpleName());
 	}
 }
