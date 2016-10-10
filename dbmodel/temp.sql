@@ -1,21 +1,23 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 11g                           */
-/* Created on:     2016/9/13 10:08:29                           */
+/* Created on:     2016/10/8 16:08:16                           */
 /*==============================================================*/
 
 
-drop table xlsys_bufferinfo cascade constraints;
+drop table xlsys_template cascade constraints;
 
 /*==============================================================*/
-/* Table: xlsys_bufferinfo                                    */
+/* Table: xlsys_template                                      */
 /*==============================================================*/
-create table xlsys_bufferinfo 
+create table xlsys_template 
 (
-   buffername         VARCHAR2(256)        not null,
-   version            NUMBER(8,0)          not null,
-   constraint PK_XLSYS_BUFFERINFO primary key (buffername)
+   templateid         VARCHAR2(256)        not null,
+   name               VARCHAR2(64),
+   templatepath       VARCHAR2(1000),
+   template           BLOB,
+   dispatchpath       VARCHAR2(1000),
+   javalistener       VARCHAR2(1000),
+   jslistener         BLOB,
+   constraint PK_XLSYS_TEMPLATE primary key (templateid)
 );
-
-comment on table xlsys_bufferinfo is
-'雪狼系统缓存信息表';
 

@@ -1,6 +1,7 @@
 package xlsys.base.io.transfer.server;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,7 +9,9 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.net.URLDecoder;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,8 +22,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.entity.ContentType;
+import org.osgi.framework.Bundle;
 
 import xlsys.base.XLSYS;
+import xlsys.base.XlsysBaseActivator;
 import xlsys.base.database.EnvDataBase;
 import xlsys.base.database.IDataBase;
 import xlsys.base.database.bean.ParamBean;
@@ -28,10 +33,10 @@ import xlsys.base.database.util.DBUtil;
 import xlsys.base.dataset.IDataSet;
 import xlsys.base.io.pack.InnerPackage;
 import xlsys.base.io.pack.XlsysPackage;
-import xlsys.base.io.transfer.server.extra.ExtraCmdEvent;
-import xlsys.base.io.transfer.server.extra.ExtraCmdListener;
-import xlsys.base.io.transfer.server.extra.ExtraCmdProcessor;
-import xlsys.base.io.transfer.server.extra.JSExtraCmdListener;
+import xlsys.base.io.transfer.server.tpl.JSTplListener;
+import xlsys.base.io.transfer.server.tpl.TplEvent;
+import xlsys.base.io.transfer.server.tpl.TplListener;
+import xlsys.base.io.transfer.server.tpl.TplProcessor;
 import xlsys.base.io.util.IOUtil;
 import xlsys.base.log.LogUtil;
 import xlsys.base.script.XlsysClassLoader;
@@ -53,7 +58,7 @@ public class XlsysServlet extends AbstractServlet
 	
 	private static ServletServerTransfer servletServerTransfer;
 	
-	private static Map<Integer, Map<String, ExtraCmdProcessor>> extraMap;
+	private static Map<Integer, Map<String, TplProcessor>> tplProcessorMap;
 	
 	public XlsysServlet()
 	{
@@ -68,14 +73,14 @@ public class XlsysServlet extends AbstractServlet
 		}
 	}
 	
-	private synchronized static Map<String, ExtraCmdProcessor> getExtraMap(int envId)
+	private synchronized static Map<String, TplProcessor> getTplProcessorMap(int envId)
 	{
-		if(extraMap==null) extraMap = new HashMap<Integer, Map<String, ExtraCmdProcessor>>();
-		if(!extraMap.containsKey(envId))
+		if(tplProcessorMap==null) tplProcessorMap = new HashMap<Integer, Map<String, TplProcessor>>();
+		if(!tplProcessorMap.containsKey(envId))
 		{
-			extraMap.put(envId, new HashMap<String, ExtraCmdProcessor>());
+			tplProcessorMap.put(envId, new HashMap<String, TplProcessor>());
 		}
-		return extraMap.get(envId);
+		return tplProcessorMap.get(envId);
 	}
 	
 	/**
@@ -116,29 +121,15 @@ public class XlsysServlet extends AbstractServlet
 	{
 		try
 		{
-			
 			// resp.addHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
 			Integer platForm = ObjectUtil.objectToInt(req.getHeader(XLSYS.PLATFORM));
 			if(platForm!=null)
 			{
 				if(platForm==XLSYS.PLATFORM_WEB) doWebPost(req, resp);
+				else if(platForm==XLSYS.PLATFORM_TEMPLATE) doTemplatePost(req, resp);
+				else doBinaryPost(req, resp);
 			}
-			else
-			{
-				String extraCommand = req.getParameter(XLSYS.EXTRA_COMMAND);
-				if(extraCommand!=null)
-				{
-					doExtraPost(req, resp);
-				}
-				else
-				{
-					String contype = req.getContentType();
-					if (contype.equals(ContentType.DEFAULT_BINARY.toString()))
-					{
-						doBinaryPost(req, resp);
-					}
-				}
-			}
+			else doBinaryPost(req, resp);
 		}
 		catch (Exception e)
 		{
@@ -146,7 +137,7 @@ public class XlsysServlet extends AbstractServlet
 		}
 	}
 	
-	private void addJavaListenerToExtra(IDataBase dataBase, String javaListener, ExtraCmdProcessor ecp)
+	private void addJavaListenerToTemplate(IDataBase dataBase, String javaListener, TplProcessor ecp)
 	{
 		if(javaListener!=null)
 		{
@@ -182,7 +173,7 @@ public class XlsysServlet extends AbstractServlet
 						}
 					}
 					Class<?> lsnClass = XlsysClassLoader.getInstance().loadClass(lsnStr);
-					ExtraCmdListener listener = (ExtraCmdListener) lsnClass.newInstance();
+					TplListener listener = (TplListener) lsnClass.newInstance();
 					// 设置额外参数
 					if(paramStr!=null)
 					{
@@ -212,30 +203,6 @@ public class XlsysServlet extends AbstractServlet
 		return URLDecoder.decode(src, "utf-8");
 	}
 	
-	/*private void doWebPost(HttpServletRequest req, HttpServletResponse resp) throws Exception
-	{
-		req.setCharacterEncoding("UTF-8");
-		resp.setCharacterEncoding("UTF-8");
-		resp.setContentType("text/html");
-		String cmd = decodeUrl(req.getParameter(XLSYS.WEB_COMMAND));
-		String sessionStr = decodeUrl(req.getParameter(XLSYS.WEB_SESSION));
-		Session session = (Session) IOUtil.readJSONObject(sessionStr);
-		String data = decodeUrl(req.getParameter(XLSYS.WEB_DATA));
-		Serializable inObj = (Serializable) IOUtil.readJSONObject(data);
-		boolean retPkg = ObjectUtil.objectToBoolean(decodeUrl(req.getParameter(XLSYS.WEB_RETPKG)));
-		Serializable outObj = null;
-		if(retPkg)
-		{
-			InnerPackage inPkg = new InnerPackage(session);
-			inPkg.setCommand(cmd);
-			inPkg.setObj(inObj);
-			outObj = virtualPost(inPkg);
-		}
-		else outObj = virtualPost(session, cmd, inObj);
-		PrintWriter pw = resp.getWriter();
-		pw.write(IOUtil.getJSONObjectStr(outObj));
-	}*/
-	
 	private void doWebPost(HttpServletRequest req, HttpServletResponse resp) throws Exception
 	{
 		req.setCharacterEncoding("UTF-8");
@@ -245,16 +212,33 @@ public class XlsysServlet extends AbstractServlet
 		InputStream is = null;
 		try
 		{
+			String cmd = null;
+			String sessionStr = null;
+			String data = null;
+			String retPkgStr = null;
 			is = req.getInputStream();
-			byte[] b = IOUtil.readBytesFromInputStream(is, length);
-			String str = new String(b, "UTF-8");
-			Map<String, String> paramMap = StringUtil.getParamMap(str, "=", "&");
-			String cmd = decodeUrl(paramMap.get(XLSYS.WEB_COMMAND));
-			String sessionStr = decodeUrl(paramMap.get(XLSYS.WEB_SESSION));
+			try
+			{
+				byte[] b = IOUtil.readBytesFromInputStream(is, length);
+				String str = new String(b, "UTF-8");
+				Map<String, String> paramMap = StringUtil.getParamMap(str, "=", "&");
+				cmd = decodeUrl(paramMap.get(XLSYS.WEB_COMMAND));
+				sessionStr = decodeUrl(paramMap.get(XLSYS.WEB_SESSION));
+				data = decodeUrl(paramMap.get(XLSYS.WEB_DATA));
+				retPkgStr = decodeUrl(paramMap.get(XLSYS.WEB_RETPKG));
+			}
+			catch(Exception e)
+			{
+				// 尝试使用Parameter直接获取值
+				cmd = decodeUrl(req.getParameter(XLSYS.WEB_COMMAND));
+				sessionStr = decodeUrl(req.getParameter(XLSYS.WEB_SESSION));
+				data = decodeUrl(req.getParameter(XLSYS.WEB_DATA));
+				retPkgStr = decodeUrl(req.getParameter(XLSYS.WEB_RETPKG));
+				if(cmd==null) throw e;
+			}
 			Session session = (Session) IOUtil.readJSONObject(sessionStr);
-			String data = decodeUrl(paramMap.get(XLSYS.WEB_DATA));
 			Serializable inObj = (Serializable) IOUtil.readJSONObject(data);
-			boolean retPkg = ObjectUtil.objectToBoolean(decodeUrl(paramMap.get(XLSYS.WEB_RETPKG)));
+			boolean retPkg = ObjectUtil.objectToBoolean(retPkgStr);
 			Serializable outObj = null;
 			if(retPkg)
 			{
@@ -273,69 +257,163 @@ public class XlsysServlet extends AbstractServlet
 		}
 	}
 
-	private void doExtraPost(HttpServletRequest req, HttpServletResponse resp) throws Exception
+	private void doTemplatePost(HttpServletRequest req, HttpServletResponse resp) throws Exception
 	{
 		req.setCharacterEncoding("UTF-8");
 		resp.setCharacterEncoding("UTF-8");
-		String extraCmd = req.getParameter(XLSYS.EXTRA_COMMAND);
-		int envId = ObjectUtil.objectToInt(req.getParameter(XLSYS.EXTRA_ENVID));
-		IDataBase dataBase = null;
+		resp.setContentType("text/html");
+		int length = req.getContentLength();
+		InputStream is = null;
 		try
 		{
-			dataBase = EnvDataBase.getInstance(envId);
-			dataBase.setAutoCommit(false);
-			
-			Map<String, ExtraCmdProcessor> procMap = getExtraMap(envId);
-			synchronized(procMap)
+			String cmd = null;
+			String sessionStr = null;
+			String data = null;
+			String retPkgStr = null;
+			String templateId = null;
+			is = req.getInputStream();
+			try
 			{
-				if(!procMap.containsKey(extraCmd))
-				{
-					ExtraCmdProcessor ecp = new ExtraCmdProcessor(extraCmd);
-					// 初始化该命令字对应的处理器
-					String selectSql = "select * from xlsys_extracmd where extracmd=?";
-					ParamBean pb = new ParamBean(selectSql);
-					pb.addParamGroup();
-					pb.setParam(1, extraCmd);
-					IDataSet dataSet = dataBase.sqlSelect(pb);
-					if(dataSet.getRowCount()>0)
-					{
-						// 添加Java监听
-						String javaListener = ObjectUtil.objectToString(dataSet.getValue(0, "javalistener"));
-						addJavaListenerToExtra(dataBase, javaListener, ecp);
-						// 添加JS脚本监听
-						String jsListener = ObjectUtil.objectToString(dataSet.getValue(0, "jslistener")); //$NON-NLS-1$
-						if(jsListener!=null&&jsListener.length()>0)
-						{
-							ecp.addListener(new JSExtraCmdListener(jsListener));
-						}
-						// 添加默认的跳转路径
-						ecp.setDefaultDispatchPath(ObjectUtil.objectToString(dataSet.getValue(0, "dispatchpath")));
-					}
-					procMap.put(extraCmd, ecp);
-				}
+				byte[] b = IOUtil.readBytesFromInputStream(is, length);
+				String str = new String(b, "UTF-8");
+				Map<String, String> paramMap = StringUtil.getParamMap(str, "=", "&");
+				cmd = decodeUrl(paramMap.get(XLSYS.WEB_COMMAND));
+				sessionStr = decodeUrl(paramMap.get(XLSYS.WEB_SESSION));
+				data = decodeUrl(paramMap.get(XLSYS.WEB_DATA));
+				retPkgStr = decodeUrl(paramMap.get(XLSYS.WEB_RETPKG));
+				templateId = decodeUrl(paramMap.get(XLSYS.WEB_TEMPLATE_ID));
 			}
-			ExtraCmdProcessor ecp = procMap.get(extraCmd);
-			ExtraCmdEvent event = new ExtraCmdEvent(extraCmd);
-			event.request = req;
-			event.response = resp;
-			event.dispatchPath = ecp.getDefaultDispatchPath();
-			ecp.process(event);
-			if(event.doit) dataBase.commit();
+			catch(Exception e)
+			{
+				// 尝试使用Parameter直接获取值
+				cmd = decodeUrl(req.getParameter(XLSYS.WEB_COMMAND));
+				sessionStr = decodeUrl(req.getParameter(XLSYS.WEB_SESSION));
+				data = decodeUrl(req.getParameter(XLSYS.WEB_DATA));
+				retPkgStr = decodeUrl(req.getParameter(XLSYS.WEB_RETPKG));
+				templateId = decodeUrl(req.getParameter(XLSYS.WEB_TEMPLATE_ID));
+				if(sessionStr==null) throw e;
+			}
+			Session session = (Session) IOUtil.readJSONObject(sessionStr);
+			Serializable outObj = null;
+			if(cmd!=null)
+			{
+				Serializable inObj = (Serializable) IOUtil.readJSONObject(data);
+				boolean retPkg = ObjectUtil.objectToBoolean(retPkgStr);
+				if(retPkg)
+				{
+					InnerPackage inPkg = new InnerPackage(session);
+					inPkg.setCommand(cmd);
+					inPkg.setObj(inObj);
+					outObj = virtualPost(inPkg);
+				}
+				else outObj = virtualPost(session, cmd, inObj);
+			}
+			if(templateId==null||templateId.isEmpty())
+			{
+				// 如果没有模板Id, 则直接返回结果对象
+				PrintWriter pw = resp.getWriter();
+				pw.write(IOUtil.getJSONObjectStr(outObj));
+			}
 			else
 			{
-				if(event.errMsg instanceof Exception) throw (Exception)event.errMsg;
-				else throw new Exception(ObjectUtil.objectToString(event.errMsg));
+				// 如果存在模板Id, 则交给模板处理器处理
+				doPostWithTemplateProcessor(req, resp, templateId, session, outObj);
 			}
-		}
-		catch (Exception e)
-		{
-			if(!dataBase.getAutoCommit()) dataBase.rollback();
-			throw e;
 		}
 		finally
 		{
-			DBUtil.close(dataBase);
+			IOUtil.close(is);
 		}
+	}
+
+	private void doPostWithTemplateProcessor(HttpServletRequest req, HttpServletResponse resp, String templateId, Session session, Serializable outObj) throws Exception
+	{
+		int envId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
+		Map<String, TplProcessor> procMap = getTplProcessorMap(envId);
+		synchronized(procMap)
+		{
+			if(!procMap.containsKey(templateId))
+			{
+				TplProcessor ecp = new TplProcessor(templateId);
+				IDataBase dataBase = null;
+				try
+				{
+					dataBase = EnvDataBase.getInstance(envId);
+					// 初始化该命令字对应的处理器
+					String selectSql = "select * from xlsys_template where templateid=?";
+					ParamBean pb = new ParamBean(selectSql);
+					pb.addParamGroup();
+					pb.setParam(1, templateId);
+					IDataSet dataSet = dataBase.sqlSelect(pb);
+					if(dataSet.getRowCount()>0)
+					{
+						// 获取模板
+						byte[] template = (byte[]) dataSet.getValue(0, "template");
+						if(template==null||template.length==0)
+						{
+							// 尝试从path中获取模板
+							String templatePath = ObjectUtil.objectToString(dataSet.getValue(0, "templatepath"));
+							if(templatePath!=null&&!templatePath.isEmpty())
+							{
+								File temp = new File(templatePath);
+								String dir = temp.getParent();
+								if(dir==null) dir = "/";
+								String fileName = temp.getName();
+								String targetBundleId = ObjectUtil.objectToString(dataSet.getValue(0, "bundleid"));
+								// 从BundleContext对象中取得所有的bundles
+								Bundle[] bundles = XlsysBaseActivator.getBundleContext().getBundles();
+								// 调用每个bundle的classLoader来查找查找该类
+								for(Bundle bundle : bundles)
+								{
+									if(targetBundleId.equals(bundle.getSymbolicName()))
+									{
+										Enumeration<URL> e = bundle.findEntries(dir, fileName, false);
+										if(e.hasMoreElements())
+										{
+											URL url = e.nextElement();
+											InputStream is = null;
+											try
+											{
+												is = url.openStream();
+												template = IOUtil.readBytesFromInputStream(is, -1);
+											}
+											finally
+											{
+												IOUtil.close(is);
+											}
+										}
+										break;
+									}
+								}
+							}
+						}
+						if(template!=null&&template.length>0) ecp.setDefaultTemplate(new String(template, "utf-8"));
+						// 添加默认的跳转路径
+						ecp.setDefaultRedirectPath(ObjectUtil.objectToString(dataSet.getValue(0, "redirectPath")));
+						// 添加Java监听
+						String javaListener = ObjectUtil.objectToString(dataSet.getValue(0, "javalistener"));
+						addJavaListenerToTemplate(dataBase, javaListener, ecp);
+						// 添加JS脚本监听
+						String jsListener = ObjectUtil.objectToString(dataSet.getValue(0, "jslistener"));
+						if(jsListener!=null&&jsListener.length()>0) ecp.addListener(new JSTplListener(jsListener));
+					}
+					procMap.put(templateId, ecp);
+				}
+				finally
+				{
+					DBUtil.close(dataBase);
+				}
+			}
+		}
+		TplProcessor ecp = procMap.get(templateId);
+		if(ecp==null) return;
+		TplEvent event = new TplEvent(templateId);
+		event.request = req;
+		event.response = resp;
+		event.fillObj = outObj;
+		event.template = ecp.getDefaultTemplate();
+		event.redirectPath = ecp.getDefaultRedirectPath();
+		ecp.process(event);
 	}
 
 	private void doBinaryPost(HttpServletRequest req, HttpServletResponse resp)
@@ -400,6 +478,5 @@ public class XlsysServlet extends AbstractServlet
 			IOUtil.close(is);
 			IOUtil.close(os);
 		}
-		
 	}
 }

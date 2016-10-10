@@ -10,6 +10,7 @@ public interface XLSYS
 	public final static String PLATFORM = "_PLATFORM";
 	public final static int PLATFORM_WEB = 1;
 	public final static int PLATFORM_MOBILE = 2;
+	public final static int PLATFORM_TEMPLATE = 3;
 	
 	// 以下是Base包中的Command命令
 	/**
@@ -650,20 +651,6 @@ public interface XLSYS
 	 * 环境工厂
 	 */
 	public final static String FACTORY_ENV = "_FACTORY_ENV";
-	
-	// 系统额外请求处理
-	/**
-	 * 系统额外请求处理, 主要为了处理第三方的网页版客户端请求
-	 */
-	public final static String EXTRA_COMMAND = "EXTRA_COMMAND";
-	/**
-	 * 额外请求对应的环境ID
-	 */
-	public final static String EXTRA_ENVID = "EXTRA_ENVID";
-	/**
-	 * 额外请求对应的数据
-	 */
-	public final static String EXTRA_DATA = "EXTRA_DATA";
 
 	/**
 	 * 客户端类型 : WEB
@@ -672,6 +659,7 @@ public interface XLSYS
 	public final static String WEB_SESSION = "WEB_SESSION";
 	public final static String WEB_DATA = "WEB_DATA";
 	public final static String WEB_RETPKG = "WEB_RETPKG";
+	public final static String WEB_TEMPLATE_ID = "WEB_TEMPLATE_ID";
 	
 	/**
 	 * 统计方式 : 加总

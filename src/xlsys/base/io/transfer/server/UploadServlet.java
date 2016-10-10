@@ -19,7 +19,6 @@ import xlsys.base.io.attachment.XlsysAttachment;
 import xlsys.base.io.util.IOUtil;
 import xlsys.base.script.XlsysClassLoader;
 import xlsys.base.session.SessionManager;
-import xlsys.base.util.StringUtil;
 
 public class UploadServlet extends AbstractServlet
 {
