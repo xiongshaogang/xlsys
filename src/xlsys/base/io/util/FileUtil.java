@@ -11,12 +11,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+
+import xlsys.base.XlsysBaseActivator;
 import xlsys.base.io.attachment.XlsysAttachment;
 import xlsys.base.util.StringUtil;
 
@@ -435,6 +441,38 @@ public class FileUtil
 	    {
 	      IOUtil.close(stream);
 	    }
+	}
+	
+	public static URL getBundleResourceUrl(String filePath)
+	{
+		return getBundleResourceUrl(filePath, null);
+	}
+	
+	public static URL getBundleResourceUrl(String filePath, String bundleId)
+	{
+		URL url = null;
+		BundleContext bundleContext = XlsysBaseActivator.getBundleContext();
+		if(bundleContext==null) return null;
+		// 从BundleContext对象中取得所有的bundles
+		Bundle[] bundles = bundleContext.getBundles();
+		// 调用每个bundle的classLoader来查找查找该类
+		File temp = new File(filePath);
+		String dir = temp.getParent();
+		if(dir==null) dir = "/";
+		String fileName = temp.getName();
+		for(Bundle bundle : bundles)
+		{
+			if(bundleId==null||bundleId.equals(bundle.getSymbolicName()))
+			{
+				Enumeration<URL> e = bundle.findEntries(dir, fileName, false);
+				if(e.hasMoreElements())
+				{
+					url = e.nextElement();
+					break;
+				}
+			}
+		}
+		return url;
 	}
 
 	private static String readLines(BufferedReader reader) throws IOException

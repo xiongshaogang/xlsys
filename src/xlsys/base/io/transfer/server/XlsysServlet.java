@@ -1,7 +1,6 @@
 package xlsys.base.io.transfer.server;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,7 +10,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,10 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.entity.ContentType;
-import org.osgi.framework.Bundle;
 
 import xlsys.base.XLSYS;
-import xlsys.base.XlsysBaseActivator;
 import xlsys.base.database.EnvDataBase;
 import xlsys.base.database.IDataBase;
 import xlsys.base.database.bean.ParamBean;
@@ -37,6 +33,7 @@ import xlsys.base.io.transfer.server.tpl.JSTplListener;
 import xlsys.base.io.transfer.server.tpl.TplEvent;
 import xlsys.base.io.transfer.server.tpl.TplListener;
 import xlsys.base.io.transfer.server.tpl.TplProcessor;
+import xlsys.base.io.util.FileUtil;
 import xlsys.base.io.util.IOUtil;
 import xlsys.base.log.LogUtil;
 import xlsys.base.script.XlsysClassLoader;
@@ -355,34 +352,19 @@ public class XlsysServlet extends AbstractServlet
 							String templatePath = ObjectUtil.objectToString(dataSet.getValue(0, "templatepath"));
 							if(templatePath!=null&&!templatePath.isEmpty())
 							{
-								File temp = new File(templatePath);
-								String dir = temp.getParent();
-								if(dir==null) dir = "/";
-								String fileName = temp.getName();
 								String targetBundleId = ObjectUtil.objectToString(dataSet.getValue(0, "bundleid"));
-								// 从BundleContext对象中取得所有的bundles
-								Bundle[] bundles = XlsysBaseActivator.getBundleContext().getBundles();
-								// 调用每个bundle的classLoader来查找查找该类
-								for(Bundle bundle : bundles)
+								URL url = FileUtil.getBundleResourceUrl(templatePath, targetBundleId);
+								if(url!=null)
 								{
-									if(targetBundleId.equals(bundle.getSymbolicName()))
+									InputStream is = null;
+									try
 									{
-										Enumeration<URL> e = bundle.findEntries(dir, fileName, false);
-										if(e.hasMoreElements())
-										{
-											URL url = e.nextElement();
-											InputStream is = null;
-											try
-											{
-												is = url.openStream();
-												template = IOUtil.readBytesFromInputStream(is, -1);
-											}
-											finally
-											{
-												IOUtil.close(is);
-											}
-										}
-										break;
+										is = url.openStream();
+										template = IOUtil.readBytesFromInputStream(is, -1);
+									}
+									finally
+									{
+										IOUtil.close(is);
 									}
 								}
 							}

@@ -345,7 +345,7 @@ public class ReflectUtil
 	{
 		Map fieldMap = new LinkedHashMap();
 		initStaticFinalField(fieldMap, objClass, prefix, makeNameKey);
-		if(!objClass.isInterface())
+		/*if(!objClass.isInterface())
 		{
 			// 从实现接口中获取
 			Class<?>[] interfaces = objClass.getInterfaces();
@@ -353,7 +353,7 @@ public class ReflectUtil
 			{
 				initStaticFinalField(fieldMap, i, prefix, makeNameKey);
 			}
-		}
+		}*/
 		return fieldMap;
 	}
 	
@@ -398,7 +398,6 @@ public class ReflectUtil
 	 */
 	public static Method getDeclaredMethod(Class<?> type, String name, Class<?>... parameterTypes)
 	{
-		
 		Method method = null;
 		Class<?> curClass = type;
 		do

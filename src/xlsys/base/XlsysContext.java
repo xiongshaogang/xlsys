@@ -11,13 +11,12 @@ import java.util.Set;
  * 系统上下文抽象类，系统中所使用的上下文必须是其子类，该类使用树型结构来构造上下文，使用该类获取上下文变量时，会优先获取本身的上下文变量，如果在本上下文环境中找不到，则去父节点获取
  * @author Lewis
  *
- * @param <T>
  */
-public abstract class XlsysContext<T>
+public abstract class XlsysContext
 {
-	private XlsysContext<?> parent;
+	private XlsysContext parent;
 	private Map<String, Object> defaultMap;
-	private T sourceContext;
+	private Object sourceContext;
 	
 	/**
 	 * 构造一个上下文环境
@@ -31,7 +30,7 @@ public abstract class XlsysContext<T>
 	 * 构造一个带父节点的上下文环境
 	 * @param parent 父节点
 	 */
-	protected XlsysContext(XlsysContext<?> parent)
+	protected XlsysContext(XlsysContext parent)
 	{
 		defaultMap = new HashMap<String, Object>();
 		this.parent = parent;
@@ -50,7 +49,7 @@ public abstract class XlsysContext<T>
 	 * 获取源上下文
 	 * @return
 	 */
-	public final T getSourceContext()
+	public final Object getSourceContext()
 	{
 		return sourceContext;
 	}
@@ -59,7 +58,7 @@ public abstract class XlsysContext<T>
 	 * 设置源上下文
 	 * @param sourceContext
 	 */
-	public final void setSourceContext(T sourceContext)
+	public final void setSourceContext(Object sourceContext)
 	{
 		this.sourceContext = sourceContext;
 	}
@@ -350,7 +349,7 @@ public abstract class XlsysContext<T>
 	 * 获取父对象
 	 * @return
 	 */
-	public final XlsysContext<?> getParent()
+	public final XlsysContext getParent()
 	{
 		return parent;
 	}

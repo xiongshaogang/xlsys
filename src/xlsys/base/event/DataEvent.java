@@ -1,6 +1,5 @@
 package xlsys.base.event;
 
-import java.io.Serializable;
 import java.util.EventObject;
 
 public class DataEvent extends Event

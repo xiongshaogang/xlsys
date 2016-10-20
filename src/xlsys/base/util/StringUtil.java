@@ -226,7 +226,29 @@ public class StringUtil
 	 */
 	public static boolean isNum(String str)
 	{
-		if(str!=null) return str.matches("[0-9]+(\\.[0-9]+)?");
+		if(str!=null) return str.matches("-?[0-9]+(\\.[0-9]+)?");
+		else return false;
+	}
+	
+	/**
+	 * 检查是否是整数
+	 * @param str
+	 * @return
+	 */
+	public static boolean isInteger(String str)
+	{
+		if(str!=null) return str.matches("-?[0-9]+");
+		else return false;
+	}
+	
+	/**
+	 * 检查是否是正整数
+	 * @param str
+	 * @return
+	 */
+	public static boolean isPositiveInteger(String str)
+	{
+		if(str!=null) return str.matches("[0-9]+");
 		else return false;
 	}
 
