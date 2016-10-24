@@ -1,14 +1,11 @@
 package xlsys.base.test;
 
-import java.util.UUID;
-
-import xlsys.base.util.StringUtil;
-
 public class TempTest
 {
 
 	public static void main(String[] args) throws Exception
 	{
-		System.out.println(TempTest.class.getSimpleName());
+		String attrValue = "#AF2d3a";
+		System.out.println(attrValue.matches("#[0-9a-fA-F]{6}"));
 	}
 }

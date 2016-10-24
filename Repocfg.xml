@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<Apps>
+		<App name="mobile-demo" version="2.0.0.20161021" desc="客户端安装包配置, 此配置不会缓存, 会实时加载">
+			<path platform="android">clientapp/android-debug.apk</path>
+			<path platform="windows">clientapp/CordovaApp.Windows10_0.0.1.0_anycpu_debug.appx</path>
+		</App>
+	</Apps>
+</config>

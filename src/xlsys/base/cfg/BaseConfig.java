@@ -28,6 +28,7 @@ public class BaseConfig
 	public final static String CLIENT_CONFIG = "Clientcfg";
 	public final static String TASK_CONFIG = "Taskcfg";
 	public final static String EM_CONFIG = "Emcfg";
+	public final static String REPO_CONFIG = "Repocfg";
 	
 	private BaseConfig() throws DocumentException
 	{

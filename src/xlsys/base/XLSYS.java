@@ -275,6 +275,10 @@ public interface XLSYS
 	 * 转换视频
 	 */
 	public final static String COMMAND_REMUXING_VIDEO = "_COMMAND_REMUXING_VIDEO";
+	/**
+	 * 检查版本更新
+	 */
+	public final static String COMMAND_CHECK_UPDATE = "_COMMAND_CHECK_UPDATE";
 	
 	// 以下是Base包中的Session相关常量
 	/**

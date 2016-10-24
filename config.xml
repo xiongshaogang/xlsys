@@ -20,4 +20,8 @@
 		<cfgName>Emcfg</cfgName>
 		<cfgPath>Emcfg.xml</cfgPath>
 	</Cfg>
+	<Cfg>
+		<cfgName>Repocfg</cfgName>
+		<cfgPath>Repocfg.xml</cfgPath>
+	</Cfg>
 </config>
