@@ -14,6 +14,7 @@ import xlsys.base.buffer.XlsysBuffer;
 import xlsys.base.database.bean.ExecuteBean;
 import xlsys.base.database.bean.ISqlBean;
 import xlsys.base.database.bean.ParamBean;
+import xlsys.base.database.util.DBUtil;
 import xlsys.base.dataset.DataSet;
 import xlsys.base.dataset.IDataSet;
 import xlsys.base.io.transfer.client.ClientTransfer;
@@ -28,7 +29,7 @@ import xlsys.base.util.ObjectUtil;
  */
 public class ClientDataBase implements IClientDataBase
 {
-	private static ClientTransfer clientTransfer;
+	static ClientTransfer clientTransfer;
 	
 	private boolean autoCommit;
 	private List<ISqlBean> transactionList;
@@ -69,21 +70,10 @@ public class ClientDataBase implements IClientDataBase
 	public TableInfo getTableInfo(String tableName) throws Exception
 	{
 		int envId = getEnvId();
-		Map<String, TableInfo> tableInfoBuffer = ClientTableInfoBuffer.getInstance(envId).getTableInfoBuffer();
-		TableInfo tableInfo = tableInfoBuffer.get(tableName);
-		if(tableInfo==null)
-		{
-			synchronized(tableInfoBuffer)
-			{
-				tableInfo = tableInfoBuffer.get(tableName);
-				if(tableInfo==null)
-				{
-					tableInfo = (TableInfo) clientTransfer.post(XLSYS.COMMAND_DB_GET_TABLE_INFO, tableName);
-					tableInfoBuffer.put(tableName, tableInfo);
-				}
-			}
-		}
-		return tableInfo;
+		String bufferName = "_ENV"+XLSYS.BUFFER_TABLE_INFO_PREFIX+envId;
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put(IDataBase.BUFFER_KEY_TABLE_NAME, tableName);
+		return (TableInfo) ClientTableInfoBuffer.getInstance(envId).getBufferData(envId, bufferName, paramMap);
 	}
 
 	@Override
@@ -315,6 +305,7 @@ class ClientTableInfoBuffer implements XlsysBuffer
 {
 	private static Map<Integer, ClientTableInfoBuffer> ctibMap;
 	private Map<String, TableInfo> tableInfoBuffer;
+	private Integer tableCount;
 	private int envId;
 	
 	private ClientTableInfoBuffer(int envId)
@@ -335,48 +326,119 @@ class ClientTableInfoBuffer implements XlsysBuffer
 		}
 		return ctib;
 	}
-
-	public Map<String, TableInfo> getTableInfoBuffer()
-	{
-		return tableInfoBuffer;
-	}
 	
 	@Override
 	public Serializable getStorageObject(int envId, String bufferName)
 	{
-		return (Serializable) tableInfoBuffer;
+		Serializable[] arr = new Serializable[2];
+		arr[0] = (Serializable) tableInfoBuffer;
+		arr[1] = tableCount;
+		return arr;
 	}
 	
 	@Override
 	public boolean isBufferComplete(int envId, String bufferName)
 	{
-		return false;
+		if(this.envId!=envId) return false;
+		if(tableCount==null)
+		{
+			Session session = SessionManager.getInstance().getCurrentSession();
+			if(session==null) return false;
+			int curEnvId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
+			if(curEnvId!=this.envId) return false;
+			IClientDataBase dataBase = ClientDataBase.getInstance();
+			try
+			{
+				tableCount = dataBase.getAllTableBaseInfo().size();
+			}
+			catch(Exception e)
+			{
+				throw new RuntimeException(e);
+			}
+			finally
+			{
+				DBUtil.close(dataBase);
+			}
+		}
+		return tableInfoBuffer.size()==tableCount.intValue();
 	}
 	
 	@Override
 	public void reloadDataDirectly(int envId, String bufferName, Map<String, Object> paramMap, boolean forceLoad)
 	{
-		if(paramMap!=null)
+		String tableName = null;
+		if(paramMap!=null) tableName = (String) paramMap.get(IDataBase.BUFFER_KEY_TABLE_NAME);
+		if(tableName!=null) tableInfoBuffer.remove(tableName);
+		else
 		{
-			String tableName = ObjectUtil.objectToString(paramMap.get(ConnectionPool.BUFFER_KEY_TABLE_NAME));
-			if(tableName!=null) tableInfoBuffer.remove(tableName);
-			else tableInfoBuffer.clear();
+			tableInfoBuffer.clear();
+			tableCount = null;
 		}
-		else tableInfoBuffer.clear();
+		if(forceLoad) this.getBufferData(envId, bufferName, paramMap);
 	}
 	
 	@Override
 	public boolean loadDataFromStorageObject(int envId, String bufferName, Serializable storageObj)
 	{
-		return false;
+		Serializable[] arr = (Serializable[]) storageObj;
+		tableInfoBuffer = (Map<String, TableInfo>) arr[0];
+		tableCount = (Integer) arr[1];
+		return true;
 	}
 
 	@Override
 	public Serializable doGetBufferData(int envId, String bufferName, Map<String, Object> paramMap)
 	{
-		if(paramMap==null) return (Serializable) tableInfoBuffer;
-		String tableName = (String) paramMap.get(ConnectionPool.BUFFER_KEY_TABLE_NAME);
-		if(tableName==null) return (Serializable) tableInfoBuffer;
-		return tableInfoBuffer.get(tableName);
+		if(envId!=this.envId) return null;
+		Serializable ret = null;
+		String tableName = null;
+		if(paramMap==null) tableName = (String) paramMap.get(IDataBase.BUFFER_KEY_TABLE_NAME);
+		if(tableName!=null)
+		{
+			ret = tableInfoBuffer.get(tableName);
+			if(ret!=null) return ret;
+		}
+		else
+		{
+			ret = (Serializable) tableInfoBuffer;
+			if(tableCount!=null&&tableInfoBuffer.size()==tableCount.intValue()) return ret;
+			else ret = null;
+		}
+		if(ret==null)
+		{
+			Session session = SessionManager.getInstance().getCurrentSession();
+			if(session==null) return ret;
+			int curEnvId = ObjectUtil.objectToInt(session.getAttribute(XLSYS.SESSION_ENV_ID));
+			if(curEnvId!=this.envId) return ret;
+			ClientDataBase dataBase = ClientDataBase.getInstance();
+			try
+			{
+				if(tableName!=null)
+				{
+					TableInfo tableInfo = (TableInfo) dataBase.clientTransfer.post(XLSYS.COMMAND_DB_GET_TABLE_INFO, tableName);
+					tableInfoBuffer.put(tableName, tableInfo);
+					ret = tableInfo;
+				}
+				else
+				{
+					Map<String, String> allTableInfo = (Map<String, String>) dataBase.clientTransfer.post(XLSYS.COMMAND_DB_GET_ALL_TABLE_BASE_INFO);
+					for(String tempTable : allTableInfo.keySet())
+					{
+						TableInfo tableInfo = (TableInfo) dataBase.clientTransfer.post(XLSYS.COMMAND_DB_GET_TABLE_INFO, tempTable);
+						tableInfoBuffer.put(tempTable, tableInfo);
+					}
+					ret = (Serializable) tableInfoBuffer;
+				}
+			}
+			catch(Exception e)
+			{
+				throw new RuntimeException(e);
+			}
+			finally
+			{
+				DBUtil.close(dataBase);
+			}
+		}
+		return ret;
 	}
 }

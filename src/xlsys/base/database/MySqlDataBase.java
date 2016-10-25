@@ -325,7 +325,8 @@ public class MySqlDataBase extends DataBase
 		return sql;
 	}
 	
-	private IDataSet doSqlSelect(ParamBean paramBean, boolean tryTableInfo) throws Exception
+	@Override
+	protected IDataSet doSqlSelect(ParamBean paramBean, boolean tryTableInfo) throws Exception
 	{
 		IDataSet ds = null;
 		PreparedStatement ps = null;

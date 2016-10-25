@@ -126,7 +126,8 @@ public class SqlServerDataBase extends DataBase
 		return doSqlSelect(paramBean, true);
 	}
 
-	private IDataSet doSqlSelect(ParamBean paramBean, boolean tryTableInfo) throws Exception
+	@Override
+	protected IDataSet doSqlSelect(ParamBean paramBean, boolean tryTableInfo) throws Exception
 	{
 		IDataSet ds = null;
 		PreparedStatement ps = null;

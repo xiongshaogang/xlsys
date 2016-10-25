@@ -17,6 +17,8 @@ import xlsys.base.dataset.IDataSet;
  */
 public interface IDataBase
 {
+	public static final String BUFFER_KEY_TABLE_NAME = "_BUFFER_KEY_TABLE_NAME";
+	
 	/**
 	 * 获取当前的数据库ID
 	 * @return

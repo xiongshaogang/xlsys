@@ -1,21 +1,7 @@
 package xlsys.base.buffer;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Map;
-
-import xlsys.base.XLSYS;
-import xlsys.base.XlsysFactory;
-import xlsys.base.io.util.FileUtil;
-import xlsys.base.io.util.IOUtil;
-import xlsys.base.log.LogUtil;
-import xlsys.base.util.StringUtil;
-import xlsys.base.util.SystemUtil;
 
 /**
  * 标准缓冲对象接口
@@ -78,14 +64,7 @@ public interface XlsysBuffer
 	 */
 	default public Serializable getBufferData(int envId, String bufferName, Map<String, Object> paramMap)
 	{
-		if(!isBufferComplete(envId, bufferName)) this.reloadDataFromLocalStorage(envId, bufferName);
-		Serializable ret = doGetBufferData(envId, bufferName, paramMap);
-		if(isBufferComplete(envId, bufferName))
-		{
-			Serializable storageObject = getStorageObject(envId, bufferName);
-			saveDataToLocalStorage(envId, bufferName, storageObject);
-		}
-		return ret;
+		return MXlsysBuffer._getBufferData(this, envId, bufferName, paramMap);
 	}
 	
 	/**
@@ -97,7 +76,7 @@ public interface XlsysBuffer
 	 */
 	default int updateCurrentVersion(int envId, String bufferName)
 	{
-		return MXlsysBuffer.doUpdateCurrentVersion(envId, bufferName, true);
+		return MXlsysBuffer._updateCurrentVersion(this, envId, bufferName, true);
 	}
 	
 	/**
@@ -108,7 +87,7 @@ public interface XlsysBuffer
 	 */
 	default int getCurrentVersion(int envId, String bufferName)
 	{
-		return MXlsysBuffer.doGetCurrentVersion(envId, bufferName, true);
+		return MXlsysBuffer._getCurrentVersion(this, envId, bufferName, true);
 	}
 	
 	/**
@@ -120,42 +99,7 @@ public interface XlsysBuffer
 	 */
 	default boolean saveDataToLocalStorage(int envId, String bufferName, Serializable storageObject)
 	{
-		if(SystemUtil.isDebug()) return false;
-		boolean success = false;
-		synchronized(this)
-		{
-			int version = getCurrentVersion(envId, bufferName);
-			int localVersion = getLocalStorageVersion(envId, bufferName);
-			if(localVersion>=version) return true;
-			DataOutputStream dos = null;
-			try
-			{
-				String storageDir = (String) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_WORKDIR).getInstance();
-				storageDir += File.separator + LOCAL_STORAGE_DIR;
-				storageDir = FileUtil.fixFilePath(storageDir);
-				String fileName = envId + "_" + StringUtil.getMD5String(bufferName);
-				String filePath = storageDir + File.separator + fileName;
-				FileOutputStream fos = IOUtil.getFileOutputStream(filePath, false);
-				dos = new DataOutputStream(fos);
-				dos.writeInt(version);
-				dos.write(IOUtil.getObjectBytes(storageObject));
-				dos.flush();
-				dos.close();
-				dos = null;
-				success = true;
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-				success = false;
-			}
-			finally
-			{
-				IOUtil.close(dos);
-			}
-			LogUtil.printlnError("Save Buffer To Local " + (success?"success":"failed") + "! EnvId : " + envId + "  bufferName : " + bufferName);
-		}
-		return success;
+		return MXlsysBuffer._saveDataToLocalStorage(this, envId, bufferName, storageObject);
 	}
 	
 	/**
@@ -166,7 +110,7 @@ public interface XlsysBuffer
 	 */
 	default void reloadAllData(int envId, String bufferName)
 	{
-		reloadAllData(envId, bufferName, false);
+		MXlsysBuffer._reloadAllData(this, envId, bufferName);
 	}
 	
 	/**
@@ -178,18 +122,7 @@ public interface XlsysBuffer
 	 */
 	default void reloadAllData(int envId, String bufferName, boolean forceLoad)
 	{
-		synchronized(this)
-		{
-			if(!reloadDataFromLocalStorage(envId, bufferName))
-			{
-				reloadDataDirectly(envId, bufferName, null, forceLoad);
-				if(isBufferComplete(envId, bufferName))
-				{
-					Serializable storageObject = getStorageObject(envId, bufferName);
-					saveDataToLocalStorage(envId, bufferName, storageObject);
-				}
-			}
-		}
+		MXlsysBuffer._reloadAllData(this, envId, bufferName, forceLoad);
 	}
 	
 	/**
@@ -201,7 +134,7 @@ public interface XlsysBuffer
 	 */
 	default void reloadData(int envId, String bufferName, Map<String, Object> paramMap)
 	{
-		reloadData(envId, bufferName, paramMap, false);
+		MXlsysBuffer._reloadData(this, envId, bufferName, paramMap);
 	}
 	
 	/**
@@ -214,20 +147,7 @@ public interface XlsysBuffer
 	 */
 	default void reloadData(int envId, String bufferName, Map<String, Object> paramMap, boolean forceLoad)
 	{
-		synchronized(this)
-		{
-			if(paramMap==null) reloadAllData(envId, bufferName);
-			else
-			{
-				reloadDataDirectly(envId, bufferName, paramMap, forceLoad);
-				if(isBufferComplete(envId, bufferName))
-				{
-					Serializable storageObject = getStorageObject(envId, bufferName);
-					saveDataToLocalStorage(envId, bufferName, storageObject);
-				}
-			}
-		}
-		
+		MXlsysBuffer._reloadData(this, envId, bufferName, paramMap, forceLoad);
 	}
 	
 	/**
@@ -238,36 +158,7 @@ public interface XlsysBuffer
 	 */
 	default boolean reloadDataFromLocalStorage(int envId, String bufferName)
 	{
-		if(SystemUtil.isDebug()) return false;
-		boolean success = false;
-		synchronized(this)
-		{
-			int curVersion = getCurrentVersion(envId, bufferName);
-			if(curVersion<0) return false;
-			int localVersion = getLocalStorageVersion(envId, bufferName);
-			if(localVersion<0||curVersion>localVersion) return false;
-			// 从本地存储中加载缓冲
-			try
-			{
-				String storageDir = (String) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_WORKDIR).getInstance();
-				storageDir += File.separator + LOCAL_STORAGE_DIR;
-				storageDir = FileUtil.fixFilePath(storageDir);
-				String fileName = envId + "_" + StringUtil.getMD5String(bufferName);
-				String filePath = storageDir + File.separator + fileName;
-				byte[] fileBytes = FileUtil.getByteFromFile(filePath);
-				// 前四位是版本号
-				byte[] objBytes = Arrays.copyOfRange(fileBytes, 4, fileBytes.length);
-				Serializable storageObj = (Serializable) IOUtil.readObject(objBytes);
-				success = loadDataFromStorageObject(envId, bufferName, storageObj);
-				LogUtil.printlnError("Load Buffer From Local " + (success?"success":"failed") + "! EnvId : " + envId + "  bufferName : " + bufferName);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				success = false;
-			}
-		}
-		return success;
+		return MXlsysBuffer._reloadDataFromLocalStorage(this, envId, bufferName);
 	}
 	
 	/**
@@ -278,34 +169,6 @@ public interface XlsysBuffer
 	 */
 	default int getLocalStorageVersion(int envId, String bufferName)
 	{
-		if(SystemUtil.isDebug()) return -1;
-		int version = -1;
-		synchronized(this)
-		{
-			DataInputStream dis = null;
-			try
-			{
-				String storageDir = (String) XlsysFactory.getFactoryInstance(XLSYS.FACTORY_WORKDIR).getInstance();
-				storageDir += File.separator + LOCAL_STORAGE_DIR;
-				storageDir = FileUtil.fixFilePath(storageDir);
-				String fileName = envId + "_" + StringUtil.getMD5String(bufferName);
-				String filePath = storageDir + File.separator + fileName;
-				File file = new File(filePath);
-				if(!file.exists()) return -1;
-				FileInputStream fis = IOUtil.getFileInputStream(filePath);
-				dis = new DataInputStream(fis);
-				version = dis.readInt();
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				version = -1;
-			}
-			finally
-			{
-				IOUtil.close(dis);
-			}
-		}
-		return version;
+		return MXlsysBuffer._getLocalStorageVersion(this, envId, bufferName);
 	}
 }

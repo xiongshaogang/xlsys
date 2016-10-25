@@ -545,7 +545,7 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 			try
 			{
 				dataBase = EnvDataBase.getInstance(envId);
-				version = MXlsysBuffer.doUpdateCurrentVersionToDB(dataBase, envId, bufferName, true);
+				version = MXlsysBuffer._updateCurrentVersionToDB(this, dataBase, envId, bufferName, true);
 			}
 			catch(Exception e)
 			{
@@ -578,7 +578,7 @@ public class BasePackageProcessor extends PackageProcessor implements XlsysBuffe
 			try
 			{
 				dataBase = EnvDataBase.getInstance(envId);
-				BigDecimal dbBufferVersion = MXlsysBuffer.doGetCurrentVersionFromDB(dataBase, envId, bufferName, true);
+				BigDecimal dbBufferVersion = MXlsysBuffer._getCurrentVersionFromDB(this, dataBase, envId, bufferName, true, true);
 				if(dbBufferVersion!=null) version = dbBufferVersion.intValue();
 			}
 			catch(Exception e)

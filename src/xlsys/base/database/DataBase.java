@@ -45,42 +45,7 @@ public abstract class DataBase implements IDataBase
 	@Override
 	public TableInfo getTableInfo(String tableName) throws Exception
 	{
-		Map<String, TableInfo> tableInfoBuffer = conPool.getTableInfoBuffer();
-		TableInfo tableInfo = tableInfoBuffer.get(tableName);
-		if(tableInfo==null)
-		{
-			synchronized(tableInfoBuffer)
-			{
-				tableInfo = tableInfoBuffer.get(tableName);
-				if(tableInfo==null)
-				{
-					tableInfo = queryTableInfo(tableName);
-					if(tableInfo.getPkColSet().isEmpty())
-					{
-						// 没有从数据库获取到表主键信息,有可能是数据库不支持,或者数据库用户对该表没有相应权限,尝试从额外表信息中获取
-						String selectSql = "select etid.* from xlsys_exttableinfo eti, xlsys_exttableinfodetail etid where eti.tableid=etid.tableid and eti.tablename=? order by etid.idx";
-						ParamBean pb = new ParamBean(selectSql);
-						pb.addParamGroup();
-						pb.setParam(1, tableName);
-						IDataSet ds = sqlSelect(pb);
-						if(ds!=null)
-						{
-							int rowCount = ds.getRowCount();
-							for(int i=0;i<rowCount;i++)
-							{
-								BigDecimal primarykey = (BigDecimal) ds.getValue(i, "primarykey");
-								if(primarykey!=null&&primarykey.intValue()==1)
-								{
-									tableInfo.addPkCol((String)ds.getValue(i, "colname"));
-								}
-							}
-						}
-					}
-					tableInfoBuffer.put(tableName, tableInfo);
-				}
-			}
-		}
-		return tableInfo;
+		return conPool.getTableInfo(tableName);
 	}
 	
 	@Override
@@ -221,6 +186,8 @@ public abstract class DataBase implements IDataBase
 	 * @throws Exception
 	 */
 	protected abstract IDataSet doSqlSelect(ParamBean paramBean) throws Exception;
+	
+	protected abstract IDataSet doSqlSelect(ParamBean paramBean, boolean tryTableInfo) throws Exception;
 	
 	@Override
 	public boolean sqlExecute(String executeSql) throws Exception

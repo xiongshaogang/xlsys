@@ -86,15 +86,20 @@ public class SQLiteDataBase extends DataBase
 					is.close();
 					dsr.getCells().get(i).setContent(bytes);
 				}
+				else if(data instanceof Integer)
+				{
+					dsr.getCells().get(i).setContent(new BigDecimal(""+data));
+				}
 				else
 				{
-					dsr.getCells().get(i).setContent((Serializable)rs.getObject(i+1));
+					dsr.getCells().get(i).setContent((Serializable)data);
 				}
 			}
 		}
 	}
 	
-	private IDataSet doSqlSelect(ParamBean paramBean, boolean tryTableInfo) throws Exception
+	@Override
+	protected IDataSet doSqlSelect(ParamBean paramBean, boolean tryTableInfo) throws Exception
 	{
 		IDataSet ds = null;
 		PreparedStatement ps = null;

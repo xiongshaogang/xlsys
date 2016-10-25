@@ -2,6 +2,7 @@ package xlsys.base.database;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,12 +21,17 @@ import org.dom4j.DocumentException;
 
 import xlsys.base.XLSYS;
 import xlsys.base.buffer.BufferManager;
+import xlsys.base.buffer.MXlsysBuffer;
 import xlsys.base.buffer.XlsysBuffer;
+import xlsys.base.database.bean.ParamBean;
 import xlsys.base.database.util.DBUtil;
+import xlsys.base.dataset.IDataSet;
 import xlsys.base.exception.AlreadyClosedException;
 import xlsys.base.exception.ImpossibleSituationException;
 import xlsys.base.exception.ParameterNotEnoughException;
+import xlsys.base.io.util.LockUtil;
 import xlsys.base.log.LogUtil;
+import xlsys.base.session.Session;
 import xlsys.base.util.ObjectUtil;
 
 /**
@@ -35,8 +41,6 @@ import xlsys.base.util.ObjectUtil;
  */
 public abstract class ConnectionPool extends Thread implements XlsysBuffer
 {
-	public static final String BUFFER_KEY_TABLE_NAME = "_BUFFER_KEY_TABLE_NAME";
-	
 	private int id;
 	private String description;
 	private String dataSource;
@@ -46,6 +50,7 @@ public abstract class ConnectionPool extends Thread implements XlsysBuffer
 	private int maximumPoolSize;
 	private int keepAliveTime;
 	private int queueCapacity;
+	private Integer tableCount;
 	private Map<String, TableInfo> tableInfoBuffer;
 
 	private boolean corePoolTimeOut; // 是否允许核心池使用超时关闭策略
@@ -296,12 +301,12 @@ public abstract class ConnectionPool extends Thread implements XlsysBuffer
 				if (rollback) con.rollback();
 				else if(!con.getAutoCommit()) con.commit();
 				con.close();
-				LogUtil.printlnInfo("Connection has been closed : "+con);
+				System.out.println("Connection has been closed : "+con);
 			}
 		}
 		catch (SQLException e)
 		{
-			LogUtil.printlnError(e);
+			e.printStackTrace();
 		}
 	}
 
@@ -481,52 +486,327 @@ public abstract class ConnectionPool extends Thread implements XlsysBuffer
 	{
 		return corePoolTimeOut;
 	}
-
-	/**
-	 * 获取表信息缓冲池
-	 * @return
-	 */
-	public Map<String, TableInfo> getTableInfoBuffer()
+	
+	public TableInfo getTableInfo(String tableName)
 	{
-		return tableInfoBuffer;
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put(IDataBase.BUFFER_KEY_TABLE_NAME, tableName);
+		return (TableInfo) this.getBufferData(0, "_DB"+XLSYS.BUFFER_TABLE_INFO_PREFIX+id, paramMap);
 	}
 
 	@Override
 	public Serializable getStorageObject(int envId, String bufferName)
 	{
-		return (Serializable) tableInfoBuffer;
+		Serializable[] arr = new Serializable[2];
+		arr[0] = (Serializable) tableInfoBuffer;
+		arr[1] = tableCount;
+		return arr;
 	}
 
 	@Override
 	public boolean isBufferComplete(int envId, String bufferName)
 	{
-		return false;
+		if(tableCount==null)
+		{
+			IDataBase dataBase = null;
+			try
+			{
+				dataBase = getNewDataBase();
+				tableCount = dataBase.getAllTableBaseInfo().size();
+			}
+			catch(Exception e)
+			{
+				throw new RuntimeException(e);
+			}
+			finally
+			{
+				DBUtil.close(dataBase);
+			}
+		}
+		return tableInfoBuffer.size()==tableCount.intValue();
 	}
 
 	@Override
 	public void reloadDataDirectly(int envId, String bufferName, Map<String, Object> paramMap, boolean forceLoad)
 	{
-		if(paramMap!=null)
+		String tableName = null;
+		if(paramMap!=null) tableName = ObjectUtil.objectToString(paramMap.get(IDataBase.BUFFER_KEY_TABLE_NAME));
+		synchronized(tableInfoBuffer)
 		{
-			String tableName = ObjectUtil.objectToString(paramMap.get(BUFFER_KEY_TABLE_NAME));
 			if(tableName!=null) tableInfoBuffer.remove(tableName);
-			else tableInfoBuffer.clear();
+			else
+			{
+				tableInfoBuffer.clear();
+				tableCount = null;
+			}
+			if(forceLoad) this.doGetBufferData(envId, bufferName, paramMap);
 		}
-		else tableInfoBuffer.clear();
 	}
 	
 	@Override
 	public boolean loadDataFromStorageObject(int envId, String bufferName, Serializable storageObj)
 	{
-		return false;
+		Serializable[] arr = (Serializable[]) storageObj;
+		tableInfoBuffer = (Map<String, TableInfo>) arr[0];
+		tableCount = (Integer) arr[1];
+		return true;
 	}
 	
 	@Override
 	public Serializable doGetBufferData(int envId, String bufferName, Map<String, Object> paramMap)
 	{
-		if(paramMap==null) return (Serializable) tableInfoBuffer;
-		String tableName = (String) paramMap.get(BUFFER_KEY_TABLE_NAME);
-		if(tableName==null) return (Serializable) tableInfoBuffer;
-		return tableInfoBuffer.get(tableName);
+		Serializable ret = null;
+		String tableName = null;
+		if(paramMap!=null) tableName = (String) paramMap.get(IDataBase.BUFFER_KEY_TABLE_NAME);
+		synchronized(tableInfoBuffer)
+		{
+			if(tableName!=null)
+			{
+				TableInfo tableInfo = tableInfoBuffer.get(tableName);
+				if(tableInfo==null)
+				{
+					DataBase dataBase = null;
+					try
+					{
+						dataBase = this.getNewDataBase();
+						tableInfo = dataBase.queryTableInfo(tableName);
+						if(tableInfo.getPkColSet().isEmpty())
+						{
+							// 没有从数据库获取到表主键信息,有可能是数据库不支持,或者数据库用户对该表没有相应权限,尝试从额外表信息中获取
+							String selectSql = "select etid.* from xlsys_exttableinfo eti, xlsys_exttableinfodetail etid where eti.tableid=etid.tableid and eti.tablename=? order by etid.idx";
+							ParamBean pb = new ParamBean(selectSql);
+							pb.addParamGroup();
+							pb.setParam(1, tableName);
+							IDataSet ds = dataBase.sqlSelect(pb);
+							if(ds!=null)
+							{
+								int rowCount = ds.getRowCount();
+								for(int i=0;i<rowCount;i++)
+								{
+									BigDecimal primarykey = (BigDecimal) ds.getValue(i, "primarykey");
+									if(primarykey!=null&&primarykey.intValue()==1)
+									{
+										tableInfo.addPkCol((String)ds.getValue(i, "colname"));
+									}
+								}
+							}
+						}
+						tableInfoBuffer.put(tableName, tableInfo);
+					}
+					catch(Exception e) { throw new RuntimeException(e); }
+					finally { DBUtil.close(dataBase); }
+				}
+				ret = tableInfo;
+			}
+			else
+			{
+				IDataBase dataBase = null;
+				try
+				{
+					dataBase = this.getNewDataBase();
+					Map<String, String> allTableInfo = dataBase.getAllTableBaseInfo();
+					if(tableCount==null||allTableInfo.size()!=tableCount.intValue())
+					{
+						tableCount = allTableInfo.size();
+						for(String tempTable : allTableInfo.keySet()) tableInfoBuffer.put(tempTable, dataBase.getTableInfo(tempTable));
+					}
+				}
+				catch(Exception e) { throw new RuntimeException(e); }
+				finally { DBUtil.close(dataBase); }
+				ret = (Serializable) tableInfoBuffer;
+			}
+		}
+		return ret;
+	}
+
+	public Serializable getBufferData(int envId, String bufferName, Map<String, Object> paramMap)
+	{
+		return MXlsysBuffer._getBufferData(this, 0, bufferName, paramMap);
+	}
+	
+	private int _updateCurrentVersionToDB(DataBase dataBase, int envId, String bufferName, boolean useGlobalLock)
+	{
+		Session session = new Session(XLSYS.SESSION_DEFAULT_ID);
+		session.setAttribute(XLSYS.SESSION_ENV_ID, envId);
+		String lockKey = null;
+		int version = -1;
+		try
+		{
+			if(useGlobalLock) lockKey = LockUtil.getGlobalLock(session, bufferName);
+			BigDecimal dbBufferVersion = _getCurrentVersionFromDB(dataBase, envId, bufferName, false);
+			if(dbBufferVersion!=null) version = dbBufferVersion.intValue();
+			// 把当前版本号加1
+			version += 1;
+			// 存入当前版本号到数据库中
+			String updateSql = "update xlsys_bufferinfo set version=? where buffername=?";
+			ParamBean pb = new ParamBean(updateSql);
+			pb.addParamGroup();
+			pb.setParam(1, version);
+			pb.setParam(2, bufferName);
+			dataBase.sqlExecute(pb);
+		}
+		catch(Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+		finally
+		{
+			if(lockKey!=null) LockUtil.releaseGlobalLock(session, lockKey);
+		}
+		return version;
+	}
+
+	public int updateCurrentVersion(int envId, String bufferName)
+	{
+		int version = -1;
+		synchronized(MXlsysBuffer.versionMap)
+		{
+			Session session = new Session(XLSYS.SESSION_DEFAULT_ID);
+			session.setAttribute(XLSYS.SESSION_ENV_ID, 0);
+			String lockKey = null;
+			IDataBase dataBase = null;
+			try
+			{
+				lockKey = LockUtil.getGlobalLock(session, bufferName);
+				dataBase = this.getNewDataBase();
+				version = MXlsysBuffer._updateCurrentVersionToDB(this, dataBase, 0, bufferName, false);
+				// 存入当前版本号到缓存中
+				Map<String, Integer> tempMap = MXlsysBuffer.versionMap.get(0);
+				if(tempMap==null)
+				{
+					tempMap = new HashMap<String, Integer>();
+					MXlsysBuffer.versionMap.put(0, tempMap);
+				}
+				tempMap.put(bufferName, version);
+			}
+			catch(Exception e)
+			{
+				throw new RuntimeException(e);
+			}
+			finally
+			{
+				DBUtil.close(dataBase);
+				if(lockKey!=null) LockUtil.releaseGlobalLock(session, lockKey);
+			}
+		}
+		return version;
+	}
+	
+	private BigDecimal _getCurrentVersionFromDB(DataBase dataBase, int envId, String bufferName, boolean useGlobalLock)
+	{
+		BigDecimal version = null;
+		Session session = new Session(XLSYS.SESSION_DEFAULT_ID);
+		session.setAttribute(XLSYS.SESSION_ENV_ID, envId);
+		String lockKey = null;
+		try
+		{
+			if(useGlobalLock) lockKey = LockUtil.getGlobalLock(session, bufferName);
+			String selectSql = "select version from xlsys_bufferinfo where buffername=?";
+			ParamBean pb = new ParamBean(selectSql);
+			pb.addParamGroup();
+			pb.setParam(1, bufferName);
+			IDataSet ds = dataBase.doSqlSelect(pb, false);
+			if(ds.getRowCount()>0) version = (BigDecimal) ds.getValue(0, 0);
+		}
+		catch(Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+		finally
+		{
+			if(lockKey!=null) LockUtil.releaseGlobalLock(session, lockKey);
+		}
+		return version;
+	}
+
+	public int getCurrentVersion(int envId, String bufferName)
+	{
+		int version = -1;
+		synchronized(MXlsysBuffer.versionMap)
+		{
+			Session session = new Session(XLSYS.SESSION_DEFAULT_ID);
+			session.setAttribute(XLSYS.SESSION_ENV_ID, 0);
+			Map<String, Integer> tempMap = MXlsysBuffer.versionMap.get(0);
+			if(tempMap==null)
+			{
+				tempMap = new HashMap<String, Integer>();
+				MXlsysBuffer.versionMap.put(0, tempMap);
+			}
+			if(tempMap.containsKey(bufferName)) version = tempMap.get(bufferName);
+			else
+			{
+				// 从数据库中读取版本号
+				String lockKey = null;
+				DataBase dataBase = null;
+				try
+				{
+					lockKey = LockUtil.getGlobalLock(session, bufferName);
+					dataBase = this.getNewDataBase();
+					dataBase.setAutoCommit(false);
+					BigDecimal dbBufferVersion = _getCurrentVersionFromDB(dataBase, 0, bufferName, false);
+					if(dbBufferVersion!=null) version = dbBufferVersion.intValue();
+					else
+					{
+						version = 0;
+						// 插入数据到数据库中
+						String insertSql = "insert into xlsys_bufferinfo(buffername, version) values(?, ?)";
+						ParamBean pb = new ParamBean(insertSql);
+						pb.addParamGroup();
+						pb.setParam(1, bufferName);
+						pb.setParam(2, version);
+						dataBase.sqlExecute(pb);
+					}
+					dataBase.commit();
+				}
+				catch(Exception e)
+				{
+					DBUtil.rollback(dataBase);
+					throw new RuntimeException(e);
+				}
+				finally
+				{
+					DBUtil.close(dataBase);
+					if(lockKey!=null) LockUtil.releaseGlobalLock(session, lockKey);
+				}
+				if(version==-1) version = 0;
+				tempMap.put(bufferName, version);
+			}
+		}
+		return version;
+	}
+	
+	public boolean saveDataToLocalStorage(int envId, String bufferName, Serializable storageObject)
+	{
+		return MXlsysBuffer._saveDataToLocalStorage(this, 0, bufferName, storageObject);
+	}
+
+	public void reloadAllData(int envId, String bufferName)
+	{
+		MXlsysBuffer._reloadAllData(this, 0, bufferName, false);
+	}
+	
+	public void reloadAllData(int envId, String bufferName, boolean forceLoad)
+	{
+		MXlsysBuffer._reloadAllData(this, 0, bufferName, forceLoad);
+	}
+
+	public void reloadData(int envId, String bufferName, Map<String, Object> paramMap)
+	{
+		MXlsysBuffer._reloadData(this, 0, bufferName, paramMap);
+	}
+	
+	public void reloadData(int envId, String bufferName, Map<String, Object> paramMap, boolean forceLoad)
+	{
+		MXlsysBuffer._reloadData(this, 0, bufferName, paramMap, forceLoad);
+	}
+
+	public boolean reloadDataFromLocalStorage(int envId, String bufferName)
+	{
+		return MXlsysBuffer._reloadDataFromLocalStorage(this, 0, bufferName);
+	}
+
+	public int getLocalStorageVersion(int envId, String bufferName)
+	{
+		return MXlsysBuffer._getLocalStorageVersion(this, 0, bufferName);
 	}
 }
