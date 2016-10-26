@@ -547,8 +547,11 @@ public abstract class ConnectionPool extends Thread implements XlsysBuffer
 	public boolean loadDataFromStorageObject(int envId, String bufferName, Serializable storageObj)
 	{
 		Serializable[] arr = (Serializable[]) storageObj;
-		tableInfoBuffer = (Map<String, TableInfo>) arr[0];
-		tableCount = (Integer) arr[1];
+		synchronized(tableInfoBuffer)
+		{
+			tableInfoBuffer = (Map<String, TableInfo>) arr[0];
+			tableCount = (Integer) arr[1];
+		}
 		return true;
 	}
 	
@@ -622,38 +625,6 @@ public abstract class ConnectionPool extends Thread implements XlsysBuffer
 	public Serializable getBufferData(int envId, String bufferName, Map<String, Object> paramMap)
 	{
 		return MXlsysBuffer._getBufferData(this, 0, bufferName, paramMap);
-	}
-	
-	private int _updateCurrentVersionToDB(DataBase dataBase, int envId, String bufferName, boolean useGlobalLock)
-	{
-		Session session = new Session(XLSYS.SESSION_DEFAULT_ID);
-		session.setAttribute(XLSYS.SESSION_ENV_ID, envId);
-		String lockKey = null;
-		int version = -1;
-		try
-		{
-			if(useGlobalLock) lockKey = LockUtil.getGlobalLock(session, bufferName);
-			BigDecimal dbBufferVersion = _getCurrentVersionFromDB(dataBase, envId, bufferName, false);
-			if(dbBufferVersion!=null) version = dbBufferVersion.intValue();
-			// 把当前版本号加1
-			version += 1;
-			// 存入当前版本号到数据库中
-			String updateSql = "update xlsys_bufferinfo set version=? where buffername=?";
-			ParamBean pb = new ParamBean(updateSql);
-			pb.addParamGroup();
-			pb.setParam(1, version);
-			pb.setParam(2, bufferName);
-			dataBase.sqlExecute(pb);
-		}
-		catch(Exception e)
-		{
-			throw new RuntimeException(e);
-		}
-		finally
-		{
-			if(lockKey!=null) LockUtil.releaseGlobalLock(session, lockKey);
-		}
-		return version;
 	}
 
 	public int updateCurrentVersion(int envId, String bufferName)

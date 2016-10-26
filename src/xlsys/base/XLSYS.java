@@ -240,6 +240,10 @@ public interface XLSYS
 	 */
 	public final static String COMMAND_GET_MODEL_COUNT = "_COMMAND_GET_MODEL_COUNT";
 	/**
+	 * 获取翻译数据
+	 */
+	public final static String COMMAND_GET_TRANSLATE_DATA = "_COMMAND_GET_TRANSLATE_DATA";
+	/**
 	 * 导出数据
 	 */
 	public final static String COMMAND_EXPORT_DATA = "_COMMAND_EXPORT_DATA";
@@ -596,7 +600,7 @@ public interface XLSYS
 	/**
 	 * 翻译缓冲
 	 */
-	public final static String BUFFER_TRANSLATION = "_BUFFER_TRANSLATION";
+	public final static String BUFFER_TRANSLATION_PREFIX = "_BUFFER_TRANSLATION_";
 	/**
 	 * 数据库查询缓冲
 	 */

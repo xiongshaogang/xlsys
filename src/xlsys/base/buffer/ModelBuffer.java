@@ -9,6 +9,7 @@ import java.util.Map;
 
 import xlsys.base.XLSYS;
 import xlsys.base.database.EnvDataBase;
+import xlsys.base.database.IClientDataBase;
 import xlsys.base.database.IDataBase;
 import xlsys.base.database.IEnvDataBase;
 import xlsys.base.database.util.DBUtil;
@@ -281,7 +282,7 @@ public abstract class ModelBuffer extends AbstractBuffer
 				List<?> subList = (List<?>) field.get(model);
 				if(subList!=null&&!subList.isEmpty()&&subList.get(0) instanceof IModel)
 				{
-					List<IModel> translatedList = TranslateUtil.getInstance().translateModelList(envId, dataBase, (List<IModel>) subList, language);
+					List<IModel> translatedList = TranslateUtil.getInstance(language, !(dataBase instanceof IClientDataBase)).translateModelList(envId, dataBase, (List<IModel>) subList);
 					field.set(model, translatedList);
 				}
 			}
@@ -319,7 +320,7 @@ public abstract class ModelBuffer extends AbstractBuffer
 			try
 			{
 				dataBase = EnvDataBase.getInstance(envId);
-				transModel = TranslateUtil.getInstance().translateModel(dataBase, srcModel, language);
+				transModel = TranslateUtil.getInstance(language, !(dataBase instanceof IClientDataBase)).translateModel(dataBase, srcModel, language);
 				// 查找当前Model的所有属性, 如果属性为List, 并且List中的元素为IModel, 则翻译该属性
 				translateSubList(transModel, envId, dataBase, language);
 			}
