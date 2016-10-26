@@ -283,6 +283,10 @@ public interface XLSYS
 	 * 检查版本更新
 	 */
 	public final static String COMMAND_CHECK_UPDATE = "_COMMAND_CHECK_UPDATE";
+	/**
+	 * 保存客户端缓存内容
+	 */
+	public final static String COMMAND_SAVE_CLIENT_BUFFER_TO_FILE = "_COMMAND_SAVE_CLIENT_BUFFER_TO_FILE";
 	
 	// 以下是Base包中的Session相关常量
 	/**
