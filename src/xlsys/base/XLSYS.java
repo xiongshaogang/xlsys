@@ -287,6 +287,10 @@ public interface XLSYS
 	 * 保存客户端缓存内容
 	 */
 	public final static String COMMAND_SAVE_CLIENT_BUFFER_TO_FILE = "_COMMAND_SAVE_CLIENT_BUFFER_TO_FILE";
+	/**
+	 * 保存客户端缓存内容到JS文件
+	 */
+	public final static String COMMAND_SAVE_CLIENT_BUFFER_TO_JS = "_COMMAND_SAVE_CLIENT_BUFFER_TO_JS";
 	
 	// 以下是Base包中的Session相关常量
 	/**
