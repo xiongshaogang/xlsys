@@ -1922,6 +1922,34 @@ public class IOUtil
 		}
 		return ret;
 	}
+	
+	/**
+	 * 将字节数组转化为16进制文本
+	 * @param bytes
+	 * @return
+	 */
+	public static String bytesToHexStr(byte[] bytes)
+	{
+		StringBuilder sb = new StringBuilder();
+		for(int i=0;i<bytes.length;++i)
+		{
+			String temp = Integer.toHexString(bytes[i]);
+			if(temp.length()<2) temp = "0" + temp;
+			else if(temp.length()>2) temp = temp.substring(temp.length()-2, temp.length());
+			sb.append(temp);
+		}
+		return sb.toString();
+	}
+	
+	public static byte[] hexStrToBytes(String hexStr)
+	{
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		for(int i=0;i<hexStr.length();i+=2)
+		{
+			baos.write(Integer.parseInt(hexStr.substring(i, i+2), 16));
+		}
+		return baos.toByteArray();
+	}
 
 	public static void main(String[] args) throws Exception
 	{

@@ -1,11 +1,18 @@
 package xlsys.base.test;
 
+import xlsys.base.io.util.IOUtil;
+
 public class TempTest
 {
 
 	public static void main(String[] args) throws Exception
 	{
-		String attrValue = "#AF2d3a";
-		System.out.println(attrValue.matches("#[0-9a-fA-F]{6}"));
+		String str = "时代覅回复,948682451!@##$$%^%&&*(:\"~";
+		byte[] srcBytes = str.getBytes("utf-8");
+		String hexStr = IOUtil.bytesToHexStr(srcBytes);
+		System.out.println(hexStr);
+		byte[] targetBytes = IOUtil.hexStrToBytes(hexStr);
+		String targetStr = new String(targetBytes, "utf-8");
+		System.out.println(targetStr);
 	}
 }
