@@ -921,13 +921,25 @@ public class ModelUtil
 			jsChildrenList.add("xlsys.business.model.IdRelationModel");
 			ModelUtil.generateJsModelClass(dataBase, "xlsys_identity", "xlsys.business.model.IdentityModel", jsChildrenList, jsSrcRoot);*/
 			
-			String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
+			/*String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
 			ModelUtil.generateModelClass(dataBase, "xlsys_department", "xlsys.business.model.DepartmentModel", null, byte[].class, srcRoot);
 			ModelUtil.generateModelClass(dataBase, "xlsys_position", "xlsys.business.model.PositionModel", null, byte[].class, srcRoot);
 			
 			String jsSrcRoot = "D:/work/code/MyProject/xlsys.web/web/xlsys.web.business/source/class";
 			ModelUtil.generateJsModelClass(dataBase, "xlsys_department", "xlsys.business.model.DepartmentModel", null, jsSrcRoot);
-			ModelUtil.generateJsModelClass(dataBase, "xlsys_position", "xlsys.business.model.PositionModel", null, jsSrcRoot);
+			ModelUtil.generateJsModelClass(dataBase, "xlsys_position", "xlsys.business.model.PositionModel", null, jsSrcRoot);*/
+			
+			String srcRoot = "D:/work/code/MyProject/xlsys.business/src";
+			ModelUtil.generateModelClass(dataBase, "xlsys_dictdetail", "xlsys.business.model.DictDetailModel", null, byte[].class, srcRoot);
+			List<String> childrenList = new ArrayList<String>();
+			childrenList.add("xlsys.business.model.DictDetailModel");
+			ModelUtil.generateModelClass(dataBase, "xlsys_dict", "xlsys.business.model.DictModel", childrenList, byte[].class, srcRoot);
+			
+			String jsSrcRoot = "D:/work/code/MyProject/xlsys.web/web/xlsys.web.business/source/class";
+			ModelUtil.generateJsModelClass(dataBase, "xlsys_dictdetail", "xlsys.business.model.DictDetailModel", null, jsSrcRoot);
+			List<String> jsChildrenList = new ArrayList<String>();
+			jsChildrenList.add("xlsys.business.model.DictDetailModel");
+			ModelUtil.generateJsModelClass(dataBase, "xlsys_dict", "xlsys.business.model.DictModel", jsChildrenList, jsSrcRoot);
 		}
 		catch(Exception e)
 		{
